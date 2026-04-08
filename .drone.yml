@@ -1,123 +1,402 @@
 # =============================================================================
-# HostAI — Drone CI Configuration
+# HostAI — Drone CI/CD Configuration
 # =============================================================================
-# Pipeline 1: build-image      → Construye y pushea imagen Docker a GHCR
-# Pipeline 2: Trigger Tests    → Nightly / Adhoc: crea tag que dispara tests
+# GKE Standard cluster: drone-ci-standard (europe-west3-a)
+# Docker Runner (DinD): builds con plugins/gcr
+# K8s Runner (cap 8):   tests paralelos + deploy/cleanup
 #
-# Los test pipelines estan en /pipelines/*.yml y se inyectan dinamicamente
-# cuando se crea un tag (mismo patron que qc_qa_nkp_module_test).
-#
-# GHCR (GitHub Container Registry) se usa como registry personal.
+# PR flow:  build-images → deploy-preview → 11 tests paralelos → cleanup
+# Main flow: build-production → deploy-production
 # =============================================================================
 
-# ─── Pipeline 1: Build & Push Docker Image ──────────────────────────────────
-
+# ══════════════════════════════════════════════════════════════════════════════
+# PIPELINE: BUILD IMAGES (Docker Runner, type: docker)
+# ══════════════════════════════════════════════════════════════════════════════
 kind: pipeline
 type: docker
-name: build-e2e-image
-
-clone:
-  depth: 1
+name: build-images
 
 trigger:
-  event:
-    include:
-      - push
-      - tag
-  branch:
-    - main
-    - master
+  event: [pull_request]
 
 steps:
-  - name: build and push e2e image
-    image: plugins/docker
+  - name: build-app-image
+    image: plugins/gcr
     settings:
-      repo: ghcr.io/nicolasmori/hostai-e2e
-      registry: ghcr.io
-      dockerfile: e2e/Dockerfile
-      context: e2e
+      repo: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-api
+      registry: europe-west3-docker.pkg.dev
+      dockerfile: Dockerfile
       tags:
-        - ${DRONE_COMMIT_SHA:0:8}
-        - ${DRONE_COMMIT_SHA}
-        - latest
-      username:
-        from_secret: GITHUB_USERNAME
-      password:
-        from_secret: GITHUB_TOKEN
-    when:
-      paths:
-        include:
-          - e2e/**
+        - "${DRONE_COMMIT_SHA}"
+      json_key:
+        from_secret: gcr_json_key
 
+  - name: build-e2e-image
+    image: plugins/gcr
+    settings:
+      repo: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e
+      registry: europe-west3-docker.pkg.dev
+      dockerfile: e2e/Dockerfile
+      context: e2e/
+      tags:
+        - "${DRONE_COMMIT_SHA}"
+      json_key:
+        from_secret: gcr_json_key
+
+# ══════════════════════════════════════════════════════════════════════════════
+# PIPELINE: DEPLOY PREVIEW (K8s Runner, type: kubernetes)
+# ══════════════════════════════════════════════════════════════════════════════
 ---
-
-# ─── Pipeline 2: Trigger Nightly Tests ──────────────────────────────────────
-
 kind: pipeline
-type: docker
-name: Trigger Nightly Tests
-
-clone:
-  disable: true
+type: kubernetes
+name: deploy-preview
 
 trigger:
-  event: cron
+  event: [pull_request]
+
+depends_on: [build-images]
 
 steps:
-  - name: Trigger E2E Test Suite
-    image: alpine/git:2.40.1
-    pull: if-not-exists
+  - name: deploy
+    image: bitnami/kubectl:1.29
+    commands:
+      - export NS="hostai-pr-$DRONE_PULL_REQUEST"
+      - sed -e "s|\$${PR_NUMBER}|$DRONE_PULL_REQUEST|g"
+            -e "s|\$${COMMIT_SHA}|$DRONE_COMMIT_SHA|g"
+            ci/k8s/preview.yaml | kubectl apply -f -
+      - kubectl rollout status deployment/hostai-api -n $NS --timeout=180s
+
+  - name: wait-for-health
+    image: curlimages/curl:8.5.0
+    commands:
+      - export URL="http://hostai-api-svc.hostai-pr-$DRONE_PULL_REQUEST.svc.cluster.local:8000/health"
+      - echo "Waiting for $URL ..."
+      - for i in $(seq 1 30); do
+          curl -sf "$URL" > /dev/null 2>&1 && echo "Health OK!" && exit 0;
+          echo "Attempt $i/30 - waiting 5s...";
+          sleep 5;
+        done
+      - echo "Health check FAILED after 150s"
+      - exit 1
+    depends_on: [deploy]
+
+# ══════════════════════════════════════════════════════════════════════════════
+# PIPELINES: 11 TESTS E2E EN PARALELO (K8s Runner, 1 pod cada uno)
+# ══════════════════════════════════════════════════════════════════════════════
+
+---
+kind: pipeline
+type: kubernetes
+name: test-api-health
+trigger: { event: [pull_request] }
+depends_on: [deploy-preview]
+image_pull_secrets: [ar-pull-secret]
+node_selector:
+  pool: tests
+steps:
+  - name: run
+    image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
     environment:
-      PIPELINE_NAME: HOSTAI_E2E
+      CI: "true"
+      API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
+      BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
-      - echo "Triggering nightly E2E suite"
-      - git clone -b "$DRONE_TARGET_BRANCH" --single-branch https://github.com/nicolasmori/ai-host-agent.git .
-      - echo -e "\n" >> .drone.yml
-      - cat pipelines/"$PIPELINE_NAME.yml" >> .drone.yml
-      - git add .
-      - git commit -m "Nightly E2E trigger"
-      - COMMIT_SHA=$(git rev-parse HEAD)
-      - TAG="E2E_${PIPELINE_NAME}_${COMMIT_SHA}"
-      - git tag $TAG
-      - git push origin $TAG
-    when:
-      event:
-        - cron
-      cron:
-        - hostai-e2e-nightly
+      - npx playwright test tests/api/health.spec.ts --project=chromium --reporter=list
 
 ---
-
-# ─── Pipeline 3: Trigger Adhoc Tests ────────────────────────────────────────
-
 kind: pipeline
-type: docker
-name: Trigger Adhoc Tests
+type: kubernetes
+name: test-api-auth
+trigger: { event: [pull_request] }
+depends_on: [deploy-preview]
+image_pull_secrets: [ar-pull-secret]
+node_selector: { pool: tests }
+steps:
+  - name: run
+    image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
+    environment:
+      CI: "true"
+      API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
+      BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
+    commands:
+      - npx playwright test tests/api/auth.spec.ts --project=chromium --reporter=list
 
-clone:
-  disable: true
+---
+kind: pipeline
+type: kubernetes
+name: test-api-reservations
+trigger: { event: [pull_request] }
+depends_on: [deploy-preview]
+image_pull_secrets: [ar-pull-secret]
+node_selector: { pool: tests }
+steps:
+  - name: run
+    image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
+    environment:
+      CI: "true"
+      API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
+      BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
+    commands:
+      - npx playwright test tests/api/reservations.spec.ts --project=chromium --reporter=list
+
+---
+kind: pipeline
+type: kubernetes
+name: test-api-floor-plan
+trigger: { event: [pull_request] }
+depends_on: [deploy-preview]
+image_pull_secrets: [ar-pull-secret]
+node_selector: { pool: tests }
+steps:
+  - name: run
+    image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
+    environment:
+      CI: "true"
+      API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
+      BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
+    commands:
+      - npx playwright test tests/api/floor-plan.spec.ts --project=chromium --reporter=list
+
+---
+kind: pipeline
+type: kubernetes
+name: test-api-config
+trigger: { event: [pull_request] }
+depends_on: [deploy-preview]
+image_pull_secrets: [ar-pull-secret]
+node_selector: { pool: tests }
+steps:
+  - name: run
+    image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
+    environment:
+      CI: "true"
+      API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
+      BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
+    commands:
+      - npx playwright test tests/api/config.spec.ts --project=chromium --reporter=list
+
+---
+kind: pipeline
+type: kubernetes
+name: test-api-security
+trigger: { event: [pull_request] }
+depends_on: [deploy-preview]
+image_pull_secrets: [ar-pull-secret]
+node_selector: { pool: tests }
+steps:
+  - name: run
+    image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
+    environment:
+      CI: "true"
+      API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
+      BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
+    commands:
+      - npx playwright test tests/api/security.spec.ts --project=chromium --reporter=list
+
+---
+kind: pipeline
+type: kubernetes
+name: test-api-agent
+trigger: { event: [pull_request] }
+depends_on: [deploy-preview]
+image_pull_secrets: [ar-pull-secret]
+node_selector: { pool: tests }
+steps:
+  - name: run
+    image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
+    environment:
+      CI: "true"
+      API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
+      BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
+    commands:
+      - npx playwright test tests/api/agent.spec.ts --project=chromium --reporter=list
+
+---
+kind: pipeline
+type: kubernetes
+name: test-ui-dashboard
+trigger: { event: [pull_request] }
+depends_on: [deploy-preview]
+image_pull_secrets: [ar-pull-secret]
+node_selector: { pool: tests }
+steps:
+  - name: run
+    image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
+    environment:
+      CI: "true"
+      API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
+      BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
+    commands:
+      - npx playwright test tests/ui/dashboard.spec.ts --project=chromium --reporter=list
+
+---
+kind: pipeline
+type: kubernetes
+name: test-ui-chat
+trigger: { event: [pull_request] }
+depends_on: [deploy-preview]
+image_pull_secrets: [ar-pull-secret]
+node_selector: { pool: tests }
+steps:
+  - name: run
+    image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
+    environment:
+      CI: "true"
+      API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
+      BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
+    commands:
+      - npx playwright test tests/ui/chat.spec.ts --project=chromium --reporter=list
+
+---
+kind: pipeline
+type: kubernetes
+name: test-ui-floor-plan
+trigger: { event: [pull_request] }
+depends_on: [deploy-preview]
+image_pull_secrets: [ar-pull-secret]
+node_selector: { pool: tests }
+steps:
+  - name: run
+    image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
+    environment:
+      CI: "true"
+      API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
+      BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
+    commands:
+      - npx playwright test tests/ui/floor-plan.spec.ts --project=chromium --reporter=list
+
+---
+kind: pipeline
+type: kubernetes
+name: test-ui-rbac
+trigger: { event: [pull_request] }
+depends_on: [deploy-preview]
+image_pull_secrets: [ar-pull-secret]
+node_selector: { pool: tests }
+steps:
+  - name: run
+    image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
+    environment:
+      CI: "true"
+      API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
+      BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
+    commands:
+      - npx playwright test tests/ui/rbac.spec.ts --project=chromium --reporter=list
+
+# ══════════════════════════════════════════════════════════════════════════════
+# PIPELINE: REPORT + CLEANUP (siempre corre al final)
+# ══════════════════════════════════════════════════════════════════════════════
+---
+kind: pipeline
+type: kubernetes
+name: report-and-cleanup
 
 trigger:
-  event: custom
+  event: [pull_request]
+
+depends_on:
+  - test-api-health
+  - test-api-auth
+  - test-api-reservations
+  - test-api-floor-plan
+  - test-api-config
+  - test-api-security
+  - test-api-agent
+  - test-ui-dashboard
+  - test-ui-chat
+  - test-ui-floor-plan
+  - test-ui-rbac
 
 steps:
-  - name: Trigger Adhoc E2E Tests
-    image: alpine/git:2.40.1
-    pull: if-not-exists
+  - name: report-datadog
+    image: curlimages/curl:8.5.0
+    environment:
+      DD_API_KEY:
+        from_secret: dd_api_key
     commands:
-      - |
-        if [ -z "$PIPELINE_NAME" ]; then
-          echo "PIPELINE_NAME is required. Use: HOSTAI_E2E"
-          exit 1
-        fi
-      - echo "Triggering adhoc tests for pipeline: $PIPELINE_NAME"
-      - git clone --depth 1 -b "$DRONE_TARGET_BRANCH" --single-branch https://github.com/nicolasmori/ai-host-agent.git .
-      - echo -e "\n" >> .drone.yml
-      - cat pipelines/"$PIPELINE_NAME.yml" >> .drone.yml
-      - git add .
-      - git commit -m "Adhoc E2E trigger for $PIPELINE_NAME"
-      - git commit --allow-empty -m "Generate unique SHA"
-      - COMMIT_SHA=$(git rev-parse HEAD)
-      - TAG="ADHOC_${PIPELINE_NAME}_${COMMIT_SHA}"
-      - git tag $TAG
-      - git push origin $TAG
+      - export TS=$(date +%s)
+      - 'curl -s -X POST "https://api.datadoghq.eu/api/v1/events"
+          -H "DD-API-KEY: $DD_API_KEY"
+          -H "Content-Type: application/json"
+          -d "{\"title\":\"HOST-AI PR #$DRONE_PULL_REQUEST tests completed\",
+               \"text\":\"Branch: $DRONE_BRANCH. Commit: $DRONE_COMMIT_SHA. Status: $DRONE_BUILD_STATUS\",
+               \"priority\":\"normal\",
+               \"tags\":[\"pipeline:ai-host-agent\",\"pr:$DRONE_PULL_REQUEST\",
+                         \"branch:$DRONE_BRANCH\",\"env:ci\",\"source:drone-ci\"],
+               \"alert_type\":\"info\",
+               \"source_type_name\":\"DRONE\"}"'
+      - echo "Event sent to Datadog"
+
+  - name: cleanup-preview
+    image: bitnami/kubectl:1.29
+    commands:
+      - export NS="hostai-pr-$DRONE_PULL_REQUEST"
+      - echo "Cleaning up namespace $NS..."
+      - kubectl delete namespace $NS --ignore-not-found=true
+      - echo "Cleanup complete"
+    depends_on: [report-datadog]
+
+# ══════════════════════════════════════════════════════════════════════════════
+# PIPELINE: BUILD PRODUCTION (push a main, Docker Runner)
+# ══════════════════════════════════════════════════════════════════════════════
+---
+kind: pipeline
+type: docker
+name: build-production
+
+trigger:
+  branch: [main]
+  event: [push]
+
+steps:
+  - name: build-and-push
+    image: plugins/gcr
+    settings:
+      repo: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-api
+      registry: europe-west3-docker.pkg.dev
+      dockerfile: Dockerfile
+      tags:
+        - "${DRONE_COMMIT_SHA}"
+        - latest
+      json_key:
+        from_secret: gcr_json_key
+
+# ══════════════════════════════════════════════════════════════════════════════
+# PIPELINE: DEPLOY PRODUCTION (push a main, K8s Runner)
+# ══════════════════════════════════════════════════════════════════════════════
+---
+kind: pipeline
+type: kubernetes
+name: deploy-production
+
+trigger:
+  branch: [main]
+  event: [push]
+
+depends_on: [build-production]
+
+steps:
+  - name: deploy
+    image: bitnami/kubectl:1.29
+    commands:
+      - echo "Deploying to production..."
+      - kubectl set image deployment/hostai-api
+          api=europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-api:$DRONE_COMMIT_SHA
+          -n hostai-prod
+      - kubectl rollout status deployment/hostai-api -n hostai-prod --timeout=120s
+      - echo "Production deploy complete"
+
+  - name: report-datadog
+    image: curlimages/curl:8.5.0
+    environment:
+      DD_API_KEY:
+        from_secret: dd_api_key
+    commands:
+      - 'curl -s -X POST "https://api.datadoghq.eu/api/v1/events"
+          -H "DD-API-KEY: $DD_API_KEY"
+          -H "Content-Type: application/json"
+          -d "{\"title\":\"HOST-AI production deployed\",
+               \"text\":\"Commit: $DRONE_COMMIT_SHA. Branch: main.\",
+               \"tags\":[\"pipeline:ai-host-agent\",\"env:production\",\"source:drone-ci\"],
+               \"alert_type\":\"success\"}"'
+    depends_on: [deploy]
