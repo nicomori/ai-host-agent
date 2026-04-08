@@ -151,6 +151,8 @@ spec:
       labels:
         app: hostai-api
     spec:
+      imagePullSecrets:
+        - name: ar-pull-secret
       nodeSelector:
         pool: apps
       containers:
@@ -171,11 +173,11 @@ spec:
             failureThreshold: 6
           resources:
             requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
               cpu: "500m"
               memory: "512Mi"
-            limits:
-              cpu: "1000m"
-              memory: "1Gi"
 ---
 apiVersion: v1
 kind: Service
