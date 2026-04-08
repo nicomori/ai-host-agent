@@ -3,7 +3,7 @@
     "guest_name": "Raúl Quintero",
     "guest_phone": "+4915750441601",
     "date": "2026-04-11",
-    "time": "15:00",
+    "time": "21:15",
     "party_size": 10,
     "preference": "VIP",
     "notes": "Cena de negocios"
@@ -11,8 +11,8 @@
   {
     "guest_name": "Raúl Quintero",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-25",
-    "time": "15:15",
+    "date": "2026-04-11",
+    "time": "19:45",
     "party_size": 12,
     "preference": "Interior",
     "notes": "Reserva especial"
@@ -20,8 +20,8 @@
   {
     "guest_name": "Daniela Ponce",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-30",
-    "time": "13:45",
+    "date": "2026-04-16",
+    "time": "19:45",
     "party_size": 10,
     "preference": "Terraza",
     "notes": "Bienvenida"
@@ -29,8 +29,8 @@
   {
     "guest_name": "Oscar Lara",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-19",
-    "time": "12:00",
+    "date": "2026-04-14",
+    "time": "14:15",
     "party_size": 9,
     "preference": "Privado",
     "notes": "Llegará 10 min tarde"
@@ -38,8 +38,8 @@
   {
     "guest_name": "David Contreras",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-30",
-    "time": "19:00",
+    "date": "2026-04-14",
+    "time": "19:15",
     "party_size": 11,
     "preference": "Interior",
     "notes": "Cliente habitual"
@@ -47,8 +47,8 @@
   {
     "guest_name": "Claudia Vera",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-24",
-    "time": "18:15",
+    "date": "2026-04-14",
+    "time": "16:45",
     "party_size": 1,
     "preference": "Jardín",
     "notes": "Despedida"
@@ -56,8 +56,8 @@
   {
     "guest_name": "Silvia Rangel",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-15",
-    "time": "17:15",
+    "date": "2026-04-14",
+    "time": "18:00",
     "party_size": 9,
     "preference": "Terraza",
     "notes": "Bienvenida"
@@ -65,7 +65,7 @@
   {
     "guest_name": "Laura Fernández",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-09",
+    "date": "2026-04-14",
     "time": "21:00",
     "party_size": 5,
     "preference": "Patio",
@@ -74,8 +74,8 @@
   {
     "guest_name": "Oscar Lara",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-18",
-    "time": "17:15",
+    "date": "2026-04-11",
+    "time": "18:30",
     "party_size": 7,
     "preference": "Bar",
     "notes": ""
@@ -83,8 +83,8 @@
   {
     "guest_name": "Emma Espinoza",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-30",
-    "time": "12:00",
+    "date": "2026-04-15",
+    "time": "19:00",
     "party_size": 8,
     "preference": "Privado",
     "notes": ""
@@ -92,8 +92,8 @@
   {
     "guest_name": "Ana Rodríguez",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-18",
-    "time": "17:45",
+    "date": "2026-04-11",
+    "time": "19:00",
     "party_size": 5,
     "preference": "Patio",
     "notes": "Cliente habitual"
@@ -101,8 +101,8 @@
   {
     "guest_name": "Andrés Castro",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-22",
-    "time": "16:45",
+    "date": "2026-04-13",
+    "time": "14:45",
     "party_size": 4,
     "preference": "Patio",
     "notes": "Cena romántica"
@@ -110,8 +110,8 @@
   {
     "guest_name": "Samuel Guzmán",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-21",
-    "time": "16:15",
+    "date": "2026-04-10",
+    "time": "16:30",
     "party_size": 1,
     "preference": "VIP",
     "notes": ""
@@ -119,8 +119,8 @@
   {
     "guest_name": "Paula Jiménez",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-24",
-    "time": "12:15",
+    "date": "2026-04-15",
+    "time": "20:15",
     "party_size": 4,
     "preference": "Jardín",
     "notes": "Pide mesa tranquila"
@@ -128,8 +128,8 @@
   {
     "guest_name": "Natalia Pereira",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-16",
-    "time": "16:15",
+    "date": "2026-04-10",
+    "time": "20:45",
     "party_size": 11,
     "preference": "Ventana",
     "notes": "Necesita silla alta"
@@ -137,8 +137,8 @@
   {
     "guest_name": "Natalia Pereira",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-26",
-    "time": "19:45",
+    "date": "2026-04-12",
+    "time": "20:00",
     "party_size": 8,
     "preference": "Terraza",
     "notes": "Bienvenida"
@@ -146,8 +146,8 @@
   {
     "guest_name": "Ana Rodríguez",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-18",
-    "time": "20:30",
+    "date": "2026-04-12",
+    "time": "22:15",
     "party_size": 5,
     "preference": "Bar",
     "notes": "Llegará 10 min tarde"
@@ -155,8 +155,8 @@
   {
     "guest_name": "Enrique Salinas",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-27",
-    "time": "15:00",
+    "date": "2026-04-13",
+    "time": "22:45",
     "party_size": 11,
     "preference": "Terraza",
     "notes": "Despedida"
@@ -164,8 +164,8 @@
   {
     "guest_name": "Víctor Barrera",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-23",
-    "time": "22:00",
+    "date": "2026-04-09",
+    "time": "16:00",
     "party_size": 3,
     "preference": "Bar",
     "notes": "Despedida"
@@ -173,8 +173,8 @@
   {
     "guest_name": "Lucas Peña",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-16",
-    "time": "15:00",
+    "date": "2026-04-11",
+    "time": "22:15",
     "party_size": 4,
     "preference": "VIP",
     "notes": "Grupo de amigos"
@@ -182,8 +182,8 @@
   {
     "guest_name": "Fernanda Soto",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-26",
-    "time": "12:30",
+    "date": "2026-04-14",
+    "time": "15:30",
     "party_size": 10,
     "preference": "Interior",
     "notes": "Despedida"
@@ -191,8 +191,8 @@
   {
     "guest_name": "Lucia Pacheco",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-17",
-    "time": "17:15",
+    "date": "2026-04-10",
+    "time": "22:00",
     "party_size": 9,
     "preference": "Patio",
     "notes": "Alergia al gluten"
@@ -200,8 +200,8 @@
   {
     "guest_name": "Carmen Velasco",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-24",
-    "time": "22:00",
+    "date": "2026-04-09",
+    "time": "19:00",
     "party_size": 2,
     "preference": "Interior",
     "notes": "Llegará 10 min tarde"
@@ -210,7 +210,7 @@
     "guest_name": "Lucia Pacheco",
     "guest_phone": "+4915750441601",
     "date": "2026-04-16",
-    "time": "16:45",
+    "time": "15:30",
     "party_size": 4,
     "preference": "Privado",
     "notes": ""
@@ -219,7 +219,7 @@
     "guest_name": "Juan Martínez",
     "guest_phone": "+4915750441601",
     "date": "2026-04-15",
-    "time": "16:30",
+    "time": "18:30",
     "party_size": 11,
     "preference": "Terraza",
     "notes": "Alergia al gluten"
@@ -227,8 +227,8 @@
   {
     "guest_name": "Víctor Barrera",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-15",
-    "time": "21:00",
+    "date": "2026-04-11",
+    "time": "22:45",
     "party_size": 9,
     "preference": "Jardín",
     "notes": "Cena romántica"
@@ -236,8 +236,8 @@
   {
     "guest_name": "Maximiliano Cruz",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-22",
-    "time": "18:15",
+    "date": "2026-04-14",
+    "time": "13:00",
     "party_size": 10,
     "preference": "Bar",
     "notes": "Despedida"
@@ -245,8 +245,8 @@
   {
     "guest_name": "Claudia Vera",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-16",
-    "time": "20:15",
+    "date": "2026-04-12",
+    "time": "15:45",
     "party_size": 5,
     "preference": "Jardín",
     "notes": ""
@@ -263,8 +263,8 @@
   {
     "guest_name": "Jorge Bautista",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-21",
-    "time": "15:45",
+    "date": "2026-04-09",
+    "time": "22:45",
     "party_size": 3,
     "preference": "VIP",
     "notes": "Reserva especial"
@@ -272,8 +272,8 @@
   {
     "guest_name": "María López",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-25",
-    "time": "13:15",
+    "date": "2026-04-14",
+    "time": "16:15",
     "party_size": 4,
     "preference": "Ventana",
     "notes": ""
@@ -281,8 +281,8 @@
   {
     "guest_name": "Nicolás Acosta",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-22",
-    "time": "19:15",
+    "date": "2026-04-16",
+    "time": "18:00",
     "party_size": 8,
     "preference": "Terraza",
     "notes": "Llegará 10 min tarde"
@@ -290,8 +290,8 @@
   {
     "guest_name": "Marco Estrada",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-28",
-    "time": "19:30",
+    "date": "2026-04-14",
+    "time": "17:00",
     "party_size": 1,
     "preference": "Ventana",
     "notes": "Alergia al gluten"
@@ -299,8 +299,8 @@
   {
     "guest_name": "Victoria Paredes",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-13",
-    "time": "15:30",
+    "date": "2026-04-10",
+    "time": "17:15",
     "party_size": 4,
     "preference": "Terraza",
     "notes": "Cena de negocios"
@@ -308,8 +308,8 @@
   {
     "guest_name": "Beatriz Solís",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-22",
-    "time": "17:30",
+    "date": "2026-04-16",
+    "time": "22:30",
     "party_size": 8,
     "preference": "VIP",
     "notes": "Sin preferencia especial"
@@ -317,8 +317,8 @@
   {
     "guest_name": "Mariana Delgado",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-14",
-    "time": "18:00",
+    "date": "2026-04-09",
+    "time": "14:00",
     "party_size": 5,
     "preference": "VIP",
     "notes": "Bienvenida"
@@ -326,8 +326,8 @@
   {
     "guest_name": "Antonella Reyes",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-22",
-    "time": "19:45",
+    "date": "2026-04-09",
+    "time": "22:30",
     "party_size": 12,
     "preference": "Jardín",
     "notes": "Alergia al gluten"
@@ -335,8 +335,8 @@
   {
     "guest_name": "Julieta Campos",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-14",
-    "time": "15:45",
+    "date": "2026-04-15",
+    "time": "14:15",
     "party_size": 3,
     "preference": "Patio",
     "notes": "Sin preferencia especial"
@@ -344,8 +344,8 @@
   {
     "guest_name": "Miguel Ángel Prado",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-20",
-    "time": "16:00",
+    "date": "2026-04-11",
+    "time": "13:30",
     "party_size": 10,
     "preference": "Patio",
     "notes": "Reunión familiar"
@@ -353,8 +353,8 @@
   {
     "guest_name": "Lucas Peña",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-26",
-    "time": "13:15",
+    "date": "2026-04-12",
+    "time": "15:00",
     "party_size": 6,
     "preference": "Patio",
     "notes": "Vegetariano"
@@ -362,8 +362,8 @@
   {
     "guest_name": "Rafael Córdoba",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-29",
-    "time": "13:00",
+    "date": "2026-04-13",
+    "time": "22:45",
     "party_size": 8,
     "preference": "Patio",
     "notes": "Grupo de amigos"
@@ -371,8 +371,8 @@
   {
     "guest_name": "Ana Rodríguez",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-29",
-    "time": "22:15",
+    "date": "2026-04-11",
+    "time": "22:00",
     "party_size": 1,
     "preference": "VIP",
     "notes": "Grupo de amigos"
@@ -380,8 +380,8 @@
   {
     "guest_name": "Santiago Molina",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-30",
-    "time": "19:15",
+    "date": "2026-04-16",
+    "time": "17:45",
     "party_size": 2,
     "preference": "Bar",
     "notes": "Cena romántica"
@@ -389,8 +389,8 @@
   {
     "guest_name": "Fernando León",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-23",
-    "time": "17:45",
+    "date": "2026-04-13",
+    "time": "19:45",
     "party_size": 5,
     "preference": "Privado",
     "notes": "Despedida"
@@ -398,8 +398,8 @@
   {
     "guest_name": "Laura Fernández",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-30",
-    "time": "16:15",
+    "date": "2026-04-15",
+    "time": "21:15",
     "party_size": 5,
     "preference": "Patio",
     "notes": "Pide mesa tranquila"
@@ -407,8 +407,8 @@
   {
     "guest_name": "Adrián Villanueva",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-24",
-    "time": "16:30",
+    "date": "2026-04-12",
+    "time": "17:00",
     "party_size": 3,
     "preference": "Privado",
     "notes": "Despedida"
@@ -417,7 +417,7 @@
     "guest_name": "Luciana Mendoza",
     "guest_phone": "+4915750441601",
     "date": "2026-04-10",
-    "time": "22:30",
+    "time": "12:45",
     "party_size": 4,
     "preference": "Ventana",
     "notes": "Vegetariano"
@@ -425,8 +425,8 @@
   {
     "guest_name": "Victoria Paredes",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-23",
-    "time": "22:15",
+    "date": "2026-04-12",
+    "time": "15:00",
     "party_size": 2,
     "preference": "VIP",
     "notes": "Bienvenida"
@@ -434,8 +434,8 @@
   {
     "guest_name": "Emilia Guerrero",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-19",
-    "time": "19:30",
+    "date": "2026-04-11",
+    "time": "12:15",
     "party_size": 7,
     "preference": "Interior",
     "notes": "Vegetariano"
@@ -443,8 +443,8 @@
   {
     "guest_name": "Silvia Rangel",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-16",
-    "time": "13:00",
+    "date": "2026-04-15",
+    "time": "21:45",
     "party_size": 10,
     "preference": "VIP",
     "notes": "Reunión familiar"
@@ -452,8 +452,8 @@
   {
     "guest_name": "Valentina Ruiz",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-18",
-    "time": "22:30",
+    "date": "2026-04-16",
+    "time": "15:45",
     "party_size": 12,
     "preference": "Bar",
     "notes": "Cena de negocios"
@@ -461,8 +461,8 @@
   {
     "guest_name": "Emilia Guerrero",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-09",
-    "time": "20:30",
+    "date": "2026-04-14",
+    "time": "19:00",
     "party_size": 5,
     "preference": "Interior",
     "notes": "Alergia al gluten"
@@ -470,8 +470,8 @@
   {
     "guest_name": "Oscar Lara",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-14",
-    "time": "16:45",
+    "date": "2026-04-09",
+    "time": "16:30",
     "party_size": 5,
     "preference": "Jardín",
     "notes": "Llegará 10 min tarde"
@@ -479,8 +479,8 @@
   {
     "guest_name": "Andrés Castro",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-19",
-    "time": "16:15",
+    "date": "2026-04-15",
+    "time": "17:00",
     "party_size": 1,
     "preference": "Terraza",
     "notes": "Grupo de amigos"
@@ -488,8 +488,8 @@
   {
     "guest_name": "Daniel Flores",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-15",
-    "time": "17:00",
+    "date": "2026-04-12",
+    "time": "19:30",
     "party_size": 9,
     "preference": "VIP",
     "notes": "Sin preferencia especial"
@@ -497,8 +497,8 @@
   {
     "guest_name": "Diego Torres",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-12",
-    "time": "22:15",
+    "date": "2026-04-14",
+    "time": "16:45",
     "party_size": 1,
     "preference": "Bar",
     "notes": "Reunión familiar"
@@ -507,7 +507,7 @@
     "guest_name": "Regina Sandoval",
     "guest_phone": "+4915750441601",
     "date": "2026-04-14",
-    "time": "17:45",
+    "time": "21:45",
     "party_size": 10,
     "preference": "Interior",
     "notes": "Reserva especial"
@@ -515,8 +515,8 @@
   {
     "guest_name": "Fernanda Soto",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-23",
-    "time": "13:00",
+    "date": "2026-04-09",
+    "time": "22:30",
     "party_size": 9,
     "preference": "Privado",
     "notes": "Cliente habitual"
@@ -524,8 +524,8 @@
   {
     "guest_name": "César Trejo",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-29",
-    "time": "13:30",
+    "date": "2026-04-13",
+    "time": "14:00",
     "party_size": 6,
     "preference": "VIP",
     "notes": "Cena de negocios"
@@ -533,8 +533,8 @@
   {
     "guest_name": "Antonella Reyes",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-19",
-    "time": "19:30",
+    "date": "2026-04-13",
+    "time": "21:15",
     "party_size": 5,
     "preference": "Patio",
     "notes": "Celebración"
@@ -542,8 +542,8 @@
   {
     "guest_name": "Fernanda Soto",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-11",
-    "time": "15:00",
+    "date": "2026-04-16",
+    "time": "13:00",
     "party_size": 7,
     "preference": "Jardín",
     "notes": "Alergia al gluten"
@@ -551,8 +551,8 @@
   {
     "guest_name": "Adrián Villanueva",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-18",
-    "time": "15:30",
+    "date": "2026-04-12",
+    "time": "12:30",
     "party_size": 12,
     "preference": "Privado",
     "notes": "Cliente habitual"
@@ -560,8 +560,8 @@
   {
     "guest_name": "Isabella Vargas",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-16",
-    "time": "20:45",
+    "date": "2026-04-10",
+    "time": "21:30",
     "party_size": 6,
     "preference": "Privado",
     "notes": "Sin preferencia especial"
@@ -569,8 +569,8 @@
   {
     "guest_name": "Natalia Pereira",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-28",
-    "time": "22:00",
+    "date": "2026-04-09",
+    "time": "18:00",
     "party_size": 12,
     "preference": "Patio",
     "notes": "Cumpleaños"
@@ -578,8 +578,8 @@
   {
     "guest_name": "Carmen Velasco",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-16",
-    "time": "22:15",
+    "date": "2026-04-10",
+    "time": "18:00",
     "party_size": 2,
     "preference": "VIP",
     "notes": "Alergia al gluten"
@@ -587,8 +587,8 @@
   {
     "guest_name": "Catalina Ortiz",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-22",
-    "time": "18:30",
+    "date": "2026-04-14",
+    "time": "16:00",
     "party_size": 4,
     "preference": "Patio",
     "notes": "Grupo de amigos"
@@ -596,8 +596,8 @@
   {
     "guest_name": "Carmen Velasco",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-11",
-    "time": "20:45",
+    "date": "2026-04-14",
+    "time": "20:00",
     "party_size": 3,
     "preference": "Ventana",
     "notes": "Cena romántica"
@@ -605,8 +605,8 @@
   {
     "guest_name": "Benjamín Ramírez",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-30",
-    "time": "19:15",
+    "date": "2026-04-10",
+    "time": "18:45",
     "party_size": 2,
     "preference": "Jardín",
     "notes": "Celebración"
@@ -614,8 +614,8 @@
   {
     "guest_name": "Sofía Morales",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-27",
-    "time": "16:00",
+    "date": "2026-04-11",
+    "time": "14:15",
     "party_size": 4,
     "preference": "Bar",
     "notes": "Grupo de amigos"
@@ -623,8 +623,8 @@
   {
     "guest_name": "Valeria Aguilar",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-20",
-    "time": "19:15",
+    "date": "2026-04-14",
+    "time": "12:30",
     "party_size": 1,
     "preference": "VIP",
     "notes": "Cumpleaños"
@@ -632,8 +632,8 @@
   {
     "guest_name": "Marco Estrada",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-30",
-    "time": "14:15",
+    "date": "2026-04-09",
+    "time": "17:30",
     "party_size": 8,
     "preference": "Bar",
     "notes": "Cena de negocios"
@@ -641,8 +641,8 @@
   {
     "guest_name": "Daniela Ponce",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-30",
-    "time": "20:45",
+    "date": "2026-04-09",
+    "time": "16:00",
     "party_size": 10,
     "preference": "Patio",
     "notes": "Grupo de amigos"
@@ -650,8 +650,8 @@
   {
     "guest_name": "Rosa Maldonado",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-26",
-    "time": "20:00",
+    "date": "2026-04-13",
+    "time": "20:45",
     "party_size": 9,
     "preference": "Interior",
     "notes": "Grupo de amigos"
@@ -659,7 +659,7 @@
   {
     "guest_name": "Rosa Maldonado",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-28",
+    "date": "2026-04-11",
     "time": "19:30",
     "party_size": 5,
     "preference": "Ventana",
@@ -668,8 +668,8 @@
   {
     "guest_name": "Joaquín Suárez",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-16",
-    "time": "18:45",
+    "date": "2026-04-13",
+    "time": "17:15",
     "party_size": 11,
     "preference": "Terraza",
     "notes": "Necesita silla alta"
@@ -677,8 +677,8 @@
   {
     "guest_name": "Valeria Aguilar",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-21",
-    "time": "16:30",
+    "date": "2026-04-15",
+    "time": "15:15",
     "party_size": 4,
     "preference": "Ventana",
     "notes": "Cliente habitual"
@@ -686,8 +686,8 @@
   {
     "guest_name": "Julieta Campos",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-28",
-    "time": "19:30",
+    "date": "2026-04-10",
+    "time": "16:15",
     "party_size": 3,
     "preference": "VIP",
     "notes": "Celebración"
@@ -695,8 +695,8 @@
   {
     "guest_name": "Alejandro Vega",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-30",
-    "time": "20:00",
+    "date": "2026-04-11",
+    "time": "13:30",
     "party_size": 4,
     "preference": "Bar",
     "notes": "Llegará 10 min tarde"
@@ -704,8 +704,8 @@
   {
     "guest_name": "Pedro Sánchez",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-12",
-    "time": "12:15",
+    "date": "2026-04-10",
+    "time": "18:15",
     "party_size": 2,
     "preference": "Bar",
     "notes": "Grupo de amigos"
@@ -713,8 +713,8 @@
   {
     "guest_name": "Regina Sandoval",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-29",
-    "time": "12:00",
+    "date": "2026-04-13",
+    "time": "18:45",
     "party_size": 1,
     "preference": "Jardín",
     "notes": "Llegará 10 min tarde"
@@ -722,8 +722,8 @@
   {
     "guest_name": "Daniela Ponce",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-13",
-    "time": "13:15",
+    "date": "2026-04-09",
+    "time": "20:45",
     "party_size": 9,
     "preference": "Jardín",
     "notes": "Pide mesa tranquila"
@@ -731,8 +731,8 @@
   {
     "guest_name": "Alberto Rivas",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-18",
-    "time": "16:00",
+    "date": "2026-04-13",
+    "time": "22:45",
     "party_size": 9,
     "preference": "Bar",
     "notes": "Pide mesa tranquila"
@@ -740,8 +740,8 @@
   {
     "guest_name": "Rafael Córdoba",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-17",
-    "time": "21:45",
+    "date": "2026-04-09",
+    "time": "15:30",
     "party_size": 1,
     "preference": "Terraza",
     "notes": "Necesita silla alta"
@@ -749,8 +749,8 @@
   {
     "guest_name": "Oscar Lara",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-30",
-    "time": "18:00",
+    "date": "2026-04-13",
+    "time": "13:30",
     "party_size": 12,
     "preference": "Interior",
     "notes": "Pide mesa tranquila"
@@ -758,8 +758,8 @@
   {
     "guest_name": "Carlos García",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-30",
-    "time": "17:00",
+    "date": "2026-04-11",
+    "time": "17:45",
     "party_size": 12,
     "preference": "Privado",
     "notes": "Llegará 10 min tarde"
@@ -767,8 +767,8 @@
   {
     "guest_name": "Víctor Barrera",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-10",
-    "time": "16:30",
+    "date": "2026-04-11",
+    "time": "19:30",
     "party_size": 1,
     "preference": "Privado",
     "notes": "Cena romántica"
@@ -776,8 +776,8 @@
   {
     "guest_name": "Santiago Molina",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-23",
-    "time": "20:15",
+    "date": "2026-04-16",
+    "time": "15:30",
     "party_size": 8,
     "preference": "Patio",
     "notes": ""
@@ -785,8 +785,8 @@
   {
     "guest_name": "Catalina Ortiz",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-10",
-    "time": "17:00",
+    "date": "2026-04-13",
+    "time": "21:00",
     "party_size": 12,
     "preference": "Interior",
     "notes": "Sin preferencia especial"
@@ -794,8 +794,8 @@
   {
     "guest_name": "Gloria Cervantes",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-11",
-    "time": "13:15",
+    "date": "2026-04-15",
+    "time": "21:15",
     "party_size": 2,
     "preference": "Interior",
     "notes": "Sin preferencia especial"
@@ -803,8 +803,8 @@
   {
     "guest_name": "Alejandro Vega",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-20",
-    "time": "21:30",
+    "date": "2026-04-09",
+    "time": "19:45",
     "party_size": 7,
     "preference": "Interior",
     "notes": "Aniversario"
@@ -812,8 +812,8 @@
   {
     "guest_name": "Samuel Guzmán",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-26",
-    "time": "16:30",
+    "date": "2026-04-16",
+    "time": "17:00",
     "party_size": 8,
     "preference": "Jardín",
     "notes": "Celebración"
@@ -821,8 +821,8 @@
   {
     "guest_name": "Santiago Molina",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-29",
-    "time": "14:45",
+    "date": "2026-04-16",
+    "time": "13:00",
     "party_size": 11,
     "preference": "Ventana",
     "notes": "Cena de negocios"
@@ -830,8 +830,8 @@
   {
     "guest_name": "Alberto Rivas",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-19",
-    "time": "21:15",
+    "date": "2026-04-09",
+    "time": "16:30",
     "party_size": 1,
     "preference": "Bar",
     "notes": "Celebración"
@@ -839,8 +839,8 @@
   {
     "guest_name": "Arturo Domínguez",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-20",
-    "time": "12:00",
+    "date": "2026-04-12",
+    "time": "14:00",
     "party_size": 8,
     "preference": "Jardín",
     "notes": "Primera cita"
@@ -848,8 +848,8 @@
   {
     "guest_name": "Carmen Velasco",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-27",
-    "time": "20:30",
+    "date": "2026-04-14",
+    "time": "21:30",
     "party_size": 12,
     "preference": "Jardín",
     "notes": "Cumpleaños"
@@ -857,8 +857,8 @@
   {
     "guest_name": "Valentina Ruiz",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-09",
-    "time": "12:45",
+    "date": "2026-04-16",
+    "time": "19:30",
     "party_size": 6,
     "preference": "Terraza",
     "notes": "Reunión familiar"
@@ -866,8 +866,8 @@
   {
     "guest_name": "Daniel Flores",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-21",
-    "time": "15:15",
+    "date": "2026-04-13",
+    "time": "15:30",
     "party_size": 5,
     "preference": "VIP",
     "notes": "Grupo de amigos"
@@ -875,8 +875,8 @@
   {
     "guest_name": "Camila Díaz",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-18",
-    "time": "17:15",
+    "date": "2026-04-15",
+    "time": "12:15",
     "party_size": 12,
     "preference": "Jardín",
     "notes": "Celebración"
@@ -884,8 +884,8 @@
   {
     "guest_name": "Luciana Mendoza",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-12",
-    "time": "16:45",
+    "date": "2026-04-10",
+    "time": "18:30",
     "party_size": 4,
     "preference": "Interior",
     "notes": "Sin preferencia especial"
@@ -893,8 +893,8 @@
   {
     "guest_name": "Irene Caballero",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-13",
-    "time": "13:00",
+    "date": "2026-04-11",
+    "time": "22:15",
     "party_size": 12,
     "preference": "Terraza",
     "notes": "Pide mesa tranquila"
@@ -902,8 +902,8 @@
   {
     "guest_name": "Julieta Campos",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-27",
-    "time": "19:15",
+    "date": "2026-04-13",
+    "time": "18:45",
     "party_size": 11,
     "preference": "Terraza",
     "notes": "Reserva especial"
@@ -911,8 +911,8 @@
   {
     "guest_name": "Beatriz Solís",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-24",
-    "time": "15:45",
+    "date": "2026-04-11",
+    "time": "16:15",
     "party_size": 4,
     "preference": "VIP",
     "notes": ""
@@ -920,8 +920,8 @@
   {
     "guest_name": "Roberto Fuentes",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-22",
-    "time": "22:15",
+    "date": "2026-04-14",
+    "time": "15:30",
     "party_size": 10,
     "preference": "Privado",
     "notes": ""
@@ -929,8 +929,8 @@
   {
     "guest_name": "Lucia Pacheco",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-22",
-    "time": "21:00",
+    "date": "2026-04-16",
+    "time": "20:15",
     "party_size": 10,
     "preference": "Interior",
     "notes": ""
@@ -938,8 +938,8 @@
   {
     "guest_name": "Victoria Paredes",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-21",
-    "time": "19:15",
+    "date": "2026-04-13",
+    "time": "15:30",
     "party_size": 5,
     "preference": "Jardín",
     "notes": "Cena romántica"
@@ -947,8 +947,8 @@
   {
     "guest_name": "Julieta Campos",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-14",
-    "time": "13:30",
+    "date": "2026-04-09",
+    "time": "22:30",
     "party_size": 10,
     "preference": "Privado",
     "notes": "Vegetariano"
@@ -956,8 +956,8 @@
   {
     "guest_name": "María López",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-15",
-    "time": "16:45",
+    "date": "2026-04-10",
+    "time": "21:30",
     "party_size": 3,
     "preference": "Privado",
     "notes": "Bienvenida"
@@ -965,8 +965,8 @@
   {
     "guest_name": "César Trejo",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-19",
-    "time": "19:45",
+    "date": "2026-04-15",
+    "time": "14:45",
     "party_size": 2,
     "preference": "Bar",
     "notes": "Pide mesa tranquila"
@@ -974,8 +974,8 @@
   {
     "guest_name": "Alberto Rivas",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-27",
-    "time": "12:15",
+    "date": "2026-04-11",
+    "time": "21:15",
     "party_size": 9,
     "preference": "Privado",
     "notes": "Vegetariano"
@@ -983,8 +983,8 @@
   {
     "guest_name": "Gabriela Montes",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-25",
-    "time": "15:00",
+    "date": "2026-04-15",
+    "time": "21:30",
     "party_size": 12,
     "preference": "Terraza",
     "notes": "Llegará 10 min tarde"
@@ -992,8 +992,8 @@
   {
     "guest_name": "Benjamín Ramírez",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-25",
-    "time": "14:45",
+    "date": "2026-04-14",
+    "time": "22:00",
     "party_size": 7,
     "preference": "Terraza",
     "notes": "Bienvenida"
@@ -1001,8 +1001,8 @@
   {
     "guest_name": "Fernando León",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-26",
-    "time": "15:30",
+    "date": "2026-04-12",
+    "time": "21:45",
     "party_size": 7,
     "preference": "VIP",
     "notes": "Aniversario"
@@ -1010,8 +1010,8 @@
   {
     "guest_name": "Eduardo Bustamante",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-22",
-    "time": "17:00",
+    "date": "2026-04-12",
+    "time": "19:30",
     "party_size": 9,
     "preference": "Interior",
     "notes": ""
@@ -1019,8 +1019,8 @@
   {
     "guest_name": "Alberto Rivas",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-27",
-    "time": "22:00",
+    "date": "2026-04-09",
+    "time": "12:30",
     "party_size": 7,
     "preference": "Bar",
     "notes": "Primera cita"
@@ -1029,7 +1029,7 @@
     "guest_name": "Oscar Lara",
     "guest_phone": "+4915750441601",
     "date": "2026-04-14",
-    "time": "22:45",
+    "time": "19:00",
     "party_size": 4,
     "preference": "Interior",
     "notes": "Cumpleaños"
@@ -1037,8 +1037,8 @@
   {
     "guest_name": "Nicolás Acosta",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-21",
-    "time": "17:30",
+    "date": "2026-04-16",
+    "time": "19:00",
     "party_size": 7,
     "preference": "Jardín",
     "notes": "Cumpleaños"
@@ -1046,8 +1046,8 @@
   {
     "guest_name": "Marco Estrada",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-19",
-    "time": "19:15",
+    "date": "2026-04-15",
+    "time": "18:30",
     "party_size": 11,
     "preference": "Interior",
     "notes": "Bienvenida"
@@ -1055,8 +1055,8 @@
   {
     "guest_name": "Joaquín Suárez",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-20",
-    "time": "14:45",
+    "date": "2026-04-13",
+    "time": "17:00",
     "party_size": 11,
     "preference": "Ventana",
     "notes": "Llegará 10 min tarde"
@@ -1064,8 +1064,8 @@
   {
     "guest_name": "Silvia Rangel",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-25",
-    "time": "13:30",
+    "date": "2026-04-14",
+    "time": "14:00",
     "party_size": 3,
     "preference": "VIP",
     "notes": "Aniversario"
@@ -1073,8 +1073,8 @@
   {
     "guest_name": "Rosa Maldonado",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-20",
-    "time": "12:45",
+    "date": "2026-04-16",
+    "time": "12:00",
     "party_size": 11,
     "preference": "Jardín",
     "notes": "Grupo de amigos"
@@ -1082,8 +1082,8 @@
   {
     "guest_name": "Miguel Ángel Prado",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-25",
-    "time": "14:00",
+    "date": "2026-04-10",
+    "time": "17:00",
     "party_size": 3,
     "preference": "Ventana",
     "notes": "Sin preferencia especial"
@@ -1091,8 +1091,8 @@
   {
     "guest_name": "Luciana Mendoza",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-24",
-    "time": "16:30",
+    "date": "2026-04-09",
+    "time": "22:45",
     "party_size": 3,
     "preference": "Patio",
     "notes": ""
@@ -1100,8 +1100,8 @@
   {
     "guest_name": "David Contreras",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-17",
-    "time": "15:45",
+    "date": "2026-04-13",
+    "time": "22:15",
     "party_size": 6,
     "preference": "Patio",
     "notes": "Cumpleaños"
@@ -1109,8 +1109,8 @@
   {
     "guest_name": "Regina Sandoval",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-10",
-    "time": "12:15",
+    "date": "2026-04-15",
+    "time": "21:30",
     "party_size": 10,
     "preference": "Terraza",
     "notes": "Llegará 10 min tarde"
@@ -1118,8 +1118,8 @@
   {
     "guest_name": "Hugo Figueroa",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-09",
-    "time": "18:15",
+    "date": "2026-04-16",
+    "time": "14:30",
     "party_size": 12,
     "preference": "Interior",
     "notes": "Pide mesa tranquila"
@@ -1127,8 +1127,8 @@
   {
     "guest_name": "David Contreras",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-09",
-    "time": "17:30",
+    "date": "2026-04-11",
+    "time": "18:30",
     "party_size": 2,
     "preference": "Interior",
     "notes": "Aniversario"
@@ -1136,8 +1136,8 @@
   {
     "guest_name": "Mateo Herrera",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-20",
-    "time": "21:15",
+    "date": "2026-04-12",
+    "time": "15:45",
     "party_size": 8,
     "preference": "Patio",
     "notes": "Cumpleaños"
@@ -1145,8 +1145,8 @@
   {
     "guest_name": "Natalia Pereira",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-30",
-    "time": "13:30",
+    "date": "2026-04-10",
+    "time": "18:45",
     "party_size": 10,
     "preference": "Terraza",
     "notes": "Cliente habitual"
@@ -1154,8 +1154,8 @@
   {
     "guest_name": "Iván Cabrera",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-20",
-    "time": "13:45",
+    "date": "2026-04-12",
+    "time": "12:45",
     "party_size": 9,
     "preference": "VIP",
     "notes": "Cena de negocios"
@@ -1163,8 +1163,8 @@
   {
     "guest_name": "Laura Fernández",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-09",
-    "time": "22:15",
+    "date": "2026-04-15",
+    "time": "18:30",
     "party_size": 10,
     "preference": "Jardín",
     "notes": "Llegará 10 min tarde"
@@ -1172,8 +1172,8 @@
   {
     "guest_name": "Andrés Castro",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-25",
-    "time": "20:45",
+    "date": "2026-04-13",
+    "time": "12:45",
     "party_size": 11,
     "preference": "Bar",
     "notes": "Necesita silla alta"
@@ -1181,8 +1181,8 @@
   {
     "guest_name": "Catalina Ortiz",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-24",
-    "time": "21:00",
+    "date": "2026-04-15",
+    "time": "14:30",
     "party_size": 8,
     "preference": "Privado",
     "notes": "Grupo de amigos"
@@ -1190,8 +1190,8 @@
   {
     "guest_name": "Fernando León",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-14",
-    "time": "12:45",
+    "date": "2026-04-15",
+    "time": "22:00",
     "party_size": 1,
     "preference": "VIP",
     "notes": "Celebración"
@@ -1199,8 +1199,8 @@
   {
     "guest_name": "Diego Torres",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-14",
-    "time": "20:00",
+    "date": "2026-04-16",
+    "time": "14:00",
     "party_size": 4,
     "preference": "Ventana",
     "notes": ""
@@ -1208,8 +1208,8 @@
   {
     "guest_name": "Eduardo Bustamante",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-30",
-    "time": "16:30",
+    "date": "2026-04-11",
+    "time": "14:45",
     "party_size": 8,
     "preference": "Interior",
     "notes": "Pide mesa tranquila"
@@ -1218,7 +1218,7 @@
     "guest_name": "Andrés Castro",
     "guest_phone": "+4915750441601",
     "date": "2026-04-09",
-    "time": "14:30",
+    "time": "22:30",
     "party_size": 2,
     "preference": "Jardín",
     "notes": "Celebración"
@@ -1226,8 +1226,8 @@
   {
     "guest_name": "Carlos García",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-10",
-    "time": "22:45",
+    "date": "2026-04-09",
+    "time": "22:15",
     "party_size": 7,
     "preference": "Interior",
     "notes": "Pide mesa tranquila"
@@ -1235,8 +1235,8 @@
   {
     "guest_name": "Francisco Orozco",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-25",
-    "time": "12:30",
+    "date": "2026-04-09",
+    "time": "19:00",
     "party_size": 7,
     "preference": "Privado",
     "notes": "Celebración"
@@ -1244,8 +1244,8 @@
   {
     "guest_name": "Regina Sandoval",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-17",
-    "time": "19:30",
+    "date": "2026-04-12",
+    "time": "17:30",
     "party_size": 10,
     "preference": "Privado",
     "notes": "Pide mesa tranquila"
@@ -1253,8 +1253,8 @@
   {
     "guest_name": "Lucia Pacheco",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-21",
-    "time": "15:45",
+    "date": "2026-04-09",
+    "time": "17:15",
     "party_size": 9,
     "preference": "Jardín",
     "notes": "Bienvenida"
@@ -1262,7 +1262,7 @@
   {
     "guest_name": "Laura Fernández",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-30",
+    "date": "2026-04-15",
     "time": "16:45",
     "party_size": 11,
     "preference": "Interior",
@@ -1271,8 +1271,8 @@
   {
     "guest_name": "Silvia Rangel",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-25",
-    "time": "21:15",
+    "date": "2026-04-09",
+    "time": "18:45",
     "party_size": 12,
     "preference": "VIP",
     "notes": "Cena romántica"
@@ -1280,8 +1280,8 @@
   {
     "guest_name": "Regina Sandoval",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-15",
-    "time": "20:30",
+    "date": "2026-04-11",
+    "time": "18:45",
     "party_size": 10,
     "preference": "Interior",
     "notes": "Pide mesa tranquila"
@@ -1289,8 +1289,8 @@
   {
     "guest_name": "Maximiliano Cruz",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-26",
-    "time": "14:30",
+    "date": "2026-04-13",
+    "time": "19:00",
     "party_size": 10,
     "preference": "VIP",
     "notes": "Aniversario"
@@ -1298,8 +1298,8 @@
   {
     "guest_name": "Marco Estrada",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-23",
-    "time": "17:45",
+    "date": "2026-04-16",
+    "time": "12:15",
     "party_size": 2,
     "preference": "Ventana",
     "notes": "Cliente habitual"
@@ -1307,8 +1307,8 @@
   {
     "guest_name": "Enrique Salinas",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-25",
-    "time": "12:15",
+    "date": "2026-04-09",
+    "time": "15:15",
     "party_size": 7,
     "preference": "Privado",
     "notes": "Necesita silla alta"
@@ -1316,8 +1316,8 @@
   {
     "guest_name": "Carmen Velasco",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-13",
-    "time": "17:15",
+    "date": "2026-04-15",
+    "time": "14:45",
     "party_size": 6,
     "preference": "VIP",
     "notes": "Alergia al gluten"
@@ -1325,8 +1325,8 @@
   {
     "guest_name": "Emilia Guerrero",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-13",
-    "time": "15:15",
+    "date": "2026-04-16",
+    "time": "12:30",
     "party_size": 3,
     "preference": "Ventana",
     "notes": "Cena de negocios"
@@ -1334,8 +1334,8 @@
   {
     "guest_name": "Luciana Mendoza",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-16",
-    "time": "12:45",
+    "date": "2026-04-14",
+    "time": "13:00",
     "party_size": 7,
     "preference": "VIP",
     "notes": "Celebración"
@@ -1343,8 +1343,8 @@
   {
     "guest_name": "Maximiliano Cruz",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-09",
-    "time": "17:30",
+    "date": "2026-04-13",
+    "time": "13:15",
     "party_size": 12,
     "preference": "Ventana",
     "notes": "Despedida"
@@ -1352,8 +1352,8 @@
   {
     "guest_name": "Guest 5",
     "guest_phone": "5550000005",
-    "date": "2026-04-12",
-    "time": "23:00",
+    "date": "2026-04-13",
+    "time": "16:45",
     "party_size": 6,
     "preference": "VIP",
     "notes": "Demo reservation 5"
@@ -1361,7 +1361,7 @@
   {
     "guest_name": "Guest 4",
     "guest_phone": "5550000004",
-    "date": "2026-04-12",
+    "date": "2026-04-15",
     "time": "22:00",
     "party_size": 5,
     "preference": "Bar",
@@ -1370,8 +1370,8 @@
   {
     "guest_name": "Guest 3",
     "guest_phone": "5550000003",
-    "date": "2026-04-12",
-    "time": "21:00",
+    "date": "2026-04-09",
+    "time": "19:00",
     "party_size": 4,
     "preference": "Terraza",
     "notes": "Demo reservation 3"
@@ -1379,8 +1379,8 @@
   {
     "guest_name": "Guest 2",
     "guest_phone": "5550000002",
-    "date": "2026-04-12",
-    "time": "20:00",
+    "date": "2026-04-14",
+    "time": "19:15",
     "party_size": 3,
     "preference": "Patio",
     "notes": "Demo reservation 2"
@@ -1388,8 +1388,8 @@
   {
     "guest_name": "Guest 1",
     "guest_phone": "5550000001",
-    "date": "2026-04-12",
-    "time": "19:00",
+    "date": "2026-04-09",
+    "time": "22:15",
     "party_size": 2,
     "preference": "Interior",
     "notes": "Demo reservation 1"
