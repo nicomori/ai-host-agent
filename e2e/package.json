@@ -1,0 +1,29 @@
+{
+  "name": "hostai-e2e",
+  "private": true,
+  "version": "0.1.0",
+  "description": "HostAI E2E tests — Playwright + Drone CI",
+  "scripts": {
+    "test": "npx playwright test --project=chromium",
+    "test:all": "npx playwright test",
+    "test:ui": "npx playwright test --ui",
+    "test:headed": "npx playwright test --headed",
+    "test:debug": "npx playwright test --debug",
+    "report": "npx playwright show-report",
+    "install-browsers": "npx playwright install --with-deps chromium",
+
+    "test:smoke": "npx playwright test --grep @smoke --project=chromium",
+    "test:regression": "npx playwright test --grep @regression --project=chromium",
+    "test:api": "npx playwright test tests/api/ --project=chromium",
+
+    "pipeline:1": "npx playwright test tests/api/health.spec.ts tests/api/auth.spec.ts tests/api/reservations.spec.ts --project=chromium --reporter=list,html",
+    "pipeline:2": "npx playwright test tests/api/agent.spec.ts tests/api/floor-plan.spec.ts tests/api/config.spec.ts tests/api/security.spec.ts --project=chromium --reporter=list,html",
+    "pipeline:3": "npx playwright test tests/ui/auth.spec.ts tests/ui/rbac.spec.ts --project=chromium --reporter=list,html",
+    "pipeline:4": "npx playwright test tests/ui/dashboard.spec.ts --project=chromium --reporter=list,html",
+    "pipeline:5": "npx playwright test tests/ui/floor-plan.spec.ts tests/ui/chat.spec.ts --project=chromium --reporter=list,html"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.44.0",
+    "@types/node": "^20.11.0"
+  }
+}

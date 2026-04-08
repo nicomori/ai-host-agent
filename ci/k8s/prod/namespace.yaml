@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: hostai-prod
+  labels:
+    app: hostai
+    env: production

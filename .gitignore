@@ -1,0 +1,52 @@
+# Credentials & secrets
+.env
+CREDENTIALS.md
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+
+# Docker
+data/checkpoints.sqlite
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node (UI)
+ui/node_modules/
+ui/dist/
+
+# Node (E2E)
+e2e/node_modules/
+e2e/test-results/
+e2e/playwright-report/
+
+# Data
+data/
+
+# Temp
+tmp/
+*.mp3
+.langgraph_api/

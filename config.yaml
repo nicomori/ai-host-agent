@@ -1,0 +1,48 @@
+agent:
+  checkpointer: postgres
+  max_conversation_turns: 20
+  session_timeout_minutes: 30
+app:
+  name: ai-host-agent
+  version: 0.1.0
+lancedb:
+  embedding_dim: 1536
+  memory_max_turns: 50
+  search_limit_default: 5
+  tables:
+  - reservations_vectors
+  - conversation_memory
+  - voice_transcripts
+  uri: /app/data/lancedb
+llm:
+  fast_model: claude-haiku-4-5-20251001
+  max_tokens: 512
+  model: claude-haiku-4-5-20251001
+  temperature: 0.2
+persistence:
+  calls_table: call_logs
+  checkpoints_table: agent_checkpoints
+  reservations_table: reservations
+pipeline:
+  max_retries: 3
+  retry_wait_seconds: 2
+  tmp_audio_dir: /app/tmp/audio
+  tmp_transcripts_dir: /app/tmp/transcripts
+reservations:
+  advance_booking_days: 30
+  cancellation_window_hours: 2
+  confirmation_call_minutes_before: 60
+  max_party_size: 20
+server:
+  host: 0.0.0.0
+  port: 8000
+  reload: true
+telephony:
+  provider: twilio
+voice:
+  audio_format: wav
+  audio_sample_rate: 16000
+  language: es
+  silence_threshold_ms: 1500
+  stt_provider: whisper
+  tts_provider: elevenlabs

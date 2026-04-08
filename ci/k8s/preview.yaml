@@ -1,0 +1,190 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: hostai-pr-${PR_NUMBER}
+  labels:
+    app: hostai-preview
+    pr: "${PR_NUMBER}"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hostai-env
+  namespace: hostai-pr-${PR_NUMBER}
+data:
+  APP_ENV: "ci"
+  APP_PORT: "8000"
+  API_KEY: "ci-test-key"
+  POSTGRES_HOST: "postgres-svc"
+  POSTGRES_PORT: "5432"
+  POSTGRES_DB: "hostai_ci"
+  POSTGRES_USER: "hostai_ci"
+  POSTGRES_PASSWORD: "ci-pass-2026"
+  DATABASE_URL: "postgresql+asyncpg://hostai_ci:ci-pass-2026@postgres-svc:5432/hostai_ci"
+  REDIS_HOST: "redis-svc"
+  REDIS_PORT: "6379"
+  REDIS_URL: "redis://redis-svc:6379/0"
+  LANCEDB_URI: "/tmp/hostai_lancedb"
+  RESTAURANT_NAME: "CI Restaurant"
+  ANTHROPIC_API_KEY: "dummy-sk-ant-ci"
+  OPENAI_API_KEY: "dummy-sk-ci"
+  ELEVENLABS_API_KEY: "dummy-sk-ci"
+  TWILIO_ACCOUNT_SID: "ACdummy0000000000000000000000000000"
+  TWILIO_AUTH_TOKEN: "dummy-twilio-token"
+  TWILIO_PHONE_NUMBER: "+15005550006"
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  namespace: hostai-pr-${PR_NUMBER}
+spec:
+  serviceName: postgres-svc
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      nodeSelector:
+        pool: apps
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: "hostai_ci"
+            - name: POSTGRES_USER
+              value: "hostai_ci"
+            - name: POSTGRES_PASSWORD
+              value: "ci-pass-2026"
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "hostai_ci"]
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-svc
+  namespace: hostai-pr-${PR_NUMBER}
+spec:
+  selector:
+    app: postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis
+  namespace: hostai-pr-${PR_NUMBER}
+spec:
+  serviceName: redis-svc
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      nodeSelector:
+        pool: apps
+      containers:
+        - name: redis
+          image: redis:7-alpine
+          ports:
+            - containerPort: 6379
+          readinessProbe:
+            exec:
+              command: ["redis-cli", "ping"]
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "250m"
+              memory: "256Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-svc
+  namespace: hostai-pr-${PR_NUMBER}
+spec:
+  selector:
+    app: redis
+  ports:
+    - port: 6379
+      targetPort: 6379
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hostai-api
+  namespace: hostai-pr-${PR_NUMBER}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hostai-api
+  template:
+    metadata:
+      labels:
+        app: hostai-api
+    spec:
+      nodeSelector:
+        pool: apps
+      containers:
+        - name: api
+          image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-api:${COMMIT_SHA}
+          command: ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: hostai-env
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 6
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "512Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hostai-api-svc
+  namespace: hostai-pr-${PR_NUMBER}
+spec:
+  selector:
+    app: hostai-api
+  ports:
+    - port: 8000
+      targetPort: 8000

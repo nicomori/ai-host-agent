@@ -1,0 +1,123 @@
+# =============================================================================
+# HostAI — Drone CI Configuration
+# =============================================================================
+# Pipeline 1: build-image      → Construye y pushea imagen Docker a GHCR
+# Pipeline 2: Trigger Tests    → Nightly / Adhoc: crea tag que dispara tests
+#
+# Los test pipelines estan en /pipelines/*.yml y se inyectan dinamicamente
+# cuando se crea un tag (mismo patron que qc_qa_nkp_module_test).
+#
+# GHCR (GitHub Container Registry) se usa como registry personal.
+# =============================================================================
+
+# ─── Pipeline 1: Build & Push Docker Image ──────────────────────────────────
+
+kind: pipeline
+type: docker
+name: build-e2e-image
+
+clone:
+  depth: 1
+
+trigger:
+  event:
+    include:
+      - push
+      - tag
+  branch:
+    - main
+    - master
+
+steps:
+  - name: build and push e2e image
+    image: plugins/docker
+    settings:
+      repo: ghcr.io/nicolasmori/hostai-e2e
+      registry: ghcr.io
+      dockerfile: e2e/Dockerfile
+      context: e2e
+      tags:
+        - ${DRONE_COMMIT_SHA:0:8}
+        - ${DRONE_COMMIT_SHA}
+        - latest
+      username:
+        from_secret: GITHUB_USERNAME
+      password:
+        from_secret: GITHUB_TOKEN
+    when:
+      paths:
+        include:
+          - e2e/**
+
+---
+
+# ─── Pipeline 2: Trigger Nightly Tests ──────────────────────────────────────
+
+kind: pipeline
+type: docker
+name: Trigger Nightly Tests
+
+clone:
+  disable: true
+
+trigger:
+  event: cron
+
+steps:
+  - name: Trigger E2E Test Suite
+    image: alpine/git:2.40.1
+    pull: if-not-exists
+    environment:
+      PIPELINE_NAME: HOSTAI_E2E
+    commands:
+      - echo "Triggering nightly E2E suite"
+      - git clone -b "$DRONE_TARGET_BRANCH" --single-branch https://github.com/nicolasmori/ai-host-agent.git .
+      - echo -e "\n" >> .drone.yml
+      - cat pipelines/"$PIPELINE_NAME.yml" >> .drone.yml
+      - git add .
+      - git commit -m "Nightly E2E trigger"
+      - COMMIT_SHA=$(git rev-parse HEAD)
+      - TAG="E2E_${PIPELINE_NAME}_${COMMIT_SHA}"
+      - git tag $TAG
+      - git push origin $TAG
+    when:
+      event:
+        - cron
+      cron:
+        - hostai-e2e-nightly
+
+---
+
+# ─── Pipeline 3: Trigger Adhoc Tests ────────────────────────────────────────
+
+kind: pipeline
+type: docker
+name: Trigger Adhoc Tests
+
+clone:
+  disable: true
+
+trigger:
+  event: custom
+
+steps:
+  - name: Trigger Adhoc E2E Tests
+    image: alpine/git:2.40.1
+    pull: if-not-exists
+    commands:
+      - |
+        if [ -z "$PIPELINE_NAME" ]; then
+          echo "PIPELINE_NAME is required. Use: HOSTAI_E2E"
+          exit 1
+        fi
+      - echo "Triggering adhoc tests for pipeline: $PIPELINE_NAME"
+      - git clone --depth 1 -b "$DRONE_TARGET_BRANCH" --single-branch https://github.com/nicolasmori/ai-host-agent.git .
+      - echo -e "\n" >> .drone.yml
+      - cat pipelines/"$PIPELINE_NAME.yml" >> .drone.yml
+      - git add .
+      - git commit -m "Adhoc E2E trigger for $PIPELINE_NAME"
+      - git commit --allow-empty -m "Generate unique SHA"
+      - COMMIT_SHA=$(git rev-parse HEAD)
+      - TAG="ADHOC_${PIPELINE_NAME}_${COMMIT_SHA}"
+      - git tag $TAG
+      - git push origin $TAG

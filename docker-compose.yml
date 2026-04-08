@@ -1,0 +1,108 @@
+services:
+  api:
+    build:
+      context: .
+    image: ai-host-agent:dev
+    container_name: ai-host-agent
+    ports:
+      - "${APP_PORT:-8000}:8000"
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - audio_tmp:/app/tmp/audio
+      - transcripts_tmp:/app/tmp/transcripts
+      - lancedb_data:/app/data/lancedb
+    environment:
+      - LANCEDB_URI=/app/data/lancedb
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_URL=redis://redis:6379/0
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-hostai_user}:${POSTGRES_PASSWORD:-hostai_pass_2026}@postgres:5432/${POSTGRES_DB:-hostai_db}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - hostai_net
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: ai-host-agent-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-hostai}
+      POSTGRES_USER: ${POSTGRES_USER:-hostai}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-hostai_secret}
+    ports:
+      - "${POSTGRES_PORT:-5433}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-hostai}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - hostai_net
+
+  redis:
+    image: redis:7-alpine
+    container_name: ai-host-agent-redis
+    ports:
+      - "${REDIS_PORT:-6380}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - hostai_net
+
+  ui:
+    image: node:20-alpine
+    container_name: ai-host-agent-ui
+    working_dir: /app
+    volumes:
+      - ./ui:/app
+      - ui_node_modules:/app/node_modules
+    ports:
+      - "${UI_PORT:-5173}:5173"
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    depends_on:
+      - api
+    networks:
+      - hostai_net
+
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    container_name: ai-host-agent-tunnel
+    restart: always
+    command: tunnel --no-autoupdate --url http://api:8000
+    depends_on:
+      - api
+    networks:
+      - hostai_net
+
+volumes:
+  audio_tmp:
+    driver: local
+  transcripts_tmp:
+    driver: local
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  lancedb_data:
+    driver: local
+  ui_node_modules:
+    driver: local
+
+networks:
+  hostai_net:
+    driver: bridge

@@ -1,0 +1,223 @@
+# =============================================================================
+# HostAI E2E — 5 Pipelines Paralelos
+# =============================================================================
+#
+# Se inyecta al .drone.yml principal cuando se crea un tag E2E_* o ADHOC_*.
+#
+# Pipelines (corren en paralelo):
+#   1. API Smoke       → health, auth, reservations
+#   2. API Regression  → agent, floor-plan, config, security
+#   3. UI Auth & RBAC  → login, logout, rutas protegidas, roles
+#   4. UI Dashboard    → CRUD reservas, busqueda, filtros, preferencias
+#   5. UI Features     → floor plan editor/viewer, chat widget
+#
+# Cada pipeline corre dentro del container hostai-e2e con Chromium preinstalado.
+# Los tests se conectan al backend/frontend via BASE_URL y API_URL.
+# =============================================================================
+
+# ─── Variables compartidas ──────────────────────────────────────────────────
+
+global-variables: &default_variables
+  image: ghcr.io/nicolasmori/hostai-e2e:${DRONE_COMMIT_SHA:0:8}
+  pull: always
+  environment:
+    # URLs donde la app esta corriendo (configurar segun entorno)
+    BASE_URL: http://host.docker.internal:5173
+    API_URL: http://host.docker.internal:8000
+    # Playwright config
+    CI: "true"
+    PLAYWRIGHT_BROWSERS_PATH: /e2e/node_modules/.cache/ms-playwright
+
+# =============================================================================
+# Pipeline 1: API Smoke Tests
+# =============================================================================
+
+---
+kind: pipeline
+type: docker
+name: "1 - API Smoke"
+
+trigger:
+  ref:
+    - refs/tags/E2E_HOSTAI_E2E*
+    - refs/tags/ADHOC_HOSTAI_E2E*
+
+steps:
+  - <<: *default_variables
+    name: health + auth + reservations
+    commands:
+      - npx playwright test
+          tests/api/health.spec.ts
+          tests/api/auth.spec.ts
+          tests/api/reservations.spec.ts
+          --project=chromium
+          --reporter=list,html
+    when:
+      status: &continue_on_any
+        - failure
+        - success
+
+  - name: upload report
+    <<: *default_variables
+    commands:
+      - echo "API Smoke report available at playwright-report/"
+    depends_on:
+      - health + auth + reservations
+    when:
+      status: *continue_on_any
+
+depends_on:
+  - build-e2e-image
+
+# =============================================================================
+# Pipeline 2: API Regression Tests
+# =============================================================================
+
+---
+kind: pipeline
+type: docker
+name: "2 - API Regression"
+
+trigger:
+  ref:
+    - refs/tags/E2E_HOSTAI_E2E*
+    - refs/tags/ADHOC_HOSTAI_E2E*
+
+steps:
+  - <<: *default_variables
+    name: agent + floor-plan + config + security
+    commands:
+      - npx playwright test
+          tests/api/agent.spec.ts
+          tests/api/floor-plan.spec.ts
+          tests/api/config.spec.ts
+          tests/api/security.spec.ts
+          --project=chromium
+          --reporter=list,html
+    when:
+      status: *continue_on_any
+
+depends_on:
+  - build-e2e-image
+
+# =============================================================================
+# Pipeline 3: UI Auth & RBAC
+# =============================================================================
+
+---
+kind: pipeline
+type: docker
+name: "3 - UI Auth & RBAC"
+
+trigger:
+  ref:
+    - refs/tags/E2E_HOSTAI_E2E*
+    - refs/tags/ADHOC_HOSTAI_E2E*
+
+steps:
+  - <<: *default_variables
+    name: login + logout + rutas protegidas
+    commands:
+      - npx playwright test
+          tests/ui/auth.spec.ts
+          --project=chromium
+          --reporter=list,html
+    when:
+      status: *continue_on_any
+
+  - <<: *default_variables
+    name: RBAC (reader, writer, admin)
+    commands:
+      - npx playwright test
+          tests/ui/rbac.spec.ts
+          --project=chromium
+          --reporter=list,html
+    depends_on:
+      - login + logout + rutas protegidas
+    when:
+      status: *continue_on_any
+
+depends_on:
+  - build-e2e-image
+
+# =============================================================================
+# Pipeline 4: UI Dashboard
+# =============================================================================
+
+---
+kind: pipeline
+type: docker
+name: "4 - UI Dashboard"
+
+trigger:
+  ref:
+    - refs/tags/E2E_HOSTAI_E2E*
+    - refs/tags/ADHOC_HOSTAI_E2E*
+
+steps:
+  - <<: *default_variables
+    name: CRUD + busqueda + filtros + preferencias
+    commands:
+      - npx playwright test
+          tests/ui/dashboard.spec.ts
+          --project=chromium
+          --reporter=list,html
+    when:
+      status: *continue_on_any
+
+depends_on:
+  - build-e2e-image
+
+# =============================================================================
+# Pipeline 5: UI Features (Floor Plan + Chat)
+# =============================================================================
+
+---
+kind: pipeline
+type: docker
+name: "5 - UI Features"
+
+trigger:
+  ref:
+    - refs/tags/E2E_HOSTAI_E2E*
+    - refs/tags/ADHOC_HOSTAI_E2E*
+
+steps:
+  - <<: *default_variables
+    name: floor plan editor
+    commands:
+      - npx playwright test
+          "tests/ui/floor-plan.spec.ts"
+          --project=chromium
+          --reporter=list,html
+          --grep "Editor"
+    when:
+      status: *continue_on_any
+
+  - <<: *default_variables
+    name: floor plan viewer
+    commands:
+      - npx playwright test
+          "tests/ui/floor-plan.spec.ts"
+          --project=chromium
+          --reporter=list,html
+          --grep "Viewer"
+    depends_on:
+      - floor plan editor
+    when:
+      status: *continue_on_any
+
+  - <<: *default_variables
+    name: chat widget
+    commands:
+      - npx playwright test
+          tests/ui/chat.spec.ts
+          --project=chromium
+          --reporter=list,html
+    depends_on:
+      - floor plan viewer
+    when:
+      status: *continue_on_any
+
+depends_on:
+  - build-e2e-image

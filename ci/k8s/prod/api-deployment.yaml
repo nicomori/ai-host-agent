@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hostai-api
+  namespace: hostai-prod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hostai-api
+  template:
+    metadata:
+      labels:
+        app: hostai-api
+    spec:
+      nodeSelector:
+        pool: apps
+      containers:
+        - name: api
+          image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-api:v0.1.0
+          command: ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: hostai-env
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "512Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"

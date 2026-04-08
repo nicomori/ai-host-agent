@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: hostai-api-svc
+  namespace: hostai-prod
+spec:
+  type: LoadBalancer
+  selector:
+    app: hostai-api
+  ports:
+    - port: 8000
+      targetPort: 8000
