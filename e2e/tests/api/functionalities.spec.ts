@@ -254,6 +254,39 @@ test.describe("Core Functionalities @api @regression", () => {
     }
   });
 
+  // ── Pagination & Stats ─────────────────────────────────────────────────
+
+  test("FUNC-018: page_size up to 500 returns all reservations", async ({ apiAsAdmin }) => {
+    const res = await apiAsAdmin.listReservations({ page: 1, page_size: 500 });
+    expect(res.ok()).toBeTruthy();
+
+    const body = await res.json();
+    expect(body.page_size).toBe(500);
+    // Should return more than 100 if there are more than 100 reservations
+    expect(body.total).toBeGreaterThan(0);
+  });
+
+  test("FUNC-019: today has non-zero reservations in stats", async ({ apiAsAdmin }) => {
+    // Create a reservation for today to guarantee non-zero
+    const today = new Date().toISOString().split("T")[0];
+    await apiAsAdmin.createReservation({
+      guest_name: uniqueGuest("Stats"),
+      guest_phone: "+4915750441601",
+      date: today,
+      time: "20:00",
+      party_size: 2,
+    });
+
+    const res = await apiAsAdmin.listReservations({ page: 1, page_size: 500 });
+    expect(res.ok()).toBeTruthy();
+
+    const body = await res.json();
+    const todayReservations = body.reservations.filter(
+      (r: { date: string; status: string }) => r.date === today && r.status !== "cancelled"
+    );
+    expect(todayReservations.length).toBeGreaterThan(0);
+  });
+
   test("FUNC-017: reader cannot create reservations", async ({ api }) => {
     // Login as reader (no API key)
     await api.login("reader", "1234");

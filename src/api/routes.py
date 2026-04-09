@@ -93,7 +93,7 @@ def _get_reservation_or_404(reservation_id: str) -> dict:
 async def list_reservations(
     cfg: SettingsDep,
     page: int = Query(default=1, ge=1),
-    page_size: int = Query(default=20, ge=1, le=100),
+    page_size: int = Query(default=20, ge=1, le=500),
     status_filter: Optional[ReservationStatus] = Query(default=None, alias="status"),
 ) -> ReservationListResponse:
     all_rows = pg_db.list_reservations(

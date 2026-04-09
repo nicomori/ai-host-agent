@@ -203,18 +203,18 @@ def get_reservation(reservation_id: int | str) -> dict[str, Any] | None:
 
 def list_reservations(
     status_filter: str | None = None,
-    limit: int = 200,
+    limit: int = 2000,
 ) -> list[dict[str, Any]]:
     with get_conn() as conn:
         with conn.cursor() as cur:
             if status_filter:
                 cur.execute(
-                    "SELECT * FROM reservations WHERE status=%s ORDER BY created_at DESC LIMIT %s",
+                    "SELECT * FROM reservations WHERE status=%s ORDER BY date, time, created_at DESC LIMIT %s",
                     (status_filter, limit),
                 )
             else:
                 cur.execute(
-                    "SELECT * FROM reservations ORDER BY created_at DESC LIMIT %s",
+                    "SELECT * FROM reservations ORDER BY date, time, created_at DESC LIMIT %s",
                     (limit,),
                 )
             return [_row_to_reservation(dict(r)) for r in cur.fetchall()]
