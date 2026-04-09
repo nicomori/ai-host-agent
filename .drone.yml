@@ -22,9 +22,6 @@ name: build-images
 trigger:
   event: [pull_request]
 
-node_selector:
-  pool: infra
-
 services:
   - name: dind
     image: docker:27-dind
@@ -366,9 +363,6 @@ name: build-production
 trigger:
   branch: [main]
   event: [push]
-
-node_selector:
-  pool: infra
 
 services:
   - name: dind
