@@ -41,7 +41,8 @@ steps:
         from_secret: gcr_json_key
     commands:
       - until docker info >/dev/null 2>&1; do sleep 1; done
-      - echo "$GCR_JSON_KEY" | docker login -u _json_key --password-stdin europe-west3-docker.pkg.dev
+      - printf '%s' "$GCR_JSON_KEY" > /tmp/gcr-key.json
+      - docker login -u _json_key --password-stdin europe-west3-docker.pkg.dev < /tmp/gcr-key.json
       - docker build -t europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-api:$DRONE_COMMIT_SHA .
       - docker push europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-api:$DRONE_COMMIT_SHA
 
@@ -52,7 +53,8 @@ steps:
       GCR_JSON_KEY:
         from_secret: gcr_json_key
     commands:
-      - echo "$GCR_JSON_KEY" | docker login -u _json_key --password-stdin europe-west3-docker.pkg.dev
+      - printf '%s' "$GCR_JSON_KEY" > /tmp/gcr-key.json
+      - docker login -u _json_key --password-stdin europe-west3-docker.pkg.dev < /tmp/gcr-key.json
       - docker build -t europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:$DRONE_COMMIT_SHA e2e/
       - docker push europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:$DRONE_COMMIT_SHA
     depends_on: [build-app-image]
@@ -384,7 +386,8 @@ steps:
         from_secret: gcr_json_key
     commands:
       - until docker info >/dev/null 2>&1; do sleep 1; done
-      - echo "$GCR_JSON_KEY" | docker login -u _json_key --password-stdin europe-west3-docker.pkg.dev
+      - printf '%s' "$GCR_JSON_KEY" > /tmp/gcr-key.json
+      - docker login -u _json_key --password-stdin europe-west3-docker.pkg.dev < /tmp/gcr-key.json
       - docker build -t europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-api:$DRONE_COMMIT_SHA -t europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-api:latest .
       - docker push europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-api:$DRONE_COMMIT_SHA
       - docker push europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-api:latest
