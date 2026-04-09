@@ -98,6 +98,9 @@ steps:
     image: bitnami/kubectl:latest
     commands:
       - export NS="hostai-pr-$DRONE_PULL_REQUEST"
+      - echo "Waiting for namespace $NS to be fully deleted (if exists)..."
+      - for i in $(seq 1 30); do kubectl get namespace $NS 2>&1 | grep -q "not found" && break; echo "  Waiting ($i/30)..."; sleep 2; done
+      - kubectl delete namespace $NS --ignore-not-found=true 2>/dev/null; sleep 2
       - sed -e "s|\$${PR_NUMBER}|$DRONE_PULL_REQUEST|g"
             -e "s|\$${COMMIT_SHA}|$DRONE_COMMIT_SHA|g"
             ci/k8s/preview.yaml | kubectl apply -f -
