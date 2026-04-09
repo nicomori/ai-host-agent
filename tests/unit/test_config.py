@@ -22,7 +22,7 @@ def test_tc01_appconfig_from_yaml():
     cfg = AppConfig.from_yaml()
 
     assert cfg.app.name == "ai-host-agent"
-    assert cfg.app.version == "0.1.0"
+    assert cfg.app.version == "0.2.1"
     assert cfg.server.port == 8000
     assert cfg.agent.checkpointer == "postgres"
     assert cfg.voice.stt_provider == "whisper"
