@@ -8,6 +8,7 @@
  */
 import { test, expect } from "../../fixtures/base.fixture";
 import { MINIMAL_FLOOR_PLAN } from "../../helpers/test-data";
+import { evidence } from "../../helpers/evidence";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Editor — Modifica el plano, se ejecuta en serie
@@ -20,25 +21,35 @@ test.describe("Floor Plan Editor @regression", () => {
     await loginAs("admin");
   });
 
-  test("TC-UI-045: agregar mesa rectangular desde sidebar", async ({ editorPage }) => {
+  test("TC-UI-045: agregar mesa rectangular desde sidebar", async ({ editorPage, page }) => {
     await editorPage.goto();
     await expect(editorPage.canvas).toBeVisible();
+
+    await evidence(page, test.info(), "01-editor-canvas-loaded");
 
     await test.step("Agregar mesa 'E2E-Table' con 6 asientos en Patio", async () => {
       await editorPage.addTable("rect", "E2E-Table", 6, "Patio");
     });
+
+    await evidence(page, test.info(), "02-table-added");
   });
 
-  test("TC-UI-048: guardar plano muestra toast de exito", async ({ editorPage }) => {
+  test("TC-UI-048: guardar plano muestra toast de exito", async ({ editorPage, page }) => {
     await editorPage.goto();
+
+    await evidence(page, test.info(), "01-editor-before-save");
 
     await test.step("Click en Guardar", async () => {
       await editorPage.save();
     });
 
+    await evidence(page, test.info(), "02-after-save-click");
+
     await test.step("Verificar toast de confirmacion", async () => {
       await editorPage.expectSaveSuccess();
     });
+
+    await evidence(page, test.info(), "03-save-toast-visible");
   });
 
   test("TC-UI-047: eliminar elemento con tecla Delete", async ({ editorPage, page }) => {
@@ -48,6 +59,8 @@ test.describe("Floor Plan Editor @regression", () => {
       await editorPage.addTable("round", "ToDelete", 2);
     });
 
+    await evidence(page, test.info(), "01-table-added-for-delete");
+
     await test.step("Seleccionar elemento en el canvas y presionar Delete", async () => {
       const box = await editorPage.canvas.boundingBox();
       if (box) {
@@ -55,6 +68,8 @@ test.describe("Floor Plan Editor @regression", () => {
         await page.keyboard.press("Delete");
       }
     });
+
+    await evidence(page, test.info(), "02-after-delete-pressed");
   });
 });
 
@@ -75,7 +90,9 @@ test.describe("Floor Plan Viewer @regression", () => {
     await loginAs("admin");
   });
 
-  test("TC-UI-030: el canvas del floor plan renderiza correctamente", async ({ dashboardPage }) => {
+  test("TC-UI-030: el canvas del floor plan renderiza correctamente", async ({ dashboardPage, page }) => {
+    await evidence(page, test.info(), "01-dashboard-before-floor-plan");
+
     await dashboardPage.floorPlanViewBtn.click();
     // Konva canvas may not be available in staging builds
     const canvasVisible = await dashboardPage.floorPlanCanvas
@@ -86,6 +103,8 @@ test.describe("Floor Plan Viewer @regression", () => {
       test.skip(true, "Konva canvas not rendered in staging build");
       return;
     }
+
+    await evidence(page, test.info(), "02-floor-plan-canvas-rendered");
   });
 
   test("TC-UI-031: zoom con scroll wheel funciona", async ({ dashboardPage, page }) => {
@@ -99,13 +118,19 @@ test.describe("Floor Plan Viewer @regression", () => {
       return;
     }
 
+    await evidence(page, test.info(), "01-floor-plan-before-zoom");
+
     await test.step("Zoom in (scroll up)", async () => {
       await dashboardPage.floorPlanCanvas.hover();
       await page.mouse.wheel(0, -100);
     });
 
+    await evidence(page, test.info(), "02-after-zoom-in");
+
     await test.step("Zoom out (scroll down)", async () => {
       await page.mouse.wheel(0, 100);
     });
+
+    await evidence(page, test.info(), "03-after-zoom-out");
   });
 });

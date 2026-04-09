@@ -5,13 +5,18 @@
  * Tag: @smoke — se ejecuta en cada PR.
  */
 import { test, expect } from "../../fixtures/base.fixture";
+import { evidence } from "../../helpers/evidence";
 
 test.describe("Autenticacion @smoke", () => {
 
   test("TC-UI-001: login exitoso redirige al dashboard", async ({ loginPage, page }) => {
+    await evidence(page, test.info(), "01-login-page-loaded");
+
     await test.step("Completar formulario con credenciales validas", async () => {
       await loginPage.loginAndWait("admin", "1234");
     });
+
+    await evidence(page, test.info(), "02-dashboard-after-login");
 
     await test.step("Verificar redireccion y token en localStorage", async () => {
       expect(page.url()).toContain("/dashboard");
@@ -20,10 +25,14 @@ test.describe("Autenticacion @smoke", () => {
     });
   });
 
-  test("TC-UI-002: login con password incorrecto muestra error", async ({ loginPage }) => {
+  test("TC-UI-002: login con password incorrecto muestra error", async ({ loginPage, page }) => {
+    await evidence(page, test.info(), "01-login-page-before-error");
+
     await test.step("Intentar login con password incorrecto", async () => {
       await loginPage.login("admin", "wrong_password");
     });
+
+    await evidence(page, test.info(), "02-error-message-displayed");
 
     await test.step("Verificar que se muestra alerta de error", async () => {
       await loginPage.expectError();
@@ -38,11 +47,15 @@ test.describe("Autenticacion @smoke", () => {
       });
     });
 
+    await evidence(page, test.info(), "01-login-form-ready");
+
     await test.step("Completar formulario y enviar", async () => {
       await loginPage.username.fill("admin");
       await loginPage.password.fill("1234");
       await loginPage.signInBtn.click();
     });
+
+    await evidence(page, test.info(), "02-loading-state-active");
 
     await test.step("Verificar que el boton esta disabled con texto 'Signing in...'", async () => {
       await loginPage.expectLoadingState();
@@ -50,9 +63,13 @@ test.describe("Autenticacion @smoke", () => {
   });
 
   test("TC-UI-005: en mobile el video se oculta y el form es full-width", async ({ loginPage, page }) => {
+    await evidence(page, test.info(), "01-desktop-viewport");
+
     await test.step("Cambiar viewport a iPhone (375x812)", async () => {
       await page.setViewportSize({ width: 375, height: 812 });
     });
+
+    await evidence(page, test.info(), "02-mobile-viewport");
 
     await test.step("Verificar que el video se oculta y los inputs son visibles", async () => {
       await expect(loginPage.videoPanel).not.toBeVisible();
@@ -66,10 +83,14 @@ test.describe("Autenticacion @smoke", () => {
       await loginPage.loginAndWait("admin", "1234");
     });
 
+    await evidence(page, test.info(), "01-logged-in-dashboard");
+
     await test.step("Abrir menu de usuario y hacer sign out", async () => {
       await page.locator("button:has(.rounded-full)").last().click();
       await page.locator("button:has(.lucide-log-out), button.text-destructive").first().click();
     });
+
+    await evidence(page, test.info(), "02-after-logout");
 
     await test.step("Verificar redireccion a /login y token borrado", async () => {
       await page.waitForURL("**/login");
@@ -88,9 +109,13 @@ test.describe("Autenticacion @smoke", () => {
       });
     });
 
+    await evidence(page, test.info(), "01-login-page-token-cleared");
+
     await test.step("Navegar a /dashboard y verificar redireccion a /login", async () => {
       await page.goto("/dashboard");
       await page.waitForURL("**/login");
     });
+
+    await evidence(page, test.info(), "02-redirected-to-login");
   });
 });
