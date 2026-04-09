@@ -74,7 +74,7 @@ depends_on: [build-images]
 
 steps:
   - name: deploy
-    image: bitnami/kubectl:1.29
+    image: bitnami/kubectl:latest
     commands:
       - export NS="hostai-pr-$DRONE_PULL_REQUEST"
       - sed -e "s|\$${PR_NUMBER}|$DRONE_PULL_REQUEST|g"
@@ -347,7 +347,7 @@ steps:
       - echo "Event sent to Datadog"
 
   - name: cleanup-preview
-    image: bitnami/kubectl:1.29
+    image: bitnami/kubectl:latest
     commands:
       - export NS="hostai-pr-$DRONE_PULL_REQUEST"
       - echo "Cleaning up namespace $NS..."
@@ -408,7 +408,7 @@ depends_on: [build-production]
 
 steps:
   - name: deploy
-    image: bitnami/kubectl:1.29
+    image: bitnami/kubectl:latest
     commands:
       - echo "Deploying to production..."
       - kubectl set image deployment/hostai-api
