@@ -2,46 +2,83 @@
 # HostAI — Drone CI/CD Configuration
 # =============================================================================
 # GKE Standard cluster: drone-ci-standard (europe-west3-a)
-# Docker Runner (DinD): builds con plugins/gcr
-# K8s Runner (cap 8):   tests paralelos + deploy/cleanup
+# K8s Runner (cap 8): builds con DinD service + tests paralelos + deploy
 #
 # PR flow:  build-images → deploy-preview → 11 tests paralelos → cleanup
 # Main flow: build-production → deploy-production
+#
+# Base images (pre-baked deps, rebuild when deps change):
+#   hostai-api-base:latest  — Python + apt + UI node_modules
+#   hostai-e2e-base:latest  — Playwright + Chromium + npm deps
 # =============================================================================
 
 # ══════════════════════════════════════════════════════════════════════════════
-# PIPELINE: BUILD IMAGES (Docker Runner, type: docker)
+# PIPELINE: BUILD IMAGES (K8s Runner + DinD sidecar + persistent cache)
 # ══════════════════════════════════════════════════════════════════════════════
 kind: pipeline
-type: docker
+type: kubernetes
 name: build-images
 
 trigger:
   event: [pull_request]
 
+volumes:
+  - name: docker-cache
+    claim:
+      name: docker-cache
+      read_only: false
+
+services:
+  - name: dind
+    image: docker:27-dind
+    privileged: true
+    environment:
+      DOCKER_TLS_CERTDIR: ""
+    volumes:
+      - name: docker-cache
+        path: /var/lib/docker
+
 steps:
   - name: build-app-image
-    image: plugins/gcr
-    settings:
-      repo: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-api
-      registry: europe-west3-docker.pkg.dev
-      dockerfile: Dockerfile
-      tags:
-        - "${DRONE_COMMIT_SHA}"
-      json_key:
+    image: docker:27-cli
+    environment:
+      DOCKER_HOST: tcp://localhost:2375
+      DOCKER_BUILDKIT: "1"
+      GCR_JSON_KEY:
         from_secret: gcr_json_key
+    commands:
+      - until docker info >/dev/null 2>&1; do sleep 1; done
+      - printf '%s' "$GCR_JSON_KEY" > /tmp/gcr-key.json
+      - docker login -u _json_key --password-stdin europe-west3-docker.pkg.dev < /tmp/gcr-key.json
+      - docker pull europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-api:latest 2>/dev/null || true
+      - docker build
+          --cache-from=europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-api:latest
+          --build-arg BUILDKIT_INLINE_CACHE=1
+          -t europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-api:$DRONE_COMMIT_SHA
+          -t europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-api:latest
+          .
+      - docker push europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-api:$DRONE_COMMIT_SHA
+      - docker push europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-api:latest
 
   - name: build-e2e-image
-    image: plugins/gcr
-    settings:
-      repo: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e
-      registry: europe-west3-docker.pkg.dev
-      dockerfile: e2e/Dockerfile
-      context: e2e/
-      tags:
-        - "${DRONE_COMMIT_SHA}"
-      json_key:
+    image: docker:27-cli
+    environment:
+      DOCKER_HOST: tcp://localhost:2375
+      DOCKER_BUILDKIT: "1"
+      GCR_JSON_KEY:
         from_secret: gcr_json_key
+    commands:
+      - printf '%s' "$GCR_JSON_KEY" > /tmp/gcr-key.json
+      - docker login -u _json_key --password-stdin europe-west3-docker.pkg.dev < /tmp/gcr-key.json
+      - docker pull europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:latest 2>/dev/null || true
+      - docker build
+          --cache-from=europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:latest
+          --build-arg BUILDKIT_INLINE_CACHE=1
+          -t europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:$DRONE_COMMIT_SHA
+          -t europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:latest
+          e2e/
+      - docker push europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:$DRONE_COMMIT_SHA
+      - docker push europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:latest
 
 # ══════════════════════════════════════════════════════════════════════════════
 # PIPELINE: DEPLOY PREVIEW (K8s Runner, type: kubernetes)
@@ -58,33 +95,41 @@ depends_on: [build-images]
 
 steps:
   - name: deploy
-    image: bitnami/kubectl:1.29
+    image: bitnami/kubectl:latest
     commands:
       - export NS="hostai-pr-$DRONE_PULL_REQUEST"
+      - echo "Waiting for namespace $NS to be fully deleted (if exists)..."
+      - for i in $(seq 1 30); do kubectl get namespace $NS 2>&1 | grep -q "not found" && break; echo "  Waiting ($i/30)..."; sleep 2; done
+      - kubectl delete namespace $NS --ignore-not-found=true 2>/dev/null; sleep 2
       - sed -e "s|\$${PR_NUMBER}|$DRONE_PULL_REQUEST|g"
             -e "s|\$${COMMIT_SHA}|$DRONE_COMMIT_SHA|g"
             ci/k8s/preview.yaml | kubectl apply -f -
-      - kubectl get secret ar-pull-secret -n drone -o json
-          | sed "s/\"namespace\":\"drone\"/\"namespace\":\"$NS\"/"
+      - kubectl get secret ar-pull-secret -n drone -o yaml
+          | grep -v '^\s*namespace:'
+          | grep -v 'resourceVersion:'
+          | grep -v 'uid:'
+          | grep -v 'creationTimestamp:'
           | kubectl apply -n $NS -f -
-      - kubectl rollout status deployment/hostai-api -n $NS --timeout=180s
+      - kubectl rollout status deployment/hostai-api -n $NS --timeout=120s
 
   - name: wait-for-health
     image: curlimages/curl:8.5.0
     commands:
       - export URL="http://hostai-api-svc.hostai-pr-$DRONE_PULL_REQUEST.svc.cluster.local:8000/health"
       - echo "Waiting for $URL ..."
-      - for i in $(seq 1 30); do
+      - for i in $(seq 1 20); do
           curl -sf "$URL" > /dev/null 2>&1 && echo "Health OK!" && exit 0;
-          echo "Attempt $i/30 - waiting 5s...";
-          sleep 5;
+          echo "Attempt $i/20 - waiting 3s...";
+          sleep 3;
         done
-      - echo "Health check FAILED after 150s"
+      - echo "Health check FAILED after 60s"
       - exit 1
     depends_on: [deploy]
 
 # ══════════════════════════════════════════════════════════════════════════════
-# PIPELINES: 11 TESTS E2E EN PARALELO (K8s Runner, 1 pod cada uno)
+# PIPELINES: 11 TESTS E2E EN PARALELO
+# Cada pipeline: run test → upload report to GCS → post GitHub commit status
+# Reports auto-delete after 3 days (bucket lifecycle policy)
 # ══════════════════════════════════════════════════════════════════════════════
 
 ---
@@ -94,8 +139,7 @@ name: test-api-health
 trigger: { event: [pull_request] }
 depends_on: [deploy-preview]
 image_pull_secrets: [ar-pull-secret]
-node_selector:
-  pool: tests
+node_selector: {}
 steps:
   - name: run
     image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
@@ -104,7 +148,24 @@ steps:
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
-      - npx playwright test tests/api/health.spec.ts --project=chromium --reporter=list
+      - cd /e2e && npx playwright test tests/api/health.spec.ts --project=chromium --reporter=list,html; TEST_RC=$?; echo $TEST_RC > /drone/src/.test-exit-code; cp -r /e2e/test-results /e2e/playwright-report /drone/src/ 2>/dev/null; exit $TEST_RC
+  - name: upload-and-notify
+    image: google/cloud-sdk:slim
+    environment:
+      GCR_JSON_KEY: { from_secret: gcr_json_key }
+      GITHUB_TOKEN: { from_secret: github_token }
+    commands:
+      - export SUITE=api-health && export && export REPORT_URL="https://storage.googleapis.com/hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/playwright-report/index.html"
+      - printf '%s' "$GCR_JSON_KEY" > /tmp/gcs-key.json && gcloud auth activate-service-account --key-file=/tmp/gcs-key.json
+      - gsutil -m cp -r /drone/src/playwright-report gs://hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/ 2>/dev/null || true
+      - gsutil -m cp -r /drone/src/test-results gs://hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/ 2>/dev/null || true
+      - 'STATE=$([ "$(cat /drone/src/.test-exit-code 2>/dev/null)" = "0" ] && echo "success" || echo "failure")'
+      - 'curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Accept: application/vnd.github+json"
+          "https://api.github.com/repos/nicomori/ai-host-agent/statuses/$DRONE_COMMIT_SHA"
+          -d "{\"state\":\"$STATE\",\"target_url\":\"$REPORT_URL\",\"description\":\"Playwright $SUITE report\",\"context\":\"test/$SUITE\"}"'
+      - echo "Report -> $REPORT_URL"
+    when:
+      status: [success, failure]
 
 ---
 kind: pipeline
@@ -113,7 +174,7 @@ name: test-api-auth
 trigger: { event: [pull_request] }
 depends_on: [deploy-preview]
 image_pull_secrets: [ar-pull-secret]
-node_selector: { pool: tests }
+node_selector: {}
 steps:
   - name: run
     image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
@@ -122,7 +183,24 @@ steps:
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
-      - npx playwright test tests/api/auth.spec.ts --project=chromium --reporter=list
+      - cd /e2e && npx playwright test tests/api/auth.spec.ts --project=chromium --reporter=list,html; TEST_RC=$?; echo $TEST_RC > /drone/src/.test-exit-code; cp -r /e2e/test-results /e2e/playwright-report /drone/src/ 2>/dev/null; exit $TEST_RC
+  - name: upload-and-notify
+    image: google/cloud-sdk:slim
+    environment:
+      GCR_JSON_KEY: { from_secret: gcr_json_key }
+      GITHUB_TOKEN: { from_secret: github_token }
+    commands:
+      - export SUITE=api-auth && export REPORT_URL="https://storage.googleapis.com/hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/playwright-report/index.html"
+      - printf '%s' "$GCR_JSON_KEY" > /tmp/gcs-key.json && gcloud auth activate-service-account --key-file=/tmp/gcs-key.json
+      - gsutil -m cp -r /drone/src/playwright-report gs://hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/ 2>/dev/null || true
+      - gsutil -m cp -r /drone/src/test-results gs://hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/ 2>/dev/null || true
+      - 'STATE=$([ "$(cat /drone/src/.test-exit-code 2>/dev/null)" = "0" ] && echo "success" || echo "failure")'
+      - 'curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Accept: application/vnd.github+json"
+          "https://api.github.com/repos/nicomori/ai-host-agent/statuses/$DRONE_COMMIT_SHA"
+          -d "{\"state\":\"$STATE\",\"target_url\":\"$REPORT_URL\",\"description\":\"Playwright $SUITE report\",\"context\":\"test/$SUITE\"}"'
+      - echo "Report -> $REPORT_URL"
+    when:
+      status: [success, failure]
 
 ---
 kind: pipeline
@@ -131,7 +209,7 @@ name: test-api-reservations
 trigger: { event: [pull_request] }
 depends_on: [deploy-preview]
 image_pull_secrets: [ar-pull-secret]
-node_selector: { pool: tests }
+node_selector: {}
 steps:
   - name: run
     image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
@@ -140,7 +218,24 @@ steps:
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
-      - npx playwright test tests/api/reservations.spec.ts --project=chromium --reporter=list
+      - cd /e2e && npx playwright test tests/api/reservations.spec.ts --project=chromium --reporter=list,html; TEST_RC=$?; echo $TEST_RC > /drone/src/.test-exit-code; cp -r /e2e/test-results /e2e/playwright-report /drone/src/ 2>/dev/null; exit $TEST_RC
+  - name: upload-and-notify
+    image: google/cloud-sdk:slim
+    environment:
+      GCR_JSON_KEY: { from_secret: gcr_json_key }
+      GITHUB_TOKEN: { from_secret: github_token }
+    commands:
+      - export SUITE=api-reservations && export REPORT_URL="https://storage.googleapis.com/hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/playwright-report/index.html"
+      - printf '%s' "$GCR_JSON_KEY" > /tmp/gcs-key.json && gcloud auth activate-service-account --key-file=/tmp/gcs-key.json
+      - gsutil -m cp -r /drone/src/playwright-report gs://hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/ 2>/dev/null || true
+      - gsutil -m cp -r /drone/src/test-results gs://hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/ 2>/dev/null || true
+      - 'STATE=$([ "$(cat /drone/src/.test-exit-code 2>/dev/null)" = "0" ] && echo "success" || echo "failure")'
+      - 'curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Accept: application/vnd.github+json"
+          "https://api.github.com/repos/nicomori/ai-host-agent/statuses/$DRONE_COMMIT_SHA"
+          -d "{\"state\":\"$STATE\",\"target_url\":\"$REPORT_URL\",\"description\":\"Playwright $SUITE report\",\"context\":\"test/$SUITE\"}"'
+      - echo "Report -> $REPORT_URL"
+    when:
+      status: [success, failure]
 
 ---
 kind: pipeline
@@ -149,7 +244,7 @@ name: test-api-floor-plan
 trigger: { event: [pull_request] }
 depends_on: [deploy-preview]
 image_pull_secrets: [ar-pull-secret]
-node_selector: { pool: tests }
+node_selector: {}
 steps:
   - name: run
     image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
@@ -158,7 +253,24 @@ steps:
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
-      - npx playwright test tests/api/floor-plan.spec.ts --project=chromium --reporter=list
+      - cd /e2e && npx playwright test tests/api/floor-plan.spec.ts --project=chromium --reporter=list,html; TEST_RC=$?; echo $TEST_RC > /drone/src/.test-exit-code; cp -r /e2e/test-results /e2e/playwright-report /drone/src/ 2>/dev/null; exit $TEST_RC
+  - name: upload-and-notify
+    image: google/cloud-sdk:slim
+    environment:
+      GCR_JSON_KEY: { from_secret: gcr_json_key }
+      GITHUB_TOKEN: { from_secret: github_token }
+    commands:
+      - export SUITE=api-floor-plan && export REPORT_URL="https://storage.googleapis.com/hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/playwright-report/index.html"
+      - printf '%s' "$GCR_JSON_KEY" > /tmp/gcs-key.json && gcloud auth activate-service-account --key-file=/tmp/gcs-key.json
+      - gsutil -m cp -r /drone/src/playwright-report gs://hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/ 2>/dev/null || true
+      - gsutil -m cp -r /drone/src/test-results gs://hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/ 2>/dev/null || true
+      - 'STATE=$([ "$(cat /drone/src/.test-exit-code 2>/dev/null)" = "0" ] && echo "success" || echo "failure")'
+      - 'curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Accept: application/vnd.github+json"
+          "https://api.github.com/repos/nicomori/ai-host-agent/statuses/$DRONE_COMMIT_SHA"
+          -d "{\"state\":\"$STATE\",\"target_url\":\"$REPORT_URL\",\"description\":\"Playwright $SUITE report\",\"context\":\"test/$SUITE\"}"'
+      - echo "Report -> $REPORT_URL"
+    when:
+      status: [success, failure]
 
 ---
 kind: pipeline
@@ -167,7 +279,7 @@ name: test-api-config
 trigger: { event: [pull_request] }
 depends_on: [deploy-preview]
 image_pull_secrets: [ar-pull-secret]
-node_selector: { pool: tests }
+node_selector: {}
 steps:
   - name: run
     image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
@@ -176,7 +288,24 @@ steps:
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
-      - npx playwright test tests/api/config.spec.ts --project=chromium --reporter=list
+      - cd /e2e && npx playwright test tests/api/config.spec.ts --project=chromium --reporter=list,html; TEST_RC=$?; echo $TEST_RC > /drone/src/.test-exit-code; cp -r /e2e/test-results /e2e/playwright-report /drone/src/ 2>/dev/null; exit $TEST_RC
+  - name: upload-and-notify
+    image: google/cloud-sdk:slim
+    environment:
+      GCR_JSON_KEY: { from_secret: gcr_json_key }
+      GITHUB_TOKEN: { from_secret: github_token }
+    commands:
+      - export SUITE=api-config && export REPORT_URL="https://storage.googleapis.com/hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/playwright-report/index.html"
+      - printf '%s' "$GCR_JSON_KEY" > /tmp/gcs-key.json && gcloud auth activate-service-account --key-file=/tmp/gcs-key.json
+      - gsutil -m cp -r /drone/src/playwright-report gs://hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/ 2>/dev/null || true
+      - gsutil -m cp -r /drone/src/test-results gs://hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/ 2>/dev/null || true
+      - 'STATE=$([ "$(cat /drone/src/.test-exit-code 2>/dev/null)" = "0" ] && echo "success" || echo "failure")'
+      - 'curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Accept: application/vnd.github+json"
+          "https://api.github.com/repos/nicomori/ai-host-agent/statuses/$DRONE_COMMIT_SHA"
+          -d "{\"state\":\"$STATE\",\"target_url\":\"$REPORT_URL\",\"description\":\"Playwright $SUITE report\",\"context\":\"test/$SUITE\"}"'
+      - echo "Report -> $REPORT_URL"
+    when:
+      status: [success, failure]
 
 ---
 kind: pipeline
@@ -185,7 +314,7 @@ name: test-api-security
 trigger: { event: [pull_request] }
 depends_on: [deploy-preview]
 image_pull_secrets: [ar-pull-secret]
-node_selector: { pool: tests }
+node_selector: {}
 steps:
   - name: run
     image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
@@ -194,7 +323,24 @@ steps:
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
-      - npx playwright test tests/api/security.spec.ts --project=chromium --reporter=list
+      - cd /e2e && npx playwright test tests/api/security.spec.ts --project=chromium --reporter=list,html; TEST_RC=$?; echo $TEST_RC > /drone/src/.test-exit-code; cp -r /e2e/test-results /e2e/playwright-report /drone/src/ 2>/dev/null; exit $TEST_RC
+  - name: upload-and-notify
+    image: google/cloud-sdk:slim
+    environment:
+      GCR_JSON_KEY: { from_secret: gcr_json_key }
+      GITHUB_TOKEN: { from_secret: github_token }
+    commands:
+      - export SUITE=api-security && export REPORT_URL="https://storage.googleapis.com/hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/playwright-report/index.html"
+      - printf '%s' "$GCR_JSON_KEY" > /tmp/gcs-key.json && gcloud auth activate-service-account --key-file=/tmp/gcs-key.json
+      - gsutil -m cp -r /drone/src/playwright-report gs://hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/ 2>/dev/null || true
+      - gsutil -m cp -r /drone/src/test-results gs://hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/ 2>/dev/null || true
+      - 'STATE=$([ "$(cat /drone/src/.test-exit-code 2>/dev/null)" = "0" ] && echo "success" || echo "failure")'
+      - 'curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Accept: application/vnd.github+json"
+          "https://api.github.com/repos/nicomori/ai-host-agent/statuses/$DRONE_COMMIT_SHA"
+          -d "{\"state\":\"$STATE\",\"target_url\":\"$REPORT_URL\",\"description\":\"Playwright $SUITE report\",\"context\":\"test/$SUITE\"}"'
+      - echo "Report -> $REPORT_URL"
+    when:
+      status: [success, failure]
 
 ---
 kind: pipeline
@@ -203,7 +349,7 @@ name: test-api-agent
 trigger: { event: [pull_request] }
 depends_on: [deploy-preview]
 image_pull_secrets: [ar-pull-secret]
-node_selector: { pool: tests }
+node_selector: {}
 steps:
   - name: run
     image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
@@ -212,7 +358,24 @@ steps:
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
-      - npx playwright test tests/api/agent.spec.ts --project=chromium --reporter=list
+      - cd /e2e && npx playwright test tests/api/agent.spec.ts --project=chromium --reporter=list,html; TEST_RC=$?; echo $TEST_RC > /drone/src/.test-exit-code; cp -r /e2e/test-results /e2e/playwright-report /drone/src/ 2>/dev/null; exit $TEST_RC
+  - name: upload-and-notify
+    image: google/cloud-sdk:slim
+    environment:
+      GCR_JSON_KEY: { from_secret: gcr_json_key }
+      GITHUB_TOKEN: { from_secret: github_token }
+    commands:
+      - export SUITE=api-agent && export REPORT_URL="https://storage.googleapis.com/hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/playwright-report/index.html"
+      - printf '%s' "$GCR_JSON_KEY" > /tmp/gcs-key.json && gcloud auth activate-service-account --key-file=/tmp/gcs-key.json
+      - gsutil -m cp -r /drone/src/playwright-report gs://hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/ 2>/dev/null || true
+      - gsutil -m cp -r /drone/src/test-results gs://hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/ 2>/dev/null || true
+      - 'STATE=$([ "$(cat /drone/src/.test-exit-code 2>/dev/null)" = "0" ] && echo "success" || echo "failure")'
+      - 'curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Accept: application/vnd.github+json"
+          "https://api.github.com/repos/nicomori/ai-host-agent/statuses/$DRONE_COMMIT_SHA"
+          -d "{\"state\":\"$STATE\",\"target_url\":\"$REPORT_URL\",\"description\":\"Playwright $SUITE report\",\"context\":\"test/$SUITE\"}"'
+      - echo "Report -> $REPORT_URL"
+    when:
+      status: [success, failure]
 
 ---
 kind: pipeline
@@ -221,7 +384,7 @@ name: test-ui-dashboard
 trigger: { event: [pull_request] }
 depends_on: [deploy-preview]
 image_pull_secrets: [ar-pull-secret]
-node_selector: { pool: tests }
+node_selector: {}
 steps:
   - name: run
     image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
@@ -230,7 +393,24 @@ steps:
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
-      - npx playwright test tests/ui/dashboard.spec.ts --project=chromium --reporter=list
+      - cd /e2e && npx playwright test tests/ui/dashboard.spec.ts --project=chromium --reporter=list,html; TEST_RC=$?; echo $TEST_RC > /drone/src/.test-exit-code; cp -r /e2e/test-results /e2e/playwright-report /drone/src/ 2>/dev/null; exit $TEST_RC
+  - name: upload-and-notify
+    image: google/cloud-sdk:slim
+    environment:
+      GCR_JSON_KEY: { from_secret: gcr_json_key }
+      GITHUB_TOKEN: { from_secret: github_token }
+    commands:
+      - export SUITE=ui-dashboard && export REPORT_URL="https://storage.googleapis.com/hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/playwright-report/index.html"
+      - printf '%s' "$GCR_JSON_KEY" > /tmp/gcs-key.json && gcloud auth activate-service-account --key-file=/tmp/gcs-key.json
+      - gsutil -m cp -r /drone/src/playwright-report gs://hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/ 2>/dev/null || true
+      - gsutil -m cp -r /drone/src/test-results gs://hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/ 2>/dev/null || true
+      - 'STATE=$([ "$(cat /drone/src/.test-exit-code 2>/dev/null)" = "0" ] && echo "success" || echo "failure")'
+      - 'curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Accept: application/vnd.github+json"
+          "https://api.github.com/repos/nicomori/ai-host-agent/statuses/$DRONE_COMMIT_SHA"
+          -d "{\"state\":\"$STATE\",\"target_url\":\"$REPORT_URL\",\"description\":\"Playwright $SUITE report\",\"context\":\"test/$SUITE\"}"'
+      - echo "Report -> $REPORT_URL"
+    when:
+      status: [success, failure]
 
 ---
 kind: pipeline
@@ -239,7 +419,7 @@ name: test-ui-chat
 trigger: { event: [pull_request] }
 depends_on: [deploy-preview]
 image_pull_secrets: [ar-pull-secret]
-node_selector: { pool: tests }
+node_selector: {}
 steps:
   - name: run
     image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
@@ -248,7 +428,24 @@ steps:
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
-      - npx playwright test tests/ui/chat.spec.ts --project=chromium --reporter=list
+      - cd /e2e && npx playwright test tests/ui/chat.spec.ts --project=chromium --reporter=list,html; TEST_RC=$?; echo $TEST_RC > /drone/src/.test-exit-code; cp -r /e2e/test-results /e2e/playwright-report /drone/src/ 2>/dev/null; exit $TEST_RC
+  - name: upload-and-notify
+    image: google/cloud-sdk:slim
+    environment:
+      GCR_JSON_KEY: { from_secret: gcr_json_key }
+      GITHUB_TOKEN: { from_secret: github_token }
+    commands:
+      - export SUITE=ui-chat && export REPORT_URL="https://storage.googleapis.com/hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/playwright-report/index.html"
+      - printf '%s' "$GCR_JSON_KEY" > /tmp/gcs-key.json && gcloud auth activate-service-account --key-file=/tmp/gcs-key.json
+      - gsutil -m cp -r /drone/src/playwright-report gs://hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/ 2>/dev/null || true
+      - gsutil -m cp -r /drone/src/test-results gs://hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/ 2>/dev/null || true
+      - 'STATE=$([ "$(cat /drone/src/.test-exit-code 2>/dev/null)" = "0" ] && echo "success" || echo "failure")'
+      - 'curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Accept: application/vnd.github+json"
+          "https://api.github.com/repos/nicomori/ai-host-agent/statuses/$DRONE_COMMIT_SHA"
+          -d "{\"state\":\"$STATE\",\"target_url\":\"$REPORT_URL\",\"description\":\"Playwright $SUITE report\",\"context\":\"test/$SUITE\"}"'
+      - echo "Report -> $REPORT_URL"
+    when:
+      status: [success, failure]
 
 ---
 kind: pipeline
@@ -257,7 +454,7 @@ name: test-ui-floor-plan
 trigger: { event: [pull_request] }
 depends_on: [deploy-preview]
 image_pull_secrets: [ar-pull-secret]
-node_selector: { pool: tests }
+node_selector: {}
 steps:
   - name: run
     image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
@@ -266,7 +463,24 @@ steps:
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
-      - npx playwright test tests/ui/floor-plan.spec.ts --project=chromium --reporter=list
+      - cd /e2e && npx playwright test tests/ui/floor-plan.spec.ts --project=chromium --reporter=list,html; TEST_RC=$?; echo $TEST_RC > /drone/src/.test-exit-code; cp -r /e2e/test-results /e2e/playwright-report /drone/src/ 2>/dev/null; exit $TEST_RC
+  - name: upload-and-notify
+    image: google/cloud-sdk:slim
+    environment:
+      GCR_JSON_KEY: { from_secret: gcr_json_key }
+      GITHUB_TOKEN: { from_secret: github_token }
+    commands:
+      - export SUITE=ui-floor-plan && export REPORT_URL="https://storage.googleapis.com/hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/playwright-report/index.html"
+      - printf '%s' "$GCR_JSON_KEY" > /tmp/gcs-key.json && gcloud auth activate-service-account --key-file=/tmp/gcs-key.json
+      - gsutil -m cp -r /drone/src/playwright-report gs://hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/ 2>/dev/null || true
+      - gsutil -m cp -r /drone/src/test-results gs://hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/ 2>/dev/null || true
+      - 'STATE=$([ "$(cat /drone/src/.test-exit-code 2>/dev/null)" = "0" ] && echo "success" || echo "failure")'
+      - 'curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Accept: application/vnd.github+json"
+          "https://api.github.com/repos/nicomori/ai-host-agent/statuses/$DRONE_COMMIT_SHA"
+          -d "{\"state\":\"$STATE\",\"target_url\":\"$REPORT_URL\",\"description\":\"Playwright $SUITE report\",\"context\":\"test/$SUITE\"}"'
+      - echo "Report -> $REPORT_URL"
+    when:
+      status: [success, failure]
 
 ---
 kind: pipeline
@@ -275,7 +489,7 @@ name: test-ui-rbac
 trigger: { event: [pull_request] }
 depends_on: [deploy-preview]
 image_pull_secrets: [ar-pull-secret]
-node_selector: { pool: tests }
+node_selector: {}
 steps:
   - name: run
     image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
@@ -284,7 +498,24 @@ steps:
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
-      - npx playwright test tests/ui/rbac.spec.ts --project=chromium --reporter=list
+      - cd /e2e && npx playwright test tests/ui/rbac.spec.ts --project=chromium --reporter=list,html; TEST_RC=$?; echo $TEST_RC > /drone/src/.test-exit-code; cp -r /e2e/test-results /e2e/playwright-report /drone/src/ 2>/dev/null; exit $TEST_RC
+  - name: upload-and-notify
+    image: google/cloud-sdk:slim
+    environment:
+      GCR_JSON_KEY: { from_secret: gcr_json_key }
+      GITHUB_TOKEN: { from_secret: github_token }
+    commands:
+      - export SUITE=ui-rbac && export REPORT_URL="https://storage.googleapis.com/hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/playwright-report/index.html"
+      - printf '%s' "$GCR_JSON_KEY" > /tmp/gcs-key.json && gcloud auth activate-service-account --key-file=/tmp/gcs-key.json
+      - gsutil -m cp -r /drone/src/playwright-report gs://hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/ 2>/dev/null || true
+      - gsutil -m cp -r /drone/src/test-results gs://hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/ 2>/dev/null || true
+      - 'STATE=$([ "$(cat /drone/src/.test-exit-code 2>/dev/null)" = "0" ] && echo "success" || echo "failure")'
+      - 'curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Accept: application/vnd.github+json"
+          "https://api.github.com/repos/nicomori/ai-host-agent/statuses/$DRONE_COMMIT_SHA"
+          -d "{\"state\":\"$STATE\",\"target_url\":\"$REPORT_URL\",\"description\":\"Playwright $SUITE report\",\"context\":\"test/$SUITE\"}"'
+      - echo "Report -> $REPORT_URL"
+    when:
+      status: [success, failure]
 
 # ══════════════════════════════════════════════════════════════════════════════
 # PIPELINE: REPORT + CLEANUP (siempre corre al final)
@@ -331,7 +562,7 @@ steps:
       - echo "Event sent to Datadog"
 
   - name: cleanup-preview
-    image: bitnami/kubectl:1.29
+    image: bitnami/kubectl:latest
     commands:
       - export NS="hostai-pr-$DRONE_PULL_REQUEST"
       - echo "Cleaning up namespace $NS..."
@@ -340,29 +571,54 @@ steps:
     depends_on: [report-datadog]
 
 # ══════════════════════════════════════════════════════════════════════════════
-# PIPELINE: BUILD PRODUCTION (push a main, Docker Runner)
+# PIPELINE: BUILD PRODUCTION (push a main, K8s Runner + DinD + cache)
 # ══════════════════════════════════════════════════════════════════════════════
 ---
 kind: pipeline
-type: docker
+type: kubernetes
 name: build-production
 
 trigger:
   branch: [main]
   event: [push]
 
+volumes:
+  - name: docker-cache
+    claim:
+      name: docker-cache
+      read_only: false
+
+services:
+  - name: dind
+    image: docker:27-dind
+    privileged: true
+    environment:
+      DOCKER_TLS_CERTDIR: ""
+    volumes:
+      - name: docker-cache
+        path: /var/lib/docker
+
 steps:
   - name: build-and-push
-    image: plugins/gcr
-    settings:
-      repo: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-api
-      registry: europe-west3-docker.pkg.dev
-      dockerfile: Dockerfile
-      tags:
-        - "${DRONE_COMMIT_SHA}"
-        - latest
-      json_key:
+    image: docker:27-cli
+    environment:
+      DOCKER_HOST: tcp://localhost:2375
+      DOCKER_BUILDKIT: "1"
+      GCR_JSON_KEY:
         from_secret: gcr_json_key
+    commands:
+      - until docker info >/dev/null 2>&1; do sleep 1; done
+      - printf '%s' "$GCR_JSON_KEY" > /tmp/gcr-key.json
+      - docker login -u _json_key --password-stdin europe-west3-docker.pkg.dev < /tmp/gcr-key.json
+      - docker pull europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-api:latest 2>/dev/null || true
+      - docker build
+          --cache-from=europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-api:latest
+          --build-arg BUILDKIT_INLINE_CACHE=1
+          -t europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-api:$DRONE_COMMIT_SHA
+          -t europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-api:latest
+          .
+      - docker push europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-api:$DRONE_COMMIT_SHA
+      - docker push europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-api:latest
 
 # ══════════════════════════════════════════════════════════════════════════════
 # PIPELINE: DEPLOY PRODUCTION (push a main, K8s Runner)
@@ -380,7 +636,7 @@ depends_on: [build-production]
 
 steps:
   - name: deploy
-    image: bitnami/kubectl:1.29
+    image: bitnami/kubectl:latest
     commands:
       - echo "Deploying to production..."
       - kubectl set image deployment/hostai-api
