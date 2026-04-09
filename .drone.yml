@@ -110,7 +110,7 @@ steps:
           | grep -v 'uid:'
           | grep -v 'creationTimestamp:'
           | kubectl apply -n $NS -f -
-      - kubectl rollout status deployment/hostai-api -n $NS --timeout=90s
+      - kubectl rollout status deployment/hostai-api -n $NS --timeout=120s
 
   - name: wait-for-health
     image: curlimages/curl:8.5.0
