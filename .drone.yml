@@ -77,8 +77,11 @@ steps:
       - sed -e "s|\$${PR_NUMBER}|$DRONE_PULL_REQUEST|g"
             -e "s|\$${COMMIT_SHA}|$DRONE_COMMIT_SHA|g"
             ci/k8s/preview.yaml | kubectl apply -f -
-      - kubectl get secret ar-pull-secret -n drone -o json
-          | sed "s/\"namespace\":\"drone\"/\"namespace\":\"$NS\"/"
+      - kubectl get secret ar-pull-secret -n drone -o yaml
+          | grep -v '^\s*namespace:'
+          | grep -v '^\s*resourceVersion:'
+          | grep -v '^\s*uid:'
+          | grep -v '^\s*creationTimestamp:'
           | kubectl apply -n $NS -f -
       - kubectl rollout status deployment/hostai-api -n $NS --timeout=180s
 
