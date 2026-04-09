@@ -12,7 +12,7 @@ COPY ui/ .
 RUN npm run build
 
 # ─── Stage 2: Runtime (FROM base with pre-installed Python deps) ────────────
-FROM europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-api-base:latest
+FROM europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-api-base:latest AS runtime
 
 WORKDIR /app
 
