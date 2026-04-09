@@ -1,4 +1,5 @@
 """HostAI — FastAPI application entry point."""
+
 from __future__ import annotations
 
 import time
@@ -6,7 +7,6 @@ import uuid
 from contextlib import asynccontextmanager
 from typing import AsyncIterator
 
-import os
 from pathlib import Path
 
 import structlog
@@ -32,6 +32,7 @@ log = structlog.get_logger()
 
 # ─── Outbound confirmation job ─────────────────────────────────────────────────
 
+
 async def _run_outbound_confirmations():
     """Every minute: call guests with reservations within the configured window that haven't been called."""
     cfg = get_settings()
@@ -47,12 +48,14 @@ async def _run_outbound_confirmations():
     lead_minutes = cfg.reservations.confirmation_call_minutes_before
     now = datetime.now(timezone.utc)
     window_start = now + timedelta(minutes=lead_minutes - 5)
-    window_end   = now + timedelta(minutes=lead_minutes + 5)
+    window_end = now + timedelta(minutes=lead_minutes + 5)
 
     rows = pg_db.list_reservations(status_filter="confirmed")
     for r in rows:
         try:
-            res_dt = datetime.fromisoformat(f"{r['date']}T{r['time']}:00").replace(tzinfo=timezone.utc)
+            res_dt = datetime.fromisoformat(f"{r['date']}T{r['time']}:00").replace(
+                tzinfo=timezone.utc
+            )
         except Exception:
             continue
         if not (window_start <= res_dt <= window_end):
@@ -70,13 +73,20 @@ async def _run_outbound_confirmations():
             )
             client.calls.create(to=r["guest_phone"], from_=from_number, twiml=twiml)
             pg_db.update_confirmation_status(r["reservation_id"], "confirmed")
-            log.info("[HostAI] - Confirmation call sent", guest=r["guest_name"], phone=r["guest_phone"])
+            log.info(
+                "[HostAI] - Confirmation call sent", guest=r["guest_name"], phone=r["guest_phone"]
+            )
         except Exception as exc:
             pg_db.update_confirmation_status(r["reservation_id"], "failed")
-            log.warning("[HostAI] - Confirmation call failed", exc=str(exc), reservation_id=r["reservation_id"])
+            log.warning(
+                "[HostAI] - Confirmation call failed",
+                exc=str(exc),
+                reservation_id=r["reservation_id"],
+            )
 
 
 # ─── Lifespan (startup / shutdown) ────────────────────────────────────────────
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
@@ -111,6 +121,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 
 
 # ─── App factory ──────────────────────────────────────────────────────────────
+
 
 def create_app() -> FastAPI:
     cfg = get_settings()

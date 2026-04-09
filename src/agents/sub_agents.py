@@ -10,11 +10,11 @@ Specialized agents for the Supervisor pattern:
 Each is a standalone pure-function node — independently testable and composable.
 The Supervisor (in graph.py) uses Command(goto=...) to route to these agents.
 """
+
 from __future__ import annotations
 
 import logging
 import uuid
-from typing import Optional
 
 from langchain_core.messages import AIMessage
 
@@ -63,6 +63,7 @@ def _end_span(span, output_data: dict):
 
 # ─── Sub-agent: Reservation ────────────────────────────────────────���──────────
 
+
 def reservation_agent(state: AgentState) -> dict:
     """
     Specialized agent for make_reservation intent.
@@ -79,12 +80,19 @@ def reservation_agent(state: AgentState) -> dict:
     missing = [f for f in required_fields if not existing.get(f)]
 
     guest = existing.get("guest_name", "?")
-    span_name = f"[HostAI] - Reserva — {guest}" if not missing else f"[HostAI] - Reserva — pidiendo {missing[0]}"
-    span = _start_span(span_name, {
-        "datos_actuales": existing,
-        "campos_faltantes": missing,
-        "campos_completos": [f for f in required_fields if existing.get(f)],
-    })
+    span_name = (
+        f"[HostAI] - Reserva — {guest}"
+        if not missing
+        else f"[HostAI] - Reserva — pidiendo {missing[0]}"
+    )
+    span = _start_span(
+        span_name,
+        {
+            "datos_actuales": existing,
+            "campos_faltantes": missing,
+            "campos_completos": [f for f in required_fields if existing.get(f)],
+        },
+    )
 
     if missing:
         field_prompts = {
@@ -102,16 +110,20 @@ def reservation_agent(state: AgentState) -> dict:
             "messages": [AIMessage(content=response)],
             "agent_trace": ["reservation_agent"],
         }
-        _end_span(span, {
-            "acción": f"Pidiendo campo faltante: {first_missing}",
-            "campos_faltantes_restantes": missing,
-            "respuesta": response,
-        })
+        _end_span(
+            span,
+            {
+                "acción": f"Pidiendo campo faltante: {first_missing}",
+                "campos_faltantes_restantes": missing,
+                "respuesta": response,
+            },
+        )
         return result
 
     # All fields present → persist to PostgreSQL
     try:
         from src.services.db import save_reservation
+
         saved = save_reservation(
             guest_name=str(existing["guest_name"]),
             guest_phone=str(existing["guest_phone"]),
@@ -144,16 +156,20 @@ def reservation_agent(state: AgentState) -> dict:
         "messages": [AIMessage(content=response)],
         "agent_trace": ["reservation_agent"],
     }
-    _end_span(span, {
-        "acción": "Reserva guardada en PostgreSQL",
-        "reservation_id": existing.get("reservation_id"),
-        "resumen": f"{existing.get('guest_name')} — {existing.get('party_size')}p — {existing.get('date')} {existing.get('time')}",
-        "respuesta": response,
-    })
+    _end_span(
+        span,
+        {
+            "acción": "Reserva guardada en PostgreSQL",
+            "reservation_id": existing.get("reservation_id"),
+            "resumen": f"{existing.get('guest_name')} — {existing.get('party_size')}p — {existing.get('date')} {existing.get('time')}",
+            "respuesta": response,
+        },
+    )
     return result
 
 
 # ─── Sub-agent: Cancellation ──────────────────────────────────────────────────
+
 
 def cancellation_agent(state: AgentState) -> dict:
     """
@@ -165,21 +181,26 @@ def cancellation_agent(state: AgentState) -> dict:
     """
     reservation_data = state.get("reservation_data") or {}
     rid = reservation_data.get("reservation_id")
-    span_name = f"[HostAI] - Cancelación — reserva {rid[:8]}" if rid else "[HostAI] - Cancelación — pidiendo ID"
-    span = _start_span(span_name, {
-        "reservation_id": rid,
-        "datos_disponibles": reservation_data,
-    })
+    span_name = (
+        f"[HostAI] - Cancelación — reserva {rid[:8]}"
+        if rid
+        else "[HostAI] - Cancelación — pidiendo ID"
+    )
+    span = _start_span(
+        span_name,
+        {
+            "reservation_id": rid,
+            "datos_disponibles": reservation_data,
+        },
+    )
 
     if rid:
         try:
             from src.services.db import update_reservation_status
+
             updated = update_reservation_status(rid, "cancelled", "Cancelada vía agente IA")
             if updated:
-                response = (
-                    "Listo, ya te cancelé la reserva. "
-                    "¿Necesitás algo más?"
-                )
+                response = "Listo, ya te cancelé la reserva. ¿Necesitás algo más?"
                 logger.info("[HostAI] - Cancellation Agent: cancelled reservation %s in DB", rid)
             else:
                 response = (
@@ -188,29 +209,28 @@ def cancellation_agent(state: AgentState) -> dict:
                 )
         except Exception as exc:
             logger.warning("[HostAI] - Cancellation Agent: DB unavailable — %s", exc)
-            response = (
-                "Dale, te cancelo la reserva. "
-                "En breve te llega la confirmación."
-            )
+            response = "Dale, te cancelo la reserva. En breve te llega la confirmación."
     else:
-        response = (
-            "Dale, te la cancelo. ¿Me decís tu nombre o el número de reserva?"
-        )
+        response = "Dale, te la cancelo. ¿Me decís tu nombre o el número de reserva?"
 
     result = {
         "final_response": response,
         "messages": [AIMessage(content=response)],
         "agent_trace": ["cancellation_agent"],
     }
-    _end_span(span, {
-        "acción": "Reserva cancelada en DB" if rid else "Solicitando ID de reserva",
-        "reservation_id": rid,
-        "respuesta": response,
-    })
+    _end_span(
+        span,
+        {
+            "acción": "Reserva cancelada en DB" if rid else "Solicitando ID de reserva",
+            "reservation_id": rid,
+            "respuesta": response,
+        },
+    )
     return result
 
 
 # ─── Sub-agent: Query ─────────────────────────────────────────────────────────
+
 
 def query_agent(state: AgentState) -> dict:
     """
@@ -222,19 +242,31 @@ def query_agent(state: AgentState) -> dict:
     """
     reservation_data = state.get("reservation_data") or {}
     rid = reservation_data.get("reservation_id")
-    span_name = f"[HostAI] - Consulta — reserva {rid[:8]}" if rid else "[HostAI] - Consulta — pidiendo ID"
-    span = _start_span(span_name, {
-        "reservation_id": rid,
-        "datos_disponibles": reservation_data,
-    })
+    span_name = (
+        f"[HostAI] - Consulta — reserva {rid[:8]}" if rid else "[HostAI] - Consulta — pidiendo ID"
+    )
+    span = _start_span(
+        span_name,
+        {
+            "reservation_id": rid,
+            "datos_disponibles": reservation_data,
+        },
+    )
 
     if rid:
         try:
             from src.services.db import get_reservation_by_uuid
+
             res = get_reservation_by_uuid(rid)
             if res:
-                status_es = {"confirmed": "confirmada", "cancelled": "cancelada", "seated": "en mesa", "no_show": "marcada como no presentada", "pending": "pendiente"}
-                status_txt = status_es.get(res['status'], res['status'])
+                status_es = {
+                    "confirmed": "confirmada",
+                    "cancelled": "cancelada",
+                    "seated": "en mesa",
+                    "no_show": "marcada como no presentada",
+                    "pending": "pendiente",
+                }
+                status_txt = status_es.get(res["status"], res["status"])
                 response = (
                     f"Sí, acá la tengo. La reserva de {res['guest_name']} está {status_txt}. "
                     f"Es para {res['party_size']} personas, el {res['date']} a las {res['time']}. "
@@ -255,33 +287,38 @@ def query_agent(state: AgentState) -> dict:
                 f"¿Todo bien con eso?"
             )
     else:
-        response = (
-            "Dale, te la busco. ¿Me decís tu nombre o el número de reserva?"
-        )
+        response = "Dale, te la busco. ¿Me decís tu nombre o el número de reserva?"
 
     result = {
         "final_response": response,
         "messages": [AIMessage(content=response)],
         "agent_trace": ["query_agent"],
     }
-    _end_span(span, {
-        "acción": "Consulta de reserva en DB" if rid else "Solicitando ID de reserva",
-        "reservation_id": rid,
-        "respuesta": response,
-    })
+    _end_span(
+        span,
+        {
+            "acción": "Consulta de reserva en DB" if rid else "Solicitando ID de reserva",
+            "reservation_id": rid,
+            "respuesta": response,
+        },
+    )
     return result
 
 
 # ─── Sub-agent: Clarify ───────────────────────────────────────────────────────
+
 
 def clarify_agent(state: AgentState) -> dict:
     """
     Fallback agent when intent is unknown.
     Guides the guest toward a supported action.
     """
-    span = _start_span("[HostAI] - Bienvenida — intent no identificado", {
-        "motivo": "El usuario no expresó un intent claro (reservar, cancelar, consultar)",
-    })
+    span = _start_span(
+        "[HostAI] - Bienvenida — intent no identificado",
+        {
+            "motivo": "El usuario no expresó un intent claro (reservar, cancelar, consultar)",
+        },
+    )
     response = (
         "Hola, hablas con La Trattoria. "
         "Puedo ayudarte con una reserva, una cancelación, o consultar una reserva que ya tengas. "
@@ -292,8 +329,11 @@ def clarify_agent(state: AgentState) -> dict:
         "messages": [AIMessage(content=response)],
         "agent_trace": ["clarify_agent"],
     }
-    _end_span(span, {
-        "acción": "Mensaje de bienvenida enviado — esperando intent del usuario",
-        "respuesta": response,
-    })
+    _end_span(
+        span,
+        {
+            "acción": "Mensaje de bienvenida enviado — esperando intent del usuario",
+            "respuesta": response,
+        },
+    )
     return result

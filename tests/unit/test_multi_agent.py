@@ -14,11 +14,11 @@ Architecture under test:
   TC6: sub-agents are independently callable (unit isolation)
   TC7: multi-turn: different intents produce different traces per session
 """
+
 from __future__ import annotations
 
 import uuid
 import pytest
-from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langgraph.checkpoint.memory import MemorySaver
 
 from src.agents.graph import build_graph, invoke_agent, reset_graph
@@ -33,6 +33,7 @@ from src.agents.state import AgentState
 
 # ─── Fixture helpers ──────────────────────────────────────────────────────────
 
+
 @pytest.fixture()
 def step8_graph():
     reset_graph()
@@ -45,6 +46,7 @@ def step8_graph():
 @pytest.fixture()
 def step8_invoke():
     """Helper that resets graph singleton before each invoke."""
+
     def _invoke(msg, session_id=None, reservation_data=None):
         reset_graph()
         sid = session_id or str(uuid.uuid4())
@@ -54,6 +56,7 @@ def step8_invoke():
             reservation_data=reservation_data,
             checkpointer=MemorySaver(),
         )
+
     return _invoke
 
 
@@ -77,6 +80,7 @@ def _stub_state(**kwargs) -> AgentState:
 # TC1 — Supervisor routes "book a table" → reservation_agent
 # ══════════════════════════════════════════════════════════════════════════════
 
+
 def test_tc1_supervisor_routes_book_to_reservation(step8_invoke):
     result = step8_invoke("I want to book a table for 2 tonight")
     assert result["intent"] == "make_reservation"
@@ -89,12 +93,16 @@ def test_tc1_reservation_response_asks_for_missing_fields(step8_invoke):
     assert result["final_response"] is not None
     # Without any reservation_data, should ask for missing fields
     response = result["final_response"].lower()
-    assert any(word in response for word in ["nombre", "teléfono", "día", "hora", "cuántos", "need", "details"])
+    assert any(
+        word in response
+        for word in ["nombre", "teléfono", "día", "hora", "cuántos", "need", "details"]
+    )
 
 
 # ══════════════════════════════════════════════════════════════════════════════
 # TC2 — Supervisor routes cancel → cancellation_agent
 # ══════════════════════════════════════════════════════════════════════════════
+
 
 def test_tc2_supervisor_routes_cancel_to_cancellation(step8_invoke):
     result = step8_invoke("please cancel my reservation")
@@ -114,6 +122,7 @@ def test_tc2_cancel_response_requests_id_or_name(step8_invoke):
 # TC3 — Supervisor routes "check status" → query_agent
 # ══════════════════════════════════════════════════════════════════════════════
 
+
 def test_tc3_supervisor_routes_check_to_query(step8_invoke):
     result = step8_invoke("check the status of my booking")
     assert result["intent"] == "query_reservation"
@@ -124,12 +133,16 @@ def test_tc3_query_response_contains_status_context(step8_invoke):
     result = step8_invoke("can you check if my reservation is confirmed?")
     assert result["intent"] == "query_reservation"
     response = result["final_response"].lower()
-    assert any(word in response for word in ["reserva", "nombre", "número", "busco", "reservation", "check", "status"])
+    assert any(
+        word in response
+        for word in ["reserva", "nombre", "número", "busco", "reservation", "check", "status"]
+    )
 
 
 # ══════════════════════════════════════════════════════════════════════════════
 # TC4 — Supervisor routes unknown → clarify_agent
 # ══════════════════════════════════════════════════════════════════════════════
+
 
 def test_tc4_supervisor_routes_unknown_to_clarify(step8_invoke):
     result = step8_invoke("tell me a joke")
@@ -142,12 +155,15 @@ def test_tc4_clarify_response_lists_supported_actions(step8_invoke):
     assert result["intent"] == "unknown"
     response = result["final_response"]
     # Should mention supported actions (in Spanish: reserva, cancelación, consultar)
-    assert any(word in response.lower() for word in ["reserva", "cancelación", "consultar", "reservation"])
+    assert any(
+        word in response.lower() for word in ["reserva", "cancelación", "consultar", "reservation"]
+    )
 
 
 # ══════════════════════════════════════════════════════════════════════════════
 # TC5 — agent_trace records correct execution chain
 # ══════════════════════════════════════════════════════════════════════════════
+
 
 def test_tc5_agent_trace_supervisor_then_sub_agent(step8_invoke):
     result = step8_invoke("I want to make a reservation for tomorrow")
@@ -175,6 +191,7 @@ def test_tc5_trace_length_always_two(step8_invoke):
 # TC6 — Sub-agents independently callable (unit isolation)
 # ══════════════════════════════════════════════════════════════════════════════
 
+
 def test_tc6_reservation_agent_unit_no_data():
     state = _stub_state()
     result = reservation_agent(state)
@@ -182,14 +199,21 @@ def test_tc6_reservation_agent_unit_no_data():
     assert "agent_trace" in result
     assert result["agent_trace"] == ["reservation_agent"]
     resp = result["final_response"].lower()
-    assert any(w in resp for w in ["nombre", "teléfono", "día", "hora", "cuántos", "need", "details"])
+    assert any(
+        w in resp for w in ["nombre", "teléfono", "día", "hora", "cuántos", "need", "details"]
+    )
 
 
 def test_tc6_reservation_agent_unit_all_data():
-    state = _stub_state(reservation_data={
-        "guest_name": "Ana", "guest_phone": "555-1234",
-        "date": "2026-04-15", "time": "19:00", "party_size": 2,
-    })
+    state = _stub_state(
+        reservation_data={
+            "guest_name": "Ana",
+            "guest_phone": "555-1234",
+            "date": "2026-04-15",
+            "time": "19:00",
+            "party_size": 2,
+        }
+    )
     result = reservation_agent(state)
     resp = result["final_response"].lower()
     assert any(w in resp for w in ["anoté", "confirmad", "confirmed", "listo"])
@@ -221,6 +245,7 @@ def test_tc6_clarify_agent_unit():
 # ══════════════════════════════════════════════════════════════════════════════
 # TC7 — Different intents in different sessions produce isolated traces
 # ══════════════════════════════════════════════════════════════════════════════
+
 
 def test_tc7_multi_session_isolated_traces(step8_invoke):
     """Each session is independent — traces don't bleed across calls."""

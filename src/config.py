@@ -11,15 +11,15 @@ Architecture:
 Priority (highest → lowest):
   process env vars > .env file > config.yaml defaults
 """
+
 from __future__ import annotations
 
-import os
 from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
 import yaml
-from pydantic import BaseModel, Field, field_validator, model_validator
+from pydantic import BaseModel, Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # ─── Path resolution ──────────────────────────────────────────────────────────
@@ -31,6 +31,7 @@ _ENV_FILE = _PROJECT_ROOT / ".env"
 # ═══════════════════════════════════════════════════════════════════════════════
 # 1. TYPED MODELS — one per config.yaml section
 # ═══════════════════════════════════════════════════════════════════════════════
+
 
 class AppSection(BaseModel):
     name: str = "ai-host-agent"
@@ -84,9 +85,9 @@ class PersistenceSection(BaseModel):
 
 class LanceDBSection(BaseModel):
     uri: str = "/app/data/lancedb"
-    tables: list[str] = Field(default_factory=lambda: [
-        "reservations_vectors", "conversation_memory", "voice_transcripts"
-    ])
+    tables: list[str] = Field(
+        default_factory=lambda: ["reservations_vectors", "conversation_memory", "voice_transcripts"]
+    )
     embedding_dim: int = Field(default=1536, ge=64)
     search_limit_default: int = Field(default=5, ge=1)
     memory_max_turns: int = Field(default=50, ge=1)
@@ -101,6 +102,7 @@ class PipelineSection(BaseModel):
 
 class AppConfig(BaseModel):
     """Typed representation of config.yaml. All fields have safe defaults."""
+
     app: AppSection = Field(default_factory=AppSection)
     server: ServerSection = Field(default_factory=ServerSection)
     agent: AgentSection = Field(default_factory=AgentSection)
@@ -125,8 +127,10 @@ class AppConfig(BaseModel):
 # 2. PYDANTIC SETTINGS — reads .env + process env vars (secrets only)
 # ═══════════════════════════════════════════════════════════════════════════════
 
+
 class Settings(BaseSettings):
     """Secrets and environment-specific overrides. No defaults for required secrets."""
+
     model_config = SettingsConfigDict(
         env_file=str(_ENV_FILE),
         env_file_encoding="utf-8",
@@ -178,6 +182,7 @@ class Settings(BaseSettings):
     def warn_missing_anthropic_key(cls, v: str) -> str:
         if not v:
             import warnings
+
             warnings.warn(
                 "ANTHROPIC_API_KEY is not set — LLM calls will fail in production",
                 stacklevel=2,
@@ -202,6 +207,7 @@ class Settings(BaseSettings):
 # ═══════════════════════════════════════════════════════════════════════════════
 # 3. MERGED APP SETTINGS — single object used everywhere
 # ═══════════════════════════════════════════════════════════════════════════════
+
 
 class AppSettings:
     """
@@ -286,6 +292,7 @@ class AppSettings:
 # ═══════════════════════════════════════════════════════════════════════════════
 # 4. SINGLETON — cached, lazy-loaded
 # ═══════════════════════════════════════════════════════════════════════════════
+
 
 @lru_cache(maxsize=1)
 def get_settings() -> AppSettings:

@@ -13,6 +13,7 @@ Components:
   get_cache()        : module-level singleton factory
   estimate_cost()    : USD cost estimator for a single LLM call
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -47,33 +48,36 @@ def _hash_embed(text: str) -> list[float]:
 
 # ─── Schema ───────────────────────────────────────────────────────────────────
 
+
 def _make_cache_schema() -> pa.Schema:
-    return pa.schema([
-        pa.field("id", pa.string()),
-        pa.field("query_text", pa.string()),
-        pa.field("query_hash", pa.string()),
-        pa.field("response_text", pa.string()),
-        pa.field("model", pa.string()),
-        pa.field("tokens_input", pa.int32()),
-        pa.field("tokens_output", pa.int32()),
-        pa.field("created_at", pa.string()),
-        pa.field("vector", pa.list_(pa.float32(), CACHE_VECTOR_DIM)),
-    ])
+    return pa.schema(
+        [
+            pa.field("id", pa.string()),
+            pa.field("query_text", pa.string()),
+            pa.field("query_hash", pa.string()),
+            pa.field("response_text", pa.string()),
+            pa.field("model", pa.string()),
+            pa.field("tokens_input", pa.int32()),
+            pa.field("tokens_output", pa.int32()),
+            pa.field("created_at", pa.string()),
+            pa.field("vector", pa.list_(pa.float32(), CACHE_VECTOR_DIM)),
+        ]
+    )
 
 
 # ─── Configuration ────────────────────────────────────────────────────────────
 
+
 @dataclass
 class CacheConfig:
     """Semantic cache configuration for the HostAI pipeline."""
+
     enabled: bool = True
-    similarity_threshold: float = 0.95   # cosine sim — at or above = cache hit
-    max_entries: int = 1000              # evict oldest beyond this count
-    ttl_hours: int = 24                  # entries older than this are stale
+    similarity_threshold: float = 0.95  # cosine sim — at or above = cache hit
+    max_entries: int = 1000  # evict oldest beyond this count
+    ttl_hours: int = 24  # entries older than this are stale
     table_name: str = "session_response_cache"
-    db_uri: str = field(
-        default_factory=lambda: os.getenv("LANCEDB_URI", "/tmp/host_agent_cache")
-    )
+    db_uri: str = field(default_factory=lambda: os.getenv("LANCEDB_URI", "/tmp/host_agent_cache"))
     # USD per 1M tokens — claude-sonnet-4-6 defaults
     cost_input_per_million: float = 3.0
     cost_output_per_million: float = 15.0
@@ -81,9 +85,11 @@ class CacheConfig:
 
 # ─── Stats ────────────────────────────────────────────────────────────────────
 
+
 @dataclass
 class CacheStats:
     """Running totals for cache performance and cost savings."""
+
     hits: int = 0
     misses: int = 0
     tokens_saved_input: int = 0
@@ -109,6 +115,7 @@ class CacheStats:
 
 
 # ─── Cache ────────────────────────────────────────────────────────────────────
+
 
 class SemanticCache:
     """
@@ -140,6 +147,7 @@ class SemanticCache:
     def _connect(self) -> lancedb.DBConnection:
         if self._db is None:
             import pathlib
+
             pathlib.Path(self.config.db_uri).mkdir(parents=True, exist_ok=True)
             self._db = lancedb.connect(self.config.db_uri)
         return self._db
@@ -295,6 +303,7 @@ def get_cache(
 
 # ─── Cost estimator ───────────────────────────────────────────────────────────
 
+
 def estimate_cost(
     tokens_input: int,
     tokens_output: int,
@@ -317,7 +326,6 @@ def estimate_cost(
     }
     in_rate, out_rate = rates.get(model, (3.0, 15.0))
     return round(
-        (tokens_input / 1_000_000) * in_rate
-        + (tokens_output / 1_000_000) * out_rate,
+        (tokens_input / 1_000_000) * in_rate + (tokens_output / 1_000_000) * out_rate,
         8,
     )

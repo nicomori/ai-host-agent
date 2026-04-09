@@ -11,13 +11,13 @@ Step 11 — Langfuse + LangGraph Studio observability tests (ai-host-agent).
   TC7: trace_session context manager yields None when not configured
        and runs the body without error
 """
+
 from __future__ import annotations
 
 import os
 import uuid
 from unittest.mock import MagicMock, patch
 
-import pytest
 
 from src.observability import (
     LangfuseConfig,
@@ -36,13 +36,17 @@ from src.observability import (
 # TC1 — is_langfuse_configured() → False when env vars absent
 # ══════════════════════════════════════════════════════════════════════════════
 
+
 def test_tc1_not_configured_when_no_env_vars():
     """
     With LANGFUSE_PUBLIC_KEY and LANGFUSE_SECRET_KEY unset,
     is_langfuse_configured() must return False.
     """
-    env = {k: v for k, v in os.environ.items()
-           if k not in ("LANGFUSE_PUBLIC_KEY", "LANGFUSE_SECRET_KEY")}
+    env = {
+        k: v
+        for k, v in os.environ.items()
+        if k not in ("LANGFUSE_PUBLIC_KEY", "LANGFUSE_SECRET_KEY")
+    }
     with patch.dict(os.environ, env, clear=True):
         result = is_langfuse_configured()
     print(f"\nTC1 is_langfuse_configured (no env): {result}")
@@ -65,15 +69,19 @@ def test_tc1_not_configured_partial_env():
 # TC2 — is_langfuse_configured() → True when env vars set
 # ══════════════════════════════════════════════════════════════════════════════
 
+
 def test_tc2_configured_when_both_env_vars_set():
     """
     With both LANGFUSE_PUBLIC_KEY and LANGFUSE_SECRET_KEY set,
     is_langfuse_configured() must return True.
     """
-    with patch.dict(os.environ, {
-        "LANGFUSE_PUBLIC_KEY": "pk-test-public",
-        "LANGFUSE_SECRET_KEY": "sk-test-secret",
-    }):
+    with patch.dict(
+        os.environ,
+        {
+            "LANGFUSE_PUBLIC_KEY": "pk-test-public",
+            "LANGFUSE_SECRET_KEY": "sk-test-secret",
+        },
+    ):
         result = is_langfuse_configured()
     print(f"\nTC2 is_langfuse_configured (both set): {result}")
     assert result is True
@@ -83,17 +91,22 @@ def test_tc2_configured_when_both_env_vars_set():
 # TC3 — get_langfuse_client() → None when not configured
 # ══════════════════════════════════════════════════════════════════════════════
 
+
 def test_tc3_get_client_returns_none_when_not_configured():
     """
     get_langfuse_client() must return None when Langfuse is not configured.
     No exception must be raised.
     """
     import src.observability as obs_module
+
     original_client = obs_module._langfuse_client
     obs_module._langfuse_client = None
 
-    env = {k: v for k, v in os.environ.items()
-           if k not in ("LANGFUSE_PUBLIC_KEY", "LANGFUSE_SECRET_KEY")}
+    env = {
+        k: v
+        for k, v in os.environ.items()
+        if k not in ("LANGFUSE_PUBLIC_KEY", "LANGFUSE_SECRET_KEY")
+    }
     try:
         with patch.dict(os.environ, env, clear=True):
             client = get_langfuse_client()
@@ -108,20 +121,25 @@ def test_tc3_get_client_returns_none_when_not_configured():
 # TC4 — get_langfuse_client() → Langfuse instance when configured
 # ══════════════════════════════════════════════════════════════════════════════
 
+
 def test_tc4_get_client_returns_langfuse_when_configured():
     """
     When env vars are set and Langfuse() constructor is mocked,
     get_langfuse_client() must return a Langfuse instance.
     """
     import src.observability as obs_module
+
     original_client = obs_module._langfuse_client
     obs_module._langfuse_client = None
 
     mock_instance = MagicMock()
-    with patch.dict(os.environ, {
-        "LANGFUSE_PUBLIC_KEY": "pk-test",
-        "LANGFUSE_SECRET_KEY": "sk-test",
-    }):
+    with patch.dict(
+        os.environ,
+        {
+            "LANGFUSE_PUBLIC_KEY": "pk-test",
+            "LANGFUSE_SECRET_KEY": "sk-test",
+        },
+    ):
         with patch("src.observability.Langfuse", return_value=mock_instance) as mock_cls:
             client = get_langfuse_client()
             mock_cls.assert_called_once()
@@ -136,13 +154,17 @@ def test_tc4_get_client_returns_langfuse_when_configured():
 # TC5 — observe_agent is identity decorator when not configured
 # ══════════════════════════════════════════════════════════════════════════════
 
+
 def test_tc5_observe_agent_identity_when_not_configured():
     """
     When Langfuse is not configured, @observe_agent must return the
     original function unchanged (no wrapping overhead).
     """
-    env = {k: v for k, v in os.environ.items()
-           if k not in ("LANGFUSE_PUBLIC_KEY", "LANGFUSE_SECRET_KEY")}
+    env = {
+        k: v
+        for k, v in os.environ.items()
+        if k not in ("LANGFUSE_PUBLIC_KEY", "LANGFUSE_SECRET_KEY")
+    }
 
     def my_agent(state):
         return {"result": "agent_ran"}
@@ -159,8 +181,11 @@ def test_tc5_observe_agent_identity_when_not_configured():
 
 def test_tc5_observe_agent_with_name_param():
     """observe_agent(name=...) syntax must also work."""
-    env = {k: v for k, v in os.environ.items()
-           if k not in ("LANGFUSE_PUBLIC_KEY", "LANGFUSE_SECRET_KEY")}
+    env = {
+        k: v
+        for k, v in os.environ.items()
+        if k not in ("LANGFUSE_PUBLIC_KEY", "LANGFUSE_SECRET_KEY")
+    }
 
     def my_agent(state):
         return {}
@@ -176,13 +201,17 @@ def test_tc5_observe_agent_with_name_param():
 # TC6 — observe_tool is identity decorator when not configured
 # ══════════════════════════════════════════════════════════════════════════════
 
+
 def test_tc6_observe_tool_identity_when_not_configured():
     """
     When Langfuse is not configured, @observe_tool must return the
     original function unchanged.
     """
-    env = {k: v for k, v in os.environ.items()
-           if k not in ("LANGFUSE_PUBLIC_KEY", "LANGFUSE_SECRET_KEY")}
+    env = {
+        k: v
+        for k, v in os.environ.items()
+        if k not in ("LANGFUSE_PUBLIC_KEY", "LANGFUSE_SECRET_KEY")
+    }
 
     def lookup_reservation(reservation_id: str) -> dict:
         return {"reservation_id": reservation_id, "status": "confirmed"}
@@ -200,13 +229,17 @@ def test_tc6_observe_tool_identity_when_not_configured():
 # TC7 — trace_session yields None when not configured
 # ══════════════════════════════════════════════════════════════════════════════
 
+
 def test_tc7_trace_session_yields_none_when_not_configured():
     """
     When Langfuse is not configured, trace_session must yield None
     and not raise any exception.  The body must execute normally.
     """
-    env = {k: v for k, v in os.environ.items()
-           if k not in ("LANGFUSE_PUBLIC_KEY", "LANGFUSE_SECRET_KEY")}
+    env = {
+        k: v
+        for k, v in os.environ.items()
+        if k not in ("LANGFUSE_PUBLIC_KEY", "LANGFUSE_SECRET_KEY")
+    }
 
     sid = str(uuid.uuid4())
     body_ran = False
@@ -222,8 +255,11 @@ def test_tc7_trace_session_yields_none_when_not_configured():
 
 def test_tc7_trace_session_with_metadata():
     """trace_session with metadata kwarg must not raise."""
-    env = {k: v for k, v in os.environ.items()
-           if k not in ("LANGFUSE_PUBLIC_KEY", "LANGFUSE_SECRET_KEY")}
+    env = {
+        k: v
+        for k, v in os.environ.items()
+        if k not in ("LANGFUSE_PUBLIC_KEY", "LANGFUSE_SECRET_KEY")
+    }
 
     with patch.dict(os.environ, env, clear=True):
         with trace_session(
@@ -236,11 +272,15 @@ def test_tc7_trace_session_with_metadata():
 
 def test_tc7_flush_traces_noop_when_not_configured():
     """flush_traces() must not raise when Langfuse is not configured."""
-    env = {k: v for k, v in os.environ.items()
-           if k not in ("LANGFUSE_PUBLIC_KEY", "LANGFUSE_SECRET_KEY")}
+    env = {
+        k: v
+        for k, v in os.environ.items()
+        if k not in ("LANGFUSE_PUBLIC_KEY", "LANGFUSE_SECRET_KEY")
+    }
 
     with patch.dict(os.environ, env, clear=True):
         import src.observability as obs_module
+
         original = obs_module._langfuse_client
         obs_module._langfuse_client = None
         try:
@@ -252,6 +292,7 @@ def test_tc7_flush_traces_noop_when_not_configured():
 # ══════════════════════════════════════════════════════════════════════════════
 # Extra — LangfuseConfig dataclass
 # ══════════════════════════════════════════════════════════════════════════════
+
 
 def test_langfuse_config_defaults():
     """LangfuseConfig must have sensible defaults."""
@@ -271,11 +312,15 @@ def test_langfuse_config_custom_host():
 
 def test_create_span_returns_none_when_not_configured():
     """create_span() must return None when Langfuse not configured."""
-    env = {k: v for k, v in os.environ.items()
-           if k not in ("LANGFUSE_PUBLIC_KEY", "LANGFUSE_SECRET_KEY")}
+    env = {
+        k: v
+        for k, v in os.environ.items()
+        if k not in ("LANGFUSE_PUBLIC_KEY", "LANGFUSE_SECRET_KEY")
+    }
 
     with patch.dict(os.environ, env, clear=True):
         import src.observability as obs_module
+
         original = obs_module._langfuse_client
         obs_module._langfuse_client = None
         try:
@@ -288,11 +333,15 @@ def test_create_span_returns_none_when_not_configured():
 
 def test_record_event_noop_when_not_configured():
     """record_event() must not raise when Langfuse not configured."""
-    env = {k: v for k, v in os.environ.items()
-           if k not in ("LANGFUSE_PUBLIC_KEY", "LANGFUSE_SECRET_KEY")}
+    env = {
+        k: v
+        for k, v in os.environ.items()
+        if k not in ("LANGFUSE_PUBLIC_KEY", "LANGFUSE_SECRET_KEY")
+    }
 
     with patch.dict(os.environ, env, clear=True):
         import src.observability as obs_module
+
         original = obs_module._langfuse_client
         obs_module._langfuse_client = None
         try:

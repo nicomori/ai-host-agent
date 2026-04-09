@@ -17,6 +17,7 @@ Error resolutions applied:
   Form 4: lru_cache clear + env override for LANCEDB_URI (inherited from test_api.py)
   Form 5: parse SSE bytes directly — no iter_lines() hangup
 """
+
 from __future__ import annotations
 
 import json
@@ -37,10 +38,13 @@ def client():
         os.environ["LANCEDB_URI"] = tmp
         os.environ["API_KEY"] = VALID_KEY
         from src.config import get_settings
+
         get_settings.cache_clear()
         from src.main import create_app
+
         app = create_app()
         from src.api import routes as _r
+
         _r.reset_routes()  # Form 1: use reset_routes() instead of direct dict access
         with TestClient(app, raise_server_exceptions=True) as c:
             yield c
@@ -50,6 +54,7 @@ def client():
 
 
 # ─── TC-01: No API key → 401 ─────────────────────────────────────────────────
+
 
 def test_tc01_no_api_key_returns_401(client: TestClient):
     """TC-01: POST /reservations without X-API-Key must return 401."""
@@ -67,6 +72,7 @@ def test_tc01_no_api_key_returns_401(client: TestClient):
 
 
 # ─── TC-02: Wrong API key → 401 ──────────────────────────────────────────────
+
 
 def test_tc02_wrong_api_key_returns_401(client: TestClient):
     """TC-02: POST /reservations with wrong X-API-Key must return 401."""
@@ -87,6 +93,7 @@ def test_tc02_wrong_api_key_returns_401(client: TestClient):
 
 
 # ─── TC-03: Valid API key → 201 ──────────────────────────────────────────────
+
 
 def test_tc03_valid_api_key_creates_reservation(client: TestClient):
     """TC-03: POST /reservations with valid X-API-Key must return 201."""
@@ -112,6 +119,7 @@ def test_tc03_valid_api_key_creates_reservation(client: TestClient):
 
 # ─── TC-04: Health does NOT require API key ───────────────────────────────────
 
+
 def test_tc04_health_no_auth_required(client: TestClient):
     """TC-04: GET /health must return 200 without any API key."""
     r = client.get("/health")
@@ -122,6 +130,7 @@ def test_tc04_health_no_auth_required(client: TestClient):
 
 # ─── TC-05: SSE endpoint content-type ────────────────────────────────────────
 
+
 def test_tc05_sse_content_type(client: TestClient):
     """TC-05: GET /reservations/stream must return text/event-stream content-type."""
     with client.stream("GET", "/api/v1/reservations/stream?once=true") as r:
@@ -131,6 +140,7 @@ def test_tc05_sse_content_type(client: TestClient):
 
 
 # ─── TC-06: SSE stream emits snapshot event ───────────────────────────────────
+
 
 def test_tc06_sse_snapshot_event_fields(client: TestClient):
     """TC-06: SSE ?once=true must emit a data: event with snapshot fields.
@@ -156,6 +166,7 @@ def test_tc06_sse_snapshot_event_fields(client: TestClient):
 
 # ─── TC-07: OpenAPI spec documents all key routes ─────────────────────────────
 
+
 def test_tc07_openapi_spec_documents_routes(client: TestClient):
     """TC-07: GET /openapi.json must include all major route prefixes."""
     r = client.get("/openapi.json")
@@ -171,6 +182,7 @@ def test_tc07_openapi_spec_documents_routes(client: TestClient):
 
 
 # ─── TC-08: POST /reservations without key → 401 ─────────────────────────────
+
 
 def test_tc08_post_reservations_no_key_returns_401(client: TestClient):
     """TC-08: POST /api/v1/reservations without X-API-Key must return 401."""
@@ -188,17 +200,20 @@ def test_tc08_post_reservations_no_key_returns_401(client: TestClient):
 
 # ─── TC-09: GET /reservations with valid key → 200 + list ───────────────────
 
+
 def test_tc09_get_reservations_with_valid_key(client: TestClient):
     """TC-09: GET /api/v1/reservations with valid key must return 200 and a list."""
     r = client.get("/api/v1/reservations", headers={"X-API-Key": VALID_KEY})
     print(f"\nTC-09 GET /reservations status: {r.status_code} — {r.json()}")
     assert r.status_code == 200
     data = r.json()
-    assert "reservations" in data or isinstance(data, list), \
+    assert "reservations" in data or isinstance(data, list), (
         "Response must contain reservations list"
+    )
 
 
 # ─── TC-10: POST /reservations empty name → 422 ──────────────────────────────
+
 
 def test_tc10_post_reservation_empty_name_422(client: TestClient):
     """TC-10: POST /reservations with empty guest_name must return 422."""
@@ -220,6 +235,7 @@ def test_tc10_post_reservation_empty_name_422(client: TestClient):
 
 # ─── TC-11: POST /voice/inbound with valid key → 200 ─────────────────────────
 
+
 def test_tc11_voice_inbound_returns_200(client: TestClient):
     """TC-11: POST /api/v1/voice/inbound with Twilio form-encoded payload must return 200."""
     payload = {
@@ -238,6 +254,7 @@ def test_tc11_voice_inbound_returns_200(client: TestClient):
 
 # ─── TC-12: GET /health has restaurant_name field ────────────────────────────
 
+
 def test_tc12_health_has_restaurant_name(client: TestClient):
     """TC-12: GET /health response must include a restaurant field."""
     r = client.get("/health")
@@ -251,6 +268,7 @@ def test_tc12_health_has_restaurant_name(client: TestClient):
 
 # ─── TC-13: GET /openapi.json has info.title ─────────────────────────────────
 
+
 def test_tc13_openapi_has_info_title(client: TestClient):
     """TC-13: GET /openapi.json must have a non-empty info.title."""
     r = client.get("/openapi.json")
@@ -263,9 +281,11 @@ def test_tc13_openapi_has_info_title(client: TestClient):
 
 # ─── TC-14: Two reservations → GET /reservations total correct ───────────────
 
+
 def test_tc14_two_reservations_total_matches(client: TestClient):
     """TC-14: Creating two reservations must increment the list total by 2."""
     from src.api import routes as _r
+
     _r.reset_routes()  # Form 3: DB truncate for clean state in test
 
     for i, phone in enumerate(["+541155550141", "+541155550142"], start=1):
@@ -290,6 +310,7 @@ def test_tc14_two_reservations_total_matches(client: TestClient):
 
 
 # ─── TC-15: POST /agent/chat with valid key → 200 + session_id ───────────────
+
 
 def test_tc15_agent_chat_returns_session_id(client: TestClient):
     """TC-15: POST /api/v1/agent/chat must return 200 and a non-empty session_id."""

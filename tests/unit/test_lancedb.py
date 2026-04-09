@@ -2,6 +2,7 @@
 BLOQUE 2 — LanceDB dentro de Docker: Test Suite (HostAI)
 15 test cases: conexion, tablas, schema, insert, search, error handling, config, and 8 extra cases.
 """
+
 from __future__ import annotations
 
 import os
@@ -25,6 +26,7 @@ def test_tc01_lancedb_in_pyproject():
 def test_tc02_compose_lancedb_volume():
     """TC-02: docker-compose.yml must declare lancedb_data volume and mount it on api."""
     import yaml
+
     data = yaml.safe_load((PROJECT_ROOT / "docker-compose.yml").read_text())
     assert "lancedb_data" in data.get("volumes", {}), "Missing lancedb_data volume"
     api_volumes = data["services"]["api"].get("volumes", [])
@@ -89,6 +91,7 @@ def test_tc06_get_table_unknown_raises():
 def test_tc07_config_yaml_lancedb():
     """TC-07: config.yaml must have a lancedb section with uri, tables, embedding_dim."""
     import yaml
+
     data = yaml.safe_load((PROJECT_ROOT / "config.yaml").read_text())
     ldb = data.get("lancedb", {})
     assert ldb, "Missing [lancedb] section in config.yaml"
@@ -157,6 +160,7 @@ def test_tc12_lancedb_uri_env_in_settings(monkeypatch):
     """TC-12: LANCEDB_URI env var must override the lancedb uri in settings."""
     monkeypatch.setenv("LANCEDB_URI", "/tmp/test-lancedb-uri-tc12")
     from src.config import get_settings
+
     get_settings.cache_clear()
     settings = get_settings()
     assert settings.lancedb_uri == "/tmp/test-lancedb-uri-tc12"
@@ -167,6 +171,7 @@ def test_tc12_lancedb_uri_env_in_settings(monkeypatch):
 def test_tc13_config_yaml_embedding_dim():
     """TC-13: config.yaml lancedb.embedding_dim must equal 1536."""
     import yaml
+
     data = yaml.safe_load((PROJECT_ROOT / "config.yaml").read_text())
     assert data["lancedb"]["embedding_dim"] == 1536
 

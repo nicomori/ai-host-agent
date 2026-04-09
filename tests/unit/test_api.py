@@ -7,6 +7,7 @@ Fix 1: lifespan tries /app/data/lancedb — override LANCEDB_URI to tmpdir.
 Fix 2: TestClient.delete() no acepta json= en esta versión de Starlette
        → Resolution Form 1: usar client.request("DELETE", url, json=...) via httpx.
 """
+
 from __future__ import annotations
 
 import json
@@ -32,8 +33,10 @@ def client():
         os.environ["API_KEY"] = _DEV_API_KEY
         # Clear singleton so it re-reads the new env
         from src.config import get_settings
+
         get_settings.cache_clear()
         from src.main import create_app
+
         app = create_app()
         # Also clear in-memory store between test runs
         # Form 4: no dict clear needed — DB mode keeps state via PostgreSQL
@@ -162,7 +165,9 @@ def test_tc09_list_reservations_count(client: TestClient):
         "time": "19:00",
         "party_size": 2,
     }
-    r_create = client.post("/api/v1/reservations", json=payload, headers={"X-API-Key": _DEV_API_KEY})
+    r_create = client.post(
+        "/api/v1/reservations", json=payload, headers={"X-API-Key": _DEV_API_KEY}
+    )
     assert r_create.status_code == 201
 
     r = client.get("/api/v1/reservations")
@@ -191,6 +196,7 @@ def test_tc10_create_reservation_invalid_party_size(client: TestClient):
 def test_tc11_cancel_already_cancelled_returns_404(client: TestClient):
     """TC-11: Cancelling an already-cancelled reservation must return 404."""
     import json as _json
+
     # Create reservation
     payload = {
         "guest_name": "Double Cancel Test",
@@ -199,7 +205,9 @@ def test_tc11_cancel_already_cancelled_returns_404(client: TestClient):
         "time": "21:00",
         "party_size": 3,
     }
-    r_create = client.post("/api/v1/reservations", json=payload, headers={"X-API-Key": _DEV_API_KEY})
+    r_create = client.post(
+        "/api/v1/reservations", json=payload, headers={"X-API-Key": _DEV_API_KEY}
+    )
     assert r_create.status_code == 201
     rid = r_create.json()["reservation_id"]
 
@@ -236,14 +244,18 @@ def test_tc12_health_contains_restaurant_name(client: TestClient):
 def test_tc13_fresh_store_total_zero():
     """TC-13: With a fresh app instance, GET /reservations must return valid list.
     Form 5: in DB mode the store is shared — assert structure not emptiness."""
-    import os, tempfile
+    import os
+    import tempfile
     from fastapi.testclient import TestClient as _TC
+
     with tempfile.TemporaryDirectory() as tmp:
         os.environ["LANCEDB_URI"] = tmp
         os.environ["API_KEY"] = "isolated-test-key"
         from src.config import get_settings
+
         get_settings.cache_clear()
         from src.main import create_app
+
         app = create_app()
         with _TC(app, raise_server_exceptions=True) as fresh_client:
             r = fresh_client.get("/api/v1/reservations")
@@ -261,18 +273,22 @@ def test_tc13_fresh_store_total_zero():
 # ─── TC-14: POST /voice/inbound assigns unique session_id each call ───────────
 def test_tc14_voice_inbound_unique_session_ids(client: TestClient):
     """TC-14: Each POST /voice/inbound call must return 200 (Twilio form-encoded)."""
+
     def _post(call_sid: str):
-        r = client.post("/api/v1/voice/inbound", data={
-            "CallSid": call_sid,
-            "From": "+5491155550001",
-            "To": "+5491100000001",
-            "CallStatus": "ringing",
-        })
+        r = client.post(
+            "/api/v1/voice/inbound",
+            data={
+                "CallSid": call_sid,
+                "From": "+5491155550001",
+                "To": "+5491100000001",
+                "CallStatus": "ringing",
+            },
+        )
         assert r.status_code == 200
         return r
 
     r1 = _post("CA-unique-001")
-    r2 = _post("CA-unique-002")
+    _post("CA-unique-002")
     # Both must return TwiML (XML) with 200
     assert "xml" in r1.headers.get("content-type", "") or r1.status_code == 200
 
@@ -287,7 +303,9 @@ def test_tc15_get_reservation_status_confirmed(client: TestClient):
         "time": "20:00",
         "party_size": 5,
     }
-    r_create = client.post("/api/v1/reservations", json=payload, headers={"X-API-Key": _DEV_API_KEY})
+    r_create = client.post(
+        "/api/v1/reservations", json=payload, headers={"X-API-Key": _DEV_API_KEY}
+    )
     assert r_create.status_code == 201
     rid = r_create.json()["reservation_id"]
 

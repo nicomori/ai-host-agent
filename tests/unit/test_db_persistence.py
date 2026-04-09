@@ -25,6 +25,7 @@ Error resolutions applied:
   Form 4: Non-fatal try/except in route layer
   Form 5: contextmanager for automatic conn.close()
 """
+
 from __future__ import annotations
 
 import os
@@ -44,10 +45,11 @@ os.environ.setdefault("POSTGRES_USER", "hostai_user")
 os.environ.setdefault("POSTGRES_PASSWORD", "hostai_pass_2026")
 os.environ.setdefault("LANCEDB_URI", "/tmp/hostai_lancedb_test")
 
-from src.config import get_settings
+from src.config import get_settings  # noqa: E402
+
 get_settings.cache_clear()
 
-from src.services import db as pg_db
+from src.services import db as pg_db  # noqa: E402
 
 
 def _reachable() -> bool:
@@ -69,12 +71,14 @@ _SESSION_ID = f"sess-{uuid.uuid4().hex[:8]}"
 
 # ─── TC-01 ────────────────────────────────────────────────────────────────────
 
+
 def test_tc01_init_db_runs_without_error():
     """TC-01: init_db() must complete without raising."""
     pg_db.init_db()  # idempotent
 
 
 # ─── TC-02 ────────────────────────────────────────────────────────────────────
+
 
 def test_tc02_save_reservation_returns_dict_with_id():
     """TC-02: save_reservation() must return a dict containing 'id'."""
@@ -92,6 +96,7 @@ def test_tc02_save_reservation_returns_dict_with_id():
 
 
 # ─── TC-03 ────────────────────────────────────────────────────────────────────
+
 
 def test_tc03_get_reservation_returns_saved_record():
     """TC-03: get_reservation(id) must return the saved record."""
@@ -111,6 +116,7 @@ def test_tc03_get_reservation_returns_saved_record():
 
 # ─── TC-04 ────────────────────────────────────────────────────────────────────
 
+
 def test_tc04_list_reservations_non_empty_after_save():
     """TC-04: list_reservations() must return ≥ 1 record after TC-02."""
     pg_db.save_reservation("List Test", "+54911555002", "2026-07-03", "18:00", 3)
@@ -120,6 +126,7 @@ def test_tc04_list_reservations_non_empty_after_save():
 
 
 # ─── TC-05 ────────────────────────────────────────────────────────────────────
+
 
 def test_tc05_update_reservation_status_to_cancelled():
     """TC-05: update_reservation_status() must set status to 'cancelled'."""
@@ -139,6 +146,7 @@ def test_tc05_update_reservation_status_to_cancelled():
 
 # ─── TC-06 ────────────────────────────────────────────────────────────────────
 
+
 def test_tc06_save_call_log_returns_dict_with_id():
     """TC-06: save_call_log() must return a dict with 'id'."""
     row = pg_db.save_call_log(
@@ -155,6 +163,7 @@ def test_tc06_save_call_log_returns_dict_with_id():
 
 # ─── TC-07 ────────────────────────────────────────────────────────────────────
 
+
 def test_tc07_get_call_log_retrieves_by_sid():
     """TC-07: get_call_log(call_sid) must return the record saved in TC-06."""
     retrieved = pg_db.get_call_log(_CALL_SID)
@@ -165,15 +174,17 @@ def test_tc07_get_call_log_retrieves_by_sid():
 
 # ─── TC-08 ────────────────────────────────────────────────────────────────────
 
+
 def test_tc08_save_call_log_is_idempotent():
     """TC-08: Saving the same call_sid twice must not raise (ON CONFLICT DO UPDATE)."""
-    row1 = pg_db.save_call_log(_CALL_SID, "+54911999000", "+54911000001", "ringing")
+    pg_db.save_call_log(_CALL_SID, "+54911999000", "+54911000001", "ringing")
     row2 = pg_db.save_call_log(_CALL_SID, "+54911999000", "+54911000001", "in-progress")
     print(f"\nTC-08 second save status: {row2['call_status']}")
     assert row2["call_status"] == "in-progress"
 
 
 # ─── TC-09 ────────────────────────────────────────────────────────────────────
+
 
 def test_tc09_save_agent_session_returns_dict():
     """TC-09: save_agent_session() must return a dict with 'id'."""
@@ -191,6 +202,7 @@ def test_tc09_save_agent_session_returns_dict():
 
 # ─── TC-10 ────────────────────────────────────────────────────────────────────
 
+
 def test_tc10_get_agent_session_retrieves_by_id():
     """TC-10: get_agent_session() must return the saved session."""
     retrieved = pg_db.get_agent_session(_SESSION_ID)
@@ -200,6 +212,7 @@ def test_tc10_get_agent_session_retrieves_by_id():
 
 
 # ─── TC-11 ────────────────────────────────────────────────────────────────────
+
 
 def test_tc11_save_agent_session_is_idempotent():
     """TC-11: save_agent_session() with same session_id must update (ON CONFLICT DO UPDATE)."""
@@ -215,6 +228,7 @@ def test_tc11_save_agent_session_is_idempotent():
 
 # ─── TC-12 ────────────────────────────────────────────────────────────────────
 
+
 def test_tc12_list_reservations_obeys_limit():
     """TC-12: list_reservations(limit=1) must return at most 1 record."""
     rows = pg_db.list_reservations(limit=1)
@@ -223,6 +237,7 @@ def test_tc12_list_reservations_obeys_limit():
 
 
 # ─── TC-13 ────────────────────────────────────────────────────────────────────
+
 
 def test_tc13_save_reservation_stores_party_size():
     """TC-13: party_size must be stored and retrievable."""
@@ -240,10 +255,11 @@ def test_tc13_save_reservation_stores_party_size():
 
 # ─── TC-14 ────────────────────────────────────────────────────────────────────
 
+
 def test_tc14_save_call_log_stores_transcript_and_intent():
     """TC-14: save_call_log with transcript and intent must persist both fields."""
     sid = f"CA-tc14-{uuid.uuid4().hex[:6]}"
-    row = pg_db.save_call_log(
+    pg_db.save_call_log(
         call_sid=sid,
         from_number="+54911100014",
         to_number="+54911000001",
@@ -259,6 +275,7 @@ def test_tc14_save_call_log_stores_transcript_and_intent():
 
 # ─── TC-15 ────────────────────────────────────────────────────────────────────
 
+
 def test_tc15_save_agent_session_stores_messages_as_list():
     """TC-15: messages stored in agent_sessions must be retrievable as a list."""
     sid = f"sess-tc15-{uuid.uuid4().hex[:6]}"
@@ -273,6 +290,7 @@ def test_tc15_save_agent_session_stores_messages_as_list():
     stored_messages = retrieved["messages"]
     if isinstance(stored_messages, str):
         import json
+
         stored_messages = json.loads(stored_messages)
     assert isinstance(stored_messages, list)
     assert len(stored_messages) == 2

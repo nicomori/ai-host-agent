@@ -11,14 +11,15 @@ Provides defence-in-depth at the invoke_agent boundary:
   - apply_input_guardrails  : runs all input checks, raises GuardrailViolation
   - apply_output_guardrails : runs all output checks, returns safe text
 """
+
 from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
-from typing import Optional
 
 
 # ─── Exception ────────────────────────────────────────────────────────────────
+
 
 class GuardrailViolation(Exception):
     """Raised when a guardrail policy is violated."""
@@ -32,15 +33,21 @@ _INJECTION_PATTERNS: list[re.Pattern] = [
     re.compile(r"ignore\s+(previous|all|your|prior)\s+(instructions?|prompt|rules?)", re.I),
     re.compile(r"disregard\s+(previous|all|your|prior)\s+(instructions?|prompt|rules?)", re.I),
     re.compile(r"forget\s+(your|all|previous)\s+(instructions?|prompt|rules?)", re.I),
-    re.compile(r"\boverride\s+(?:(?:your|the|all|my)\s+)?(?:previous\s+)?(instructions?|prompt|rules?)\b", re.I),
+    re.compile(
+        r"\boverride\s+(?:(?:your|the|all|my)\s+)?(?:previous\s+)?(instructions?|prompt|rules?)\b",
+        re.I,
+    ),
     # Identity replacement
     re.compile(r"\byou\s+are\s+now\b", re.I),
-    re.compile(r"\bact\s+as\b(?!\s+a\s+reservation)", re.I),   # allow "act as a reservation..."
+    re.compile(r"\bact\s+as\b(?!\s+a\s+reservation)", re.I),  # allow "act as a reservation..."
     re.compile(r"\bpretend\s+(to\s+be|you\s+are)\b", re.I),
     re.compile(r"\bimpersonate\b", re.I),
     # System prompt exfiltration
     re.compile(r"\breveal\s+(your|the)?\s*(system\s*)?prompt\b", re.I),
-    re.compile(r"\bprint\s+(?:your|the|all)?\s*(?:system\s*)?(prompt|instructions?|rules?|directives?)\b", re.I),
+    re.compile(
+        r"\bprint\s+(?:your|the|all)?\s*(?:system\s*)?(prompt|instructions?|rules?|directives?)\b",
+        re.I,
+    ),
     re.compile(r"\bshow\s+(your|the)?\s*(system\s*)?instructions?\b", re.I),
     re.compile(r"\bwhat\s+(are|is)\s+your\s*(system\s*)?prompt\b", re.I),
     # Delimiter injection
@@ -88,6 +95,7 @@ def sanitize_input(text: str) -> str:
 
 
 # ─── Length check ─────────────────────────────────────────────────────────────
+
 
 def check_input_length(text: str, max_chars: int) -> bool:
     """Return True if text is within max_chars limit."""
@@ -140,9 +148,11 @@ def validate_output(text: str) -> str:
 
 # ─── Configuration ────────────────────────────────────────────────────────────
 
+
 @dataclass
 class GuardrailsConfig:
     """Named configuration for guardrail thresholds."""
+
     max_input_chars: int = 2_000
     block_injection: bool = True
     mask_pii_in_logs: bool = True
@@ -155,6 +165,7 @@ DEFAULT_CONFIG = GuardrailsConfig()
 
 
 # ─── Composite helpers ────────────────────────────────────────────────────────
+
 
 def apply_input_guardrails(
     text: str,
@@ -179,9 +190,7 @@ def apply_input_guardrails(
 
     for phrase in config.extra_blocked_phrases:
         if phrase.lower() in text.lower():
-            raise GuardrailViolation(
-                f"Input contains blocked phrase: '{phrase}'."
-            )
+            raise GuardrailViolation(f"Input contains blocked phrase: '{phrase}'.")
 
     return sanitize_input(text)
 

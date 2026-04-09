@@ -14,30 +14,36 @@ Components:
   flush_traces               : flush pending spans on shutdown
   LangfuseConfig             : dataclass with all Langfuse settings
 """
+
 from __future__ import annotations
 
 import os
 from contextlib import contextmanager
 from dataclasses import dataclass, field
-from functools import wraps
 from typing import Any, Callable, Generator, Optional
 
 # Form 1: graceful fallback when langfuse is not installed
 try:
     from langfuse import Langfuse, observe  # type: ignore[import]
+
     _LANGFUSE_AVAILABLE = True
 except ImportError:
     Langfuse = None  # type: ignore[assignment,misc]
-    observe = lambda **kw: (lambda fn: fn)  # type: ignore[assignment]
+
+    def observe(**kw):
+        return lambda fn: fn  # type: ignore[assignment]
+
     _LANGFUSE_AVAILABLE = False
 
 # LangChain/LangGraph callback handler (auto-instruments every node)
 try:
     from langfuse.langchain import CallbackHandler as LangfuseCallbackHandler  # type: ignore[import]
+
     _LANGFUSE_CALLBACK_AVAILABLE = True
 except ImportError:
     try:
         from langfuse.callback import CallbackHandler as LangfuseCallbackHandler  # type: ignore[import]
+
         _LANGFUSE_CALLBACK_AVAILABLE = True
     except ImportError:
         LangfuseCallbackHandler = None  # type: ignore[assignment]
@@ -45,24 +51,28 @@ except ImportError:
 
 # ─── Configuration ────────────────────────────────────────────────────────────
 
+
 @dataclass
 class LangfuseConfig:
     """Langfuse integration configuration."""
+
     enabled: bool = True
     capture_input: bool = True
     capture_output: bool = True
     # Resolved from env vars at instantiation time
     public_key: str = field(default_factory=lambda: os.getenv("LANGFUSE_PUBLIC_KEY", ""))
     secret_key: str = field(default_factory=lambda: os.getenv("LANGFUSE_SECRET_KEY", ""))
-    host: str = field(default_factory=lambda: os.getenv("LANGFUSE_HOST") or os.getenv("LANGFUSE_BASE_URL", "https://cloud.langfuse.com"))
+    host: str = field(
+        default_factory=lambda: (
+            os.getenv("LANGFUSE_HOST")
+            or os.getenv("LANGFUSE_BASE_URL", "https://cloud.langfuse.com")
+        )
+    )
 
 
 def is_langfuse_configured() -> bool:
     """Return True iff LANGFUSE_PUBLIC_KEY and LANGFUSE_SECRET_KEY are set."""
-    return bool(
-        os.getenv("LANGFUSE_PUBLIC_KEY")
-        and os.getenv("LANGFUSE_SECRET_KEY")
-    )
+    return bool(os.getenv("LANGFUSE_PUBLIC_KEY") and os.getenv("LANGFUSE_SECRET_KEY"))
 
 
 _langfuse_client: Optional[Langfuse] = None
@@ -91,6 +101,7 @@ def flush_traces() -> None:
 
 # ─── Decorator helpers ────────────────────────────────────────────────────────
 
+
 def observe_agent(func: Optional[Callable] = None, *, name: Optional[str] = None):
     """
     @observe_agent wraps a node function as a Langfuse 'agent' span.
@@ -103,6 +114,7 @@ def observe_agent(func: Optional[Callable] = None, *, name: Optional[str] = None
         @observe_agent(name="custom_agent_name")
         def some_fn(state): ...
     """
+
     def decorator(fn: Callable) -> Callable:
         if not _LANGFUSE_AVAILABLE or not is_langfuse_configured():
             return fn
@@ -121,6 +133,7 @@ def observe_tool(func: Optional[Callable] = None, *, name: Optional[str] = None)
     @observe_tool wraps a function as a Langfuse 'tool' span.
     Falls back to identity decorator when Langfuse is not configured.
     """
+
     def decorator(fn: Callable) -> Callable:
         if not _LANGFUSE_AVAILABLE or not is_langfuse_configured():
             return fn
@@ -136,6 +149,7 @@ def observe_fn(func: Optional[Callable] = None, *, name: Optional[str] = None):
     Generic @observe wrapper. Creates a Langfuse span for any function.
     Falls back to identity decorator when Langfuse is not available.
     """
+
     def decorator(fn: Callable) -> Callable:
         if not _LANGFUSE_AVAILABLE or not is_langfuse_configured():
             return fn
@@ -147,6 +161,7 @@ def observe_fn(func: Optional[Callable] = None, *, name: Optional[str] = None):
 
 
 # ─── Context-manager trace ────────────────────────────────────────────────────
+
 
 @contextmanager
 def trace_session(
@@ -179,6 +194,7 @@ def trace_session(
 
 
 # ─── Span helpers (for manual instrumentation) ────────────────────────────────
+
 
 def create_span(
     name: str,
@@ -214,6 +230,7 @@ def record_event(
 
 
 # ─── LangGraph callback handler ─────────────────────────────────────────────
+
 
 def get_langfuse_callback_handler(
     session_id: Optional[str] = None,

@@ -3,12 +3,11 @@ BLOQUE 1 — Infra Base Tests (HostAI)
 15 test cases covering: Dockerfile, docker-compose, Makefile, config, pyproject, src structure,
                         health endpoint, and 8 additional structural coverage cases.
 """
+
 from __future__ import annotations
 
-import subprocess
 from pathlib import Path
 
-import pytest
 import yaml
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
@@ -81,7 +80,7 @@ def test_tc05_pyproject_toml():
             assert pyproject.exists(), "pyproject.toml not found"
             content = pyproject.read_text()
             assert 'name = "ai-host-agent"' in content
-            assert '>=3.11' in content
+            assert ">=3.11" in content
             for lib in ["fastapi", "langgraph", "twilio", "elevenlabs", "structlog"]:
                 assert lib in content, f"Missing dependency: {lib}"
             return
@@ -200,6 +199,4 @@ def test_tc15_tests_directory_structure():
     tests_unit = PROJECT_ROOT / "tests" / "unit"
     assert tests_unit.exists(), "tests/unit/ directory not found"
     test_files = list(tests_unit.glob("test_*.py"))
-    assert len(test_files) >= 5, (
-        f"Expected ≥ 5 test files in tests/unit/, found: {len(test_files)}"
-    )
+    assert len(test_files) >= 5, f"Expected ≥ 5 test files in tests/unit/, found: {len(test_files)}"

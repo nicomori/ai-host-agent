@@ -12,6 +12,7 @@ Provides:
   Form 4: _FallbackSqliteSaver using stdlib sqlite3 when package absent
   Form 5: contextlib adapter in sqlite_checkpointer uses fallback path
 """
+
 from __future__ import annotations
 
 import contextlib
@@ -30,12 +31,14 @@ def _import_sqlite_saver():
     # Form 1: old API (langgraph < 0.3)
     try:
         from langgraph.checkpoint.sqlite import SqliteSaver  # type: ignore[import]
+
         return SqliteSaver
     except ImportError:
         pass
     # Form 2: new separate package (langgraph >= 0.3)
     try:
         from langgraph_checkpoint_sqlite import SqliteSaver  # type: ignore[import]
+
         return SqliteSaver
     except ImportError:
         pass
@@ -61,8 +64,7 @@ def _make_fallback_class():
             super().__init__()
             self._conn = conn
             conn.execute(
-                "CREATE TABLE IF NOT EXISTS checkpoints "
-                "(thread_id TEXT PRIMARY KEY, data TEXT)"
+                "CREATE TABLE IF NOT EXISTS checkpoints (thread_id TEXT PRIMARY KEY, data TEXT)"
             )
             conn.commit()
 
@@ -99,6 +101,7 @@ def sqlite_checkpointer(db_path: str = CHECKPOINT_DB_PATH):
 def get_memory_checkpointer():
     """Return an in-memory MemorySaver (tests / zero-config dev)."""
     from langgraph.checkpoint.memory import MemorySaver
+
     return MemorySaver()
 
 
@@ -116,4 +119,5 @@ def get_checkpointer(use_sqlite: bool = False, db_path: str = CHECKPOINT_DB_PATH
             return _SqliteSaver(conn)  # type: ignore[call-arg]
         return _FallbackSqliteSaver(conn)
     from langgraph.checkpoint.memory import MemorySaver
+
     return MemorySaver()

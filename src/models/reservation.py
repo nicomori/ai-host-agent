@@ -1,7 +1,7 @@
 """Pydantic models for HostAI — Reservations + Voice."""
+
 from __future__ import annotations
 
-import uuid
 from datetime import datetime
 from enum import Enum
 from typing import Optional
@@ -35,6 +35,7 @@ class CallStatus(str, Enum):
 
 
 # ─── Request models ────────────────────────────────────────────────────────────
+
 
 class CreateReservationRequest(BaseModel):
     guest_name: str = Field(..., min_length=2, max_length=100)
@@ -77,6 +78,7 @@ class VoiceInboundRequest(BaseModel):
 
 
 # ─── Response models ───────────────────────────────────────────────────────────
+
 
 class ReservationResponse(BaseModel):
     reservation_id: str

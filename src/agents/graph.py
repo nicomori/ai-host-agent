@@ -21,17 +21,17 @@ Checkpointing (Step 6):
   - prod: PostgresSaver (configured via CHECKPOINT_DB_PATH or PG DSN)
   - Each session uses thread_id = session_id — state persists across turns.
 """
+
 from __future__ import annotations
 
-import uuid
 from typing import Literal, Optional
 
-from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
+from langchain_core.messages import HumanMessage, SystemMessage
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import END, START, StateGraph
 from langgraph.types import Command
 
-from src.agents.state import AgentState, ReservationData
+from src.agents.state import AgentState
 from src.agents.sub_agents import (
     cancellation_agent,
     clarify_agent,
@@ -40,7 +40,7 @@ from src.agents.sub_agents import (
 )
 from src.context_window import HOST_AGENT_BUDGET, apply_context_strategy
 from src.guardrails import GuardrailsConfig, apply_input_guardrails, apply_output_guardrails
-from src.observability import flush_traces, observe_fn, get_langfuse_client
+from src.observability import flush_traces, get_langfuse_client
 
 # ─── System prompt ────────────────────────────────────────────────────────────
 
@@ -83,30 +83,69 @@ _SubAgent = Literal[
 # SUPERVISOR NODE (Step 8 — Multi-agent)
 # ═══════════════════════════════════════════════════════════════════════════════
 
-import re
+import re  # noqa: E402
 
 _TARGET_MAP: dict[str, _SubAgent] = {
-    "make_reservation":    "reservation_agent",
-    "cancel_reservation":  "cancellation_agent",
-    "query_reservation":   "query_agent",
-    "unknown":             "clarify_agent",
+    "make_reservation": "reservation_agent",
+    "cancel_reservation": "cancellation_agent",
+    "query_reservation": "query_agent",
+    "unknown": "clarify_agent",
 }
 
 _MONTH_MAP = {
-    "january": "01", "february": "02", "march": "03", "april": "04",
-    "may": "05", "june": "06", "july": "07", "august": "08",
-    "september": "09", "october": "10", "november": "11", "december": "12",
+    "january": "01",
+    "february": "02",
+    "march": "03",
+    "april": "04",
+    "may": "05",
+    "june": "06",
+    "july": "07",
+    "august": "08",
+    "september": "09",
+    "october": "10",
+    "november": "11",
+    "december": "12",
 }
 
 
 def _keyword_classify(text: str) -> tuple[str, _SubAgent]:
     t = text.lower()
-    if any(k in t for k in ["cancel", "cancela", "delete", "remove", "borrar", "disdire", "annulla"]):
+    if any(
+        k in t for k in ["cancel", "cancela", "delete", "remove", "borrar", "disdire", "annulla"]
+    ):
         return "cancel_reservation", "cancellation_agent"
-    if any(k in t for k in ["status", "estado", "confirma", "check", "lookup", "stato", "verifica", "conferma"]):
+    if any(
+        k in t
+        for k in [
+            "status",
+            "estado",
+            "confirma",
+            "check",
+            "lookup",
+            "stato",
+            "verifica",
+            "conferma",
+        ]
+    ):
         return "query_reservation", "query_agent"
-    if any(k in t for k in ["reserv", "book", "mesa", "table", "quiero", "want", "make",
-                             "prenot", "tavolo", "posto", "vorrei", "voglio", "posto"]):
+    if any(
+        k in t
+        for k in [
+            "reserv",
+            "book",
+            "mesa",
+            "table",
+            "quiero",
+            "want",
+            "make",
+            "prenot",
+            "tavolo",
+            "posto",
+            "vorrei",
+            "voglio",
+            "posto",
+        ]
+    ):
         return "make_reservation", "reservation_agent"
     return "unknown", "clarify_agent"
 
@@ -130,7 +169,8 @@ def _regex_extract(text: str) -> dict:
             m = re.search(
                 rf"\b{month_name}\s+(\d{{1,2}})(?:st|nd|rd|th)?\b"
                 rf"|\b(\d{{1,2}})(?:st|nd|rd|th)?\s+{month_name}\b",
-                text, re.IGNORECASE,
+                text,
+                re.IGNORECASE,
             )
             if m:
                 day = (m.group(1) or m.group(2)).zfill(2)
@@ -157,7 +197,8 @@ def _regex_extract(text: str) -> dict:
     ps_m = re.search(
         r"\bfor\s+(\d+)\b|\b(\d+)\s+(?:people|persons?|guests?|pax)\b"
         r"|\bparty\s+of\s+(\d+)\b|\btable\s+for\s+(\d+)\b",
-        text, re.IGNORECASE,
+        text,
+        re.IGNORECASE,
     )
     if ps_m:
         val = next(g for g in ps_m.groups() if g is not None)
@@ -201,6 +242,7 @@ def _llm_extract(text: str, existing_data: dict) -> tuple[str, _SubAgent, dict]:
 
     try:
         import anthropic
+
         client = anthropic.Anthropic(api_key=api_key)
         today = str(_date.today())
         prompt = _LLM_SUPERVISOR_PROMPT.format(today=today)
@@ -247,6 +289,7 @@ def _emit_supervisor_span(user_text, prior_intent, existing_data, intent, target
         return
     try:
         from src.agents.sub_agents import _current_trace_id
+
         ctx = {"trace_id": _current_trace_id, "parent_span_id": ""} if _current_trace_id else None
         label = _INTENT_LABEL.get(intent, intent)
         span = client.start_observation(
@@ -259,12 +302,14 @@ def _emit_supervisor_span(user_text, prior_intent, existing_data, intent, target
             },
             trace_context=ctx,
         )
-        span.update(output={
-            "intent_detectado": intent,
-            "agente_destino": target,
-            "campos_extraídos": list(merged_data.keys()) if merged_data else [],
-            "datos_merged": merged_data,
-        })
+        span.update(
+            output={
+                "intent_detectado": intent,
+                "agente_destino": target,
+                "campos_extraídos": list(merged_data.keys()) if merged_data else [],
+                "datos_merged": merged_data,
+            }
+        )
         span.end()
     except Exception:
         pass
@@ -280,13 +325,15 @@ def node_supervisor(state: AgentState) -> Command[_SubAgent]:
     user_text = last_msg.content if last_msg and isinstance(last_msg.content, str) else ""
 
     if not last_msg:
-        _emit_supervisor_span(user_text, prior_intent, existing_data, "unknown", "clarify_agent", {})
+        _emit_supervisor_span(
+            user_text, prior_intent, existing_data, "unknown", "clarify_agent", {}
+        )
         return Command(goto="clarify_agent", update={"intent": "unknown", "next_action": "clarify"})
 
     # If we have a prior intent with incomplete data, continue that flow
     if prior_intent and prior_intent != "unknown" and existing_data:
         intent_kw, target_kw = _keyword_classify(user_text)
-        regex_fields = _regex_extract(user_text)
+        _regex_extract(user_text)
         if intent_kw != "unknown" and intent_kw != prior_intent:
             intent, target, merged_data = _llm_extract(user_text, existing_data)
         else:
@@ -312,6 +359,7 @@ def node_supervisor(state: AgentState) -> Command[_SubAgent]:
 # ═══════════════════════════════════════════════════════════════════════════════
 # GRAPH BUILDER
 # ═══════════════════════════════════════════════════════════════════════════════
+
 
 def build_graph(checkpointer=None):
     """
@@ -352,6 +400,7 @@ def build_graph(checkpointer=None):
     else:
         try:
             from src.checkpointing import get_checkpointer, CHECKPOINT_DB_PATH
+
             cp = get_checkpointer(use_sqlite=True, db_path=CHECKPOINT_DB_PATH)
         except Exception:
             cp = MemorySaver()
@@ -375,10 +424,12 @@ def reset_graph():
     global _graph
     _graph = None
     from src.api.routes import reset_routes
+
     reset_routes()
 
 
 # ─── Public invoke helper ─────────────────────────────────────────────────────
+
 
 def invoke_agent(
     session_id: str,
@@ -460,7 +511,7 @@ def invoke_agent(
         try:
             msg_preview = user_message[:50].replace("\n", " ")
             root_span = lf_client.start_observation(
-                name=f"[HostAI] - HostAI — \"{msg_preview}\"",
+                name=f'[HostAI] - HostAI — "{msg_preview}"',
                 as_type="chain",
                 input={
                     "session_id": session_id,
@@ -470,6 +521,7 @@ def invoke_agent(
                 },
             )
             from src.agents.sub_agents import set_trace_id
+
             set_trace_id(root_span.trace_id)
         except Exception:
             pass
@@ -482,7 +534,7 @@ def invoke_agent(
             intent = result.get("intent", "unknown")
             label = _INTENT_LABEL.get(intent, intent)
             root_span.update(
-                name=f"[HostAI] - HostAI — {label} — \"{user_message[:40]}\"",
+                name=f'[HostAI] - HostAI — {label} — "{user_message[:40]}"',
                 output={
                     "intent": intent,
                     "respuesta": result.get("final_response", ""),

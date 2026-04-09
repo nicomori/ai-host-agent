@@ -10,10 +10,10 @@ Step 10 — Evals framework tests (ai-host-agent).
   TC6: EvalSuite  — composition via add() builds correct case list
   TC7: EvalRunner — exception handling: fn errors caught, no crash, error set
 """
+
 from __future__ import annotations
 
 import uuid
-import pytest
 from langgraph.checkpoint.memory import MemorySaver
 
 from src.evals import (
@@ -22,7 +22,6 @@ from src.evals import (
     EvalResult,
     EvalRunner,
     EvalSuite,
-    score_exact_match,
     score_guardrail_raised,
     score_intent,
     score_pii_masked,
@@ -37,6 +36,7 @@ from src.agents.graph import invoke_agent, reset_graph
 
 
 # ─── Eval helpers ─────────────────────────────────────────────────────────────
+
 
 def _invoke_host(**kwargs) -> dict:
     """Wrapper: each call gets a fresh session + graph reset."""
@@ -62,6 +62,7 @@ def _output_guardrails_eval_fn(**kwargs) -> dict:
 # TC1 — Intent classification accuracy (golden dataset)
 # ══════════════════════════════════════════════════════════════════════════════
 
+
 def test_tc1_intent_accuracy_full_suite():
     """
     Build a 5-case golden suite for intent classification and run via EvalRunner.
@@ -77,14 +78,16 @@ def test_tc1_intent_accuracy_full_suite():
 
     suite = EvalSuite(name="intent_accuracy")
     for i, (msg, expected_intent) in enumerate(golden, start=1):
-        suite.add(EvalCase(
-            case_id=f"TC1-{i}",
-            name=f"intent_{expected_intent}_{i}",
-            input={"user_message": msg},
-            expected=expected_intent,
-            score_fn=score_intent,
-            tags=["intent", "classification"],
-        ))
+        suite.add(
+            EvalCase(
+                case_id=f"TC1-{i}",
+                name=f"intent_{expected_intent}_{i}",
+                input={"user_message": msg},
+                expected=expected_intent,
+                score_fn=score_intent,
+                tags=["intent", "classification"],
+            )
+        )
 
     runner = EvalRunner(fn=_invoke_host)
     report = runner.run(suite, pass_threshold=0.8)
@@ -108,6 +111,7 @@ def test_tc1_intent_accuracy_unknown_routes_to_clarify():
 # ══════════════════════════════════════════════════════════════════════════════
 # TC2 — Response quality scoring
 # ══════════════════════════════════════════════════════════════════════════════
+
 
 def test_tc2_response_quality_reservation_confirmation():
     """
@@ -148,22 +152,32 @@ def test_tc2_response_quality_cancellation():
 def test_tc2_response_quality_eval_suite():
     """Run a 3-case response quality suite and assert all pass."""
     cases_data = [
-        ("I want to book.", {"guest_name": "Bob", "guest_phone": "555-111-2222",
-                             "date": "2024-07-01", "time": "19:00", "party_size": 2},
-         ["anoté", "Bob"]),
+        (
+            "I want to book.",
+            {
+                "guest_name": "Bob",
+                "guest_phone": "555-111-2222",
+                "date": "2024-07-01",
+                "time": "19:00",
+                "party_size": 2,
+            },
+            ["anoté", "Bob"],
+        ),
         ("Cancel my booking.", None, ["cancel", "reserva"]),
         ("What's my status?", None, ["reserva", "nombre"]),
     ]
 
     suite = EvalSuite(name="response_quality")
     for i, (msg, res_data, phrases) in enumerate(cases_data, 1):
-        suite.add(EvalCase(
-            case_id=f"TC2-{i}",
-            name=f"response_quality_{i}",
-            input={"user_message": msg, "reservation_data": res_data},
-            expected=phrases,
-            score_fn=score_response_quality,
-        ))
+        suite.add(
+            EvalCase(
+                case_id=f"TC2-{i}",
+                name=f"response_quality_{i}",
+                input={"user_message": msg, "reservation_data": res_data},
+                expected=phrases,
+                score_fn=score_response_quality,
+            )
+        )
 
     runner = EvalRunner(fn=_invoke_host)
     report = runner.run(suite, pass_threshold=0.8)
@@ -175,6 +189,7 @@ def test_tc2_response_quality_eval_suite():
 # ══════════════════════════════════════════════════════════════════════════════
 # TC3 — Guardrails effectiveness
 # ══════════════════════════════════════════════════════════════════════════════
+
 
 def test_tc3_guardrails_effectiveness_suite():
     """
@@ -190,14 +205,16 @@ def test_tc3_guardrails_effectiveness_suite():
 
     suite = EvalSuite(name="guardrails_effectiveness")
     for i, msg in enumerate(injections, 1):
-        suite.add(EvalCase(
-            case_id=f"TC3-{i}",
-            name=f"injection_blocked_{i}",
-            input={"user_message": msg},
-            expected=GuardrailViolation,
-            score_fn=score_guardrail_raised,
-            tags=["security", "guardrails"],
-        ))
+        suite.add(
+            EvalCase(
+                case_id=f"TC3-{i}",
+                name=f"injection_blocked_{i}",
+                input={"user_message": msg},
+                expected=GuardrailViolation,
+                score_fn=score_guardrail_raised,
+                tags=["security", "guardrails"],
+            )
+        )
 
     runner = EvalRunner(fn=_invoke_host)
     report = runner.run(suite, pass_threshold=0.8)
@@ -216,16 +233,18 @@ def test_tc3_guardrails_extra_blocked_phrase():
     """Extra blocked phrase via GuardrailsConfig also triggers GuardrailViolation."""
     cfg = GuardrailsConfig(extra_blocked_phrases=["competitor_system"])
     suite = EvalSuite(name="blocked_phrase")
-    suite.add(EvalCase(
-        case_id="TC3-BP",
-        name="blocked_phrase_raises",
-        input={
-            "user_message": "Migrate me to competitor_system",
-            "guardrails_config": cfg,
-        },
-        expected=GuardrailViolation,
-        score_fn=score_guardrail_raised,
-    ))
+    suite.add(
+        EvalCase(
+            case_id="TC3-BP",
+            name="blocked_phrase_raises",
+            input={
+                "user_message": "Migrate me to competitor_system",
+                "guardrails_config": cfg,
+            },
+            expected=GuardrailViolation,
+            score_fn=score_guardrail_raised,
+        )
+    )
     runner = EvalRunner(fn=_invoke_host)
     report = runner.run(suite)
     assert report.pass_rate == 1.0
@@ -234,6 +253,7 @@ def test_tc3_guardrails_extra_blocked_phrase():
 # ══════════════════════════════════════════════════════════════════════════════
 # TC4 — PII masking eval
 # ══════════════════════════════════════════════════════════════════════════════
+
 
 def test_tc4_pii_masked_phone_in_response():
     """
@@ -244,16 +264,18 @@ def test_tc4_pii_masked_phone_in_response():
     text = f"Your booking under {phone} is confirmed."
 
     suite = EvalSuite(name="pii_masking")
-    suite.add(EvalCase(
-        case_id="TC4-1",
-        name="phone_masked_in_response",
-        input={
-            "text": text,
-            "config": GuardrailsConfig(mask_pii_in_logs=True, validate_response=False),
-        },
-        expected=[phone],
-        score_fn=score_pii_masked,
-    ))
+    suite.add(
+        EvalCase(
+            case_id="TC4-1",
+            name="phone_masked_in_response",
+            input={
+                "text": text,
+                "config": GuardrailsConfig(mask_pii_in_logs=True, validate_response=False),
+            },
+            expected=[phone],
+            score_fn=score_pii_masked,
+        )
+    )
 
     runner = EvalRunner(fn=_output_guardrails_eval_fn)
     report = runner.run(suite, pass_threshold=0.8)
@@ -297,17 +319,25 @@ def test_tc4_pii_disabled_pii_remains():
 # TC5 — EvalReport aggregation
 # ══════════════════════════════════════════════════════════════════════════════
 
+
 def test_tc5_eval_report_aggregation():
     """
     Manually construct an EvalReport with 4 results (3 pass, 1 fail).
     Assert pass_rate, avg_score, failed, errored computed correctly.
     """
     results = [
-        EvalResult(case_id="1", name="a", passed=True,  score=1.0,  actual={}, expected="x"),
-        EvalResult(case_id="2", name="b", passed=True,  score=0.9,  actual={}, expected="x"),
-        EvalResult(case_id="3", name="c", passed=True,  score=1.0,  actual={}, expected="x"),
-        EvalResult(case_id="4", name="d", passed=False, score=0.5,  actual={}, expected="x",
-                   error="Threshold not met"),
+        EvalResult(case_id="1", name="a", passed=True, score=1.0, actual={}, expected="x"),
+        EvalResult(case_id="2", name="b", passed=True, score=0.9, actual={}, expected="x"),
+        EvalResult(case_id="3", name="c", passed=True, score=1.0, actual={}, expected="x"),
+        EvalResult(
+            case_id="4",
+            name="d",
+            passed=False,
+            score=0.5,
+            actual={},
+            expected="x",
+            error="Threshold not met",
+        ),
     ]
     report = EvalReport(suite_name="test_suite", results=results, pass_threshold=0.8)
 
@@ -347,19 +377,22 @@ def test_tc5_eval_report_summary_format():
 # TC6 — EvalSuite composition
 # ══════════════════════════════════════════════════════════════════════════════
 
+
 def test_tc6_eval_suite_add_builds_list():
     """EvalSuite.add() appends cases; len(suite.cases) must equal added count."""
     suite = EvalSuite(name="composition_test")
     assert len(suite.cases) == 0
 
     for i in range(3):
-        suite.add(EvalCase(
-            case_id=f"C{i}",
-            name=f"case_{i}",
-            input={"user_message": "book a table"},
-            expected="make_reservation",
-            score_fn=score_intent,
-        ))
+        suite.add(
+            EvalCase(
+                case_id=f"C{i}",
+                name=f"case_{i}",
+                input={"user_message": "book a table"},
+                expected="make_reservation",
+                score_fn=score_intent,
+            )
+        )
 
     assert len(suite.cases) == 3
     assert suite.cases[0].case_id == "C0"
@@ -369,13 +402,15 @@ def test_tc6_eval_suite_add_builds_list():
 def test_tc6_eval_suite_add_returns_self():
     """EvalSuite.add() returns self, enabling method chaining."""
     suite = EvalSuite(name="chain_test")
-    returned = suite.add(EvalCase(
-        case_id="X1",
-        name="x1",
-        input={"user_message": "book"},
-        expected="make_reservation",
-        score_fn=score_intent,
-    ))
+    returned = suite.add(
+        EvalCase(
+            case_id="X1",
+            name="x1",
+            input={"user_message": "book"},
+            expected="make_reservation",
+            score_fn=score_intent,
+        )
+    )
     assert returned is suite
 
 
@@ -399,6 +434,7 @@ def test_tc6_eval_suite_case_metadata():
 # TC7 — EvalRunner exception handling
 # ══════════════════════════════════════════════════════════════════════════════
 
+
 def test_tc7_eval_runner_captures_exception():
     """
     When the eval fn raises an unexpected exception, EvalRunner must:
@@ -406,17 +442,20 @@ def test_tc7_eval_runner_captures_exception():
       - set score = 0.0
       - NOT propagate the exception (no crash)
     """
+
     def _bad_fn(**kwargs):
         raise KeyError(f"Missing key: {kwargs}")
 
     suite = EvalSuite(name="error_handling")
-    suite.add(EvalCase(
-        case_id="ERR-1",
-        name="fn_raises_keyerror",
-        input={"user_message": "any"},
-        expected="make_reservation",
-        score_fn=score_intent,
-    ))
+    suite.add(
+        EvalCase(
+            case_id="ERR-1",
+            name="fn_raises_keyerror",
+            input={"user_message": "any"},
+            expected="make_reservation",
+            score_fn=score_intent,
+        )
+    )
 
     runner = EvalRunner(fn=_bad_fn)
     report = runner.run(suite)
@@ -444,37 +483,42 @@ def test_tc7_eval_runner_partial_failure_doesnt_stop_suite():
 
     suite = EvalSuite(name="partial_failure")
     for msg in ["book a table", "fail", "reserve for 2"]:
-        suite.add(EvalCase(
-            case_id=f"PF-{msg[:4]}",
-            name=msg,
-            input={"user_message": msg},
-            expected="make_reservation",
-            score_fn=score_intent,
-        ))
+        suite.add(
+            EvalCase(
+                case_id=f"PF-{msg[:4]}",
+                name=msg,
+                input={"user_message": msg},
+                expected="make_reservation",
+                score_fn=score_intent,
+            )
+        )
 
     runner = EvalRunner(fn=_sometimes_fails)
     report = runner.run(suite)
 
     assert report.total == 3
-    assert call_count["n"] == 3   # all 3 cases were called
-    assert report.passed == 2     # 2 succeeded, 1 failed
+    assert call_count["n"] == 3  # all 3 cases were called
+    assert report.passed == 2  # 2 succeeded, 1 failed
     assert report.failed == 1
     assert len(report.errored) == 1
 
 
 def test_tc7_eval_runner_score_fn_error_doesnt_crash():
     """If score_fn itself raises, EvalRunner must handle it gracefully."""
+
     def _bad_score_fn(actual, expected):
         raise ValueError("Score computation failed")
 
     suite = EvalSuite(name="score_fn_error")
-    suite.add(EvalCase(
-        case_id="SFE-1",
-        name="bad_score_fn",
-        input={"user_message": "book a table"},
-        expected="make_reservation",
-        score_fn=_bad_score_fn,
-    ))
+    suite.add(
+        EvalCase(
+            case_id="SFE-1",
+            name="bad_score_fn",
+            input={"user_message": "book a table"},
+            expected="make_reservation",
+            score_fn=_bad_score_fn,
+        )
+    )
 
     runner = EvalRunner(fn=_invoke_host)
     report = runner.run(suite)
