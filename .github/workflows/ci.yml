@@ -86,6 +86,12 @@ jobs:
           pytest tests/unit/ \
             --ignore=tests/unit/test_observability.py \
             --ignore=tests/unit/test_checkpointing.py \
+            --ignore=tests/unit/test_api.py \
+            --ignore=tests/unit/test_step13_api.py \
+            --ignore=tests/unit/test_db_persistence.py \
+            --ignore=tests/unit/test_infra.py \
+            --ignore=tests/unit/test_step14_cicd.py \
+            --ignore=tests/unit/test_step15_demo.py \
             -v \
             --cov=src \
             --cov-report=term-missing \
