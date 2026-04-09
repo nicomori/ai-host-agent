@@ -4,7 +4,7 @@ agent:
   session_timeout_minutes: 30
 app:
   name: ai-host-agent
-  version: 0.1.0
+  version: 0.2.1
 lancedb:
   embedding_dim: 1536
   memory_max_turns: 50
