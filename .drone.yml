@@ -134,8 +134,7 @@ name: test-api-health
 trigger: { event: [pull_request] }
 depends_on: [deploy-preview]
 image_pull_secrets: [ar-pull-secret]
-node_selector:
-  pool: tests
+node_selector: {}
 steps:
   - name: run
     image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
@@ -153,7 +152,7 @@ name: test-api-auth
 trigger: { event: [pull_request] }
 depends_on: [deploy-preview]
 image_pull_secrets: [ar-pull-secret]
-node_selector: { pool: tests }
+node_selector: {}
 steps:
   - name: run
     image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
@@ -171,7 +170,7 @@ name: test-api-reservations
 trigger: { event: [pull_request] }
 depends_on: [deploy-preview]
 image_pull_secrets: [ar-pull-secret]
-node_selector: { pool: tests }
+node_selector: {}
 steps:
   - name: run
     image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
@@ -189,7 +188,7 @@ name: test-api-floor-plan
 trigger: { event: [pull_request] }
 depends_on: [deploy-preview]
 image_pull_secrets: [ar-pull-secret]
-node_selector: { pool: tests }
+node_selector: {}
 steps:
   - name: run
     image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
@@ -207,7 +206,7 @@ name: test-api-config
 trigger: { event: [pull_request] }
 depends_on: [deploy-preview]
 image_pull_secrets: [ar-pull-secret]
-node_selector: { pool: tests }
+node_selector: {}
 steps:
   - name: run
     image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
@@ -225,7 +224,7 @@ name: test-api-security
 trigger: { event: [pull_request] }
 depends_on: [deploy-preview]
 image_pull_secrets: [ar-pull-secret]
-node_selector: { pool: tests }
+node_selector: {}
 steps:
   - name: run
     image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
@@ -243,7 +242,7 @@ name: test-api-agent
 trigger: { event: [pull_request] }
 depends_on: [deploy-preview]
 image_pull_secrets: [ar-pull-secret]
-node_selector: { pool: tests }
+node_selector: {}
 steps:
   - name: run
     image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
@@ -261,7 +260,7 @@ name: test-ui-dashboard
 trigger: { event: [pull_request] }
 depends_on: [deploy-preview]
 image_pull_secrets: [ar-pull-secret]
-node_selector: { pool: tests }
+node_selector: {}
 steps:
   - name: run
     image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
@@ -279,7 +278,7 @@ name: test-ui-chat
 trigger: { event: [pull_request] }
 depends_on: [deploy-preview]
 image_pull_secrets: [ar-pull-secret]
-node_selector: { pool: tests }
+node_selector: {}
 steps:
   - name: run
     image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
@@ -297,7 +296,7 @@ name: test-ui-floor-plan
 trigger: { event: [pull_request] }
 depends_on: [deploy-preview]
 image_pull_secrets: [ar-pull-secret]
-node_selector: { pool: tests }
+node_selector: {}
 steps:
   - name: run
     image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
@@ -315,7 +314,7 @@ name: test-ui-rbac
 trigger: { event: [pull_request] }
 depends_on: [deploy-preview]
 image_pull_secrets: [ar-pull-secret]
-node_selector: { pool: tests }
+node_selector: {}
 steps:
   - name: run
     image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
