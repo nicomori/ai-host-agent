@@ -6,10 +6,14 @@ import uuid
 from contextlib import asynccontextmanager
 from typing import AsyncIterator
 
+import os
+from pathlib import Path
+
 import structlog
 from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.interval import IntervalTrigger
@@ -184,6 +188,18 @@ def create_app() -> FastAPI:
             restaurant=cfg.restaurant_name,
             version=cfg.yaml.app.version,
         )
+
+    # ── Static UI (built frontend) ─────────────────────────────────────────
+    ui_dist = Path(__file__).resolve().parent.parent / "ui" / "dist"
+    if ui_dist.is_dir():
+        app.mount("/assets", StaticFiles(directory=ui_dist / "assets"), name="ui-assets")
+
+        @app.get("/{path:path}", include_in_schema=False)
+        async def serve_spa(path: str):
+            file_path = ui_dist / path
+            if file_path.is_file():
+                return FileResponse(file_path)
+            return FileResponse(ui_dist / "index.html")
 
     return app
 

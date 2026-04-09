@@ -1,4 +1,13 @@
-# ─── Stage 1: builder ─────────────────────────────────────────────────────────
+# ─── Stage 0: UI builder ─────────────────────────────────────────────────────
+FROM node:20-alpine AS ui-builder
+
+WORKDIR /ui
+COPY ui/package.json ui/package-lock.json* ./
+RUN npm install --legacy-peer-deps
+COPY ui/ .
+RUN npm run build
+
+# ─── Stage 1: Python builder ─────────────────────────────────────────────────
 FROM python:3.11-slim AS builder
 
 WORKDIR /app
@@ -57,6 +66,9 @@ COPY --from=builder /usr/local/bin /usr/local/bin
 
 # Copy full source
 COPY . .
+
+# Copy built UI from ui-builder stage
+COPY --from=ui-builder /ui/dist /app/ui/dist
 
 RUN mkdir -p /app/tmp/audio /app/tmp/transcripts
 
