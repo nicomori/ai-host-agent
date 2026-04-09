@@ -148,18 +148,18 @@ steps:
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
-      - cd /e2e && npx playwright test tests/api/health.spec.ts --project=chromium --reporter=list,html; TEST_RC=$?; cp -r /e2e/test-results /e2e/playwright-report /drone/src/ 2>/dev/null; exit $TEST_RC
+      - cd /e2e && npx playwright test tests/api/health.spec.ts --project=chromium --reporter=list,html; TEST_RC=$?; echo $TEST_RC > /drone/src/.test-exit-code; cp -r /e2e/test-results /e2e/playwright-report /drone/src/ 2>/dev/null; exit $TEST_RC
   - name: upload-and-notify
     image: google/cloud-sdk:slim
     environment:
       GCR_JSON_KEY: { from_secret: gcr_json_key }
       GITHUB_TOKEN: { from_secret: github_token }
     commands:
-      - export SUITE=api-health REPORT_URL="https://storage.googleapis.com/hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/playwright-report/index.html"
+      - export SUITE=api-health && export && export REPORT_URL="https://storage.googleapis.com/hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/playwright-report/index.html"
       - printf '%s' "$GCR_JSON_KEY" > /tmp/gcs-key.json && gcloud auth activate-service-account --key-file=/tmp/gcs-key.json
       - gsutil -m cp -r /drone/src/playwright-report gs://hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/ 2>/dev/null || true
       - gsutil -m cp -r /drone/src/test-results gs://hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/ 2>/dev/null || true
-      - 'STATE=$([ "$DRONE_BUILD_STATUS" = "success" ] && echo "success" || echo "failure")'
+      - 'STATE=$([ "$(cat /drone/src/.test-exit-code 2>/dev/null)" = "0" ] && echo "success" || echo "failure")'
       - 'curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Accept: application/vnd.github+json"
           "https://api.github.com/repos/nicomori/ai-host-agent/statuses/$DRONE_COMMIT_SHA"
           -d "{\"state\":\"$STATE\",\"target_url\":\"$REPORT_URL\",\"description\":\"Playwright $SUITE report\",\"context\":\"test/$SUITE\"}"'
@@ -183,18 +183,18 @@ steps:
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
-      - cd /e2e && npx playwright test tests/api/auth.spec.ts --project=chromium --reporter=list,html; TEST_RC=$?; cp -r /e2e/test-results /e2e/playwright-report /drone/src/ 2>/dev/null; exit $TEST_RC
+      - cd /e2e && npx playwright test tests/api/auth.spec.ts --project=chromium --reporter=list,html; TEST_RC=$?; echo $TEST_RC > /drone/src/.test-exit-code; cp -r /e2e/test-results /e2e/playwright-report /drone/src/ 2>/dev/null; exit $TEST_RC
   - name: upload-and-notify
     image: google/cloud-sdk:slim
     environment:
       GCR_JSON_KEY: { from_secret: gcr_json_key }
       GITHUB_TOKEN: { from_secret: github_token }
     commands:
-      - export SUITE=api-auth REPORT_URL="https://storage.googleapis.com/hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/playwright-report/index.html"
+      - export SUITE=api-auth && export REPORT_URL="https://storage.googleapis.com/hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/playwright-report/index.html"
       - printf '%s' "$GCR_JSON_KEY" > /tmp/gcs-key.json && gcloud auth activate-service-account --key-file=/tmp/gcs-key.json
       - gsutil -m cp -r /drone/src/playwright-report gs://hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/ 2>/dev/null || true
       - gsutil -m cp -r /drone/src/test-results gs://hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/ 2>/dev/null || true
-      - 'STATE=$([ "$DRONE_BUILD_STATUS" = "success" ] && echo "success" || echo "failure")'
+      - 'STATE=$([ "$(cat /drone/src/.test-exit-code 2>/dev/null)" = "0" ] && echo "success" || echo "failure")'
       - 'curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Accept: application/vnd.github+json"
           "https://api.github.com/repos/nicomori/ai-host-agent/statuses/$DRONE_COMMIT_SHA"
           -d "{\"state\":\"$STATE\",\"target_url\":\"$REPORT_URL\",\"description\":\"Playwright $SUITE report\",\"context\":\"test/$SUITE\"}"'
@@ -218,18 +218,18 @@ steps:
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
-      - cd /e2e && npx playwright test tests/api/reservations.spec.ts --project=chromium --reporter=list,html; TEST_RC=$?; cp -r /e2e/test-results /e2e/playwright-report /drone/src/ 2>/dev/null; exit $TEST_RC
+      - cd /e2e && npx playwright test tests/api/reservations.spec.ts --project=chromium --reporter=list,html; TEST_RC=$?; echo $TEST_RC > /drone/src/.test-exit-code; cp -r /e2e/test-results /e2e/playwright-report /drone/src/ 2>/dev/null; exit $TEST_RC
   - name: upload-and-notify
     image: google/cloud-sdk:slim
     environment:
       GCR_JSON_KEY: { from_secret: gcr_json_key }
       GITHUB_TOKEN: { from_secret: github_token }
     commands:
-      - export SUITE=api-reservations REPORT_URL="https://storage.googleapis.com/hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/playwright-report/index.html"
+      - export SUITE=api-reservations && export REPORT_URL="https://storage.googleapis.com/hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/playwright-report/index.html"
       - printf '%s' "$GCR_JSON_KEY" > /tmp/gcs-key.json && gcloud auth activate-service-account --key-file=/tmp/gcs-key.json
       - gsutil -m cp -r /drone/src/playwright-report gs://hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/ 2>/dev/null || true
       - gsutil -m cp -r /drone/src/test-results gs://hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/ 2>/dev/null || true
-      - 'STATE=$([ "$DRONE_BUILD_STATUS" = "success" ] && echo "success" || echo "failure")'
+      - 'STATE=$([ "$(cat /drone/src/.test-exit-code 2>/dev/null)" = "0" ] && echo "success" || echo "failure")'
       - 'curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Accept: application/vnd.github+json"
           "https://api.github.com/repos/nicomori/ai-host-agent/statuses/$DRONE_COMMIT_SHA"
           -d "{\"state\":\"$STATE\",\"target_url\":\"$REPORT_URL\",\"description\":\"Playwright $SUITE report\",\"context\":\"test/$SUITE\"}"'
@@ -253,18 +253,18 @@ steps:
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
-      - cd /e2e && npx playwright test tests/api/floor-plan.spec.ts --project=chromium --reporter=list,html; TEST_RC=$?; cp -r /e2e/test-results /e2e/playwright-report /drone/src/ 2>/dev/null; exit $TEST_RC
+      - cd /e2e && npx playwright test tests/api/floor-plan.spec.ts --project=chromium --reporter=list,html; TEST_RC=$?; echo $TEST_RC > /drone/src/.test-exit-code; cp -r /e2e/test-results /e2e/playwright-report /drone/src/ 2>/dev/null; exit $TEST_RC
   - name: upload-and-notify
     image: google/cloud-sdk:slim
     environment:
       GCR_JSON_KEY: { from_secret: gcr_json_key }
       GITHUB_TOKEN: { from_secret: github_token }
     commands:
-      - export SUITE=api-floor-plan REPORT_URL="https://storage.googleapis.com/hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/playwright-report/index.html"
+      - export SUITE=api-floor-plan && export REPORT_URL="https://storage.googleapis.com/hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/playwright-report/index.html"
       - printf '%s' "$GCR_JSON_KEY" > /tmp/gcs-key.json && gcloud auth activate-service-account --key-file=/tmp/gcs-key.json
       - gsutil -m cp -r /drone/src/playwright-report gs://hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/ 2>/dev/null || true
       - gsutil -m cp -r /drone/src/test-results gs://hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/ 2>/dev/null || true
-      - 'STATE=$([ "$DRONE_BUILD_STATUS" = "success" ] && echo "success" || echo "failure")'
+      - 'STATE=$([ "$(cat /drone/src/.test-exit-code 2>/dev/null)" = "0" ] && echo "success" || echo "failure")'
       - 'curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Accept: application/vnd.github+json"
           "https://api.github.com/repos/nicomori/ai-host-agent/statuses/$DRONE_COMMIT_SHA"
           -d "{\"state\":\"$STATE\",\"target_url\":\"$REPORT_URL\",\"description\":\"Playwright $SUITE report\",\"context\":\"test/$SUITE\"}"'
@@ -288,18 +288,18 @@ steps:
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
-      - cd /e2e && npx playwright test tests/api/config.spec.ts --project=chromium --reporter=list,html; TEST_RC=$?; cp -r /e2e/test-results /e2e/playwright-report /drone/src/ 2>/dev/null; exit $TEST_RC
+      - cd /e2e && npx playwright test tests/api/config.spec.ts --project=chromium --reporter=list,html; TEST_RC=$?; echo $TEST_RC > /drone/src/.test-exit-code; cp -r /e2e/test-results /e2e/playwright-report /drone/src/ 2>/dev/null; exit $TEST_RC
   - name: upload-and-notify
     image: google/cloud-sdk:slim
     environment:
       GCR_JSON_KEY: { from_secret: gcr_json_key }
       GITHUB_TOKEN: { from_secret: github_token }
     commands:
-      - export SUITE=api-config REPORT_URL="https://storage.googleapis.com/hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/playwright-report/index.html"
+      - export SUITE=api-config && export REPORT_URL="https://storage.googleapis.com/hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/playwright-report/index.html"
       - printf '%s' "$GCR_JSON_KEY" > /tmp/gcs-key.json && gcloud auth activate-service-account --key-file=/tmp/gcs-key.json
       - gsutil -m cp -r /drone/src/playwright-report gs://hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/ 2>/dev/null || true
       - gsutil -m cp -r /drone/src/test-results gs://hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/ 2>/dev/null || true
-      - 'STATE=$([ "$DRONE_BUILD_STATUS" = "success" ] && echo "success" || echo "failure")'
+      - 'STATE=$([ "$(cat /drone/src/.test-exit-code 2>/dev/null)" = "0" ] && echo "success" || echo "failure")'
       - 'curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Accept: application/vnd.github+json"
           "https://api.github.com/repos/nicomori/ai-host-agent/statuses/$DRONE_COMMIT_SHA"
           -d "{\"state\":\"$STATE\",\"target_url\":\"$REPORT_URL\",\"description\":\"Playwright $SUITE report\",\"context\":\"test/$SUITE\"}"'
@@ -323,18 +323,18 @@ steps:
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
-      - cd /e2e && npx playwright test tests/api/security.spec.ts --project=chromium --reporter=list,html; TEST_RC=$?; cp -r /e2e/test-results /e2e/playwright-report /drone/src/ 2>/dev/null; exit $TEST_RC
+      - cd /e2e && npx playwright test tests/api/security.spec.ts --project=chromium --reporter=list,html; TEST_RC=$?; echo $TEST_RC > /drone/src/.test-exit-code; cp -r /e2e/test-results /e2e/playwright-report /drone/src/ 2>/dev/null; exit $TEST_RC
   - name: upload-and-notify
     image: google/cloud-sdk:slim
     environment:
       GCR_JSON_KEY: { from_secret: gcr_json_key }
       GITHUB_TOKEN: { from_secret: github_token }
     commands:
-      - export SUITE=api-security REPORT_URL="https://storage.googleapis.com/hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/playwright-report/index.html"
+      - export SUITE=api-security && export REPORT_URL="https://storage.googleapis.com/hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/playwright-report/index.html"
       - printf '%s' "$GCR_JSON_KEY" > /tmp/gcs-key.json && gcloud auth activate-service-account --key-file=/tmp/gcs-key.json
       - gsutil -m cp -r /drone/src/playwright-report gs://hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/ 2>/dev/null || true
       - gsutil -m cp -r /drone/src/test-results gs://hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/ 2>/dev/null || true
-      - 'STATE=$([ "$DRONE_BUILD_STATUS" = "success" ] && echo "success" || echo "failure")'
+      - 'STATE=$([ "$(cat /drone/src/.test-exit-code 2>/dev/null)" = "0" ] && echo "success" || echo "failure")'
       - 'curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Accept: application/vnd.github+json"
           "https://api.github.com/repos/nicomori/ai-host-agent/statuses/$DRONE_COMMIT_SHA"
           -d "{\"state\":\"$STATE\",\"target_url\":\"$REPORT_URL\",\"description\":\"Playwright $SUITE report\",\"context\":\"test/$SUITE\"}"'
@@ -358,18 +358,18 @@ steps:
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
-      - cd /e2e && npx playwright test tests/api/agent.spec.ts --project=chromium --reporter=list,html; TEST_RC=$?; cp -r /e2e/test-results /e2e/playwright-report /drone/src/ 2>/dev/null; exit $TEST_RC
+      - cd /e2e && npx playwright test tests/api/agent.spec.ts --project=chromium --reporter=list,html; TEST_RC=$?; echo $TEST_RC > /drone/src/.test-exit-code; cp -r /e2e/test-results /e2e/playwright-report /drone/src/ 2>/dev/null; exit $TEST_RC
   - name: upload-and-notify
     image: google/cloud-sdk:slim
     environment:
       GCR_JSON_KEY: { from_secret: gcr_json_key }
       GITHUB_TOKEN: { from_secret: github_token }
     commands:
-      - export SUITE=api-agent REPORT_URL="https://storage.googleapis.com/hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/playwright-report/index.html"
+      - export SUITE=api-agent && export REPORT_URL="https://storage.googleapis.com/hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/playwright-report/index.html"
       - printf '%s' "$GCR_JSON_KEY" > /tmp/gcs-key.json && gcloud auth activate-service-account --key-file=/tmp/gcs-key.json
       - gsutil -m cp -r /drone/src/playwright-report gs://hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/ 2>/dev/null || true
       - gsutil -m cp -r /drone/src/test-results gs://hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/ 2>/dev/null || true
-      - 'STATE=$([ "$DRONE_BUILD_STATUS" = "success" ] && echo "success" || echo "failure")'
+      - 'STATE=$([ "$(cat /drone/src/.test-exit-code 2>/dev/null)" = "0" ] && echo "success" || echo "failure")'
       - 'curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Accept: application/vnd.github+json"
           "https://api.github.com/repos/nicomori/ai-host-agent/statuses/$DRONE_COMMIT_SHA"
           -d "{\"state\":\"$STATE\",\"target_url\":\"$REPORT_URL\",\"description\":\"Playwright $SUITE report\",\"context\":\"test/$SUITE\"}"'
@@ -393,18 +393,18 @@ steps:
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
-      - cd /e2e && npx playwright test tests/ui/dashboard.spec.ts --project=chromium --reporter=list,html; TEST_RC=$?; cp -r /e2e/test-results /e2e/playwright-report /drone/src/ 2>/dev/null; exit $TEST_RC
+      - cd /e2e && npx playwright test tests/ui/dashboard.spec.ts --project=chromium --reporter=list,html; TEST_RC=$?; echo $TEST_RC > /drone/src/.test-exit-code; cp -r /e2e/test-results /e2e/playwright-report /drone/src/ 2>/dev/null; exit $TEST_RC
   - name: upload-and-notify
     image: google/cloud-sdk:slim
     environment:
       GCR_JSON_KEY: { from_secret: gcr_json_key }
       GITHUB_TOKEN: { from_secret: github_token }
     commands:
-      - export SUITE=ui-dashboard REPORT_URL="https://storage.googleapis.com/hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/playwright-report/index.html"
+      - export SUITE=ui-dashboard && export REPORT_URL="https://storage.googleapis.com/hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/playwright-report/index.html"
       - printf '%s' "$GCR_JSON_KEY" > /tmp/gcs-key.json && gcloud auth activate-service-account --key-file=/tmp/gcs-key.json
       - gsutil -m cp -r /drone/src/playwright-report gs://hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/ 2>/dev/null || true
       - gsutil -m cp -r /drone/src/test-results gs://hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/ 2>/dev/null || true
-      - 'STATE=$([ "$DRONE_BUILD_STATUS" = "success" ] && echo "success" || echo "failure")'
+      - 'STATE=$([ "$(cat /drone/src/.test-exit-code 2>/dev/null)" = "0" ] && echo "success" || echo "failure")'
       - 'curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Accept: application/vnd.github+json"
           "https://api.github.com/repos/nicomori/ai-host-agent/statuses/$DRONE_COMMIT_SHA"
           -d "{\"state\":\"$STATE\",\"target_url\":\"$REPORT_URL\",\"description\":\"Playwright $SUITE report\",\"context\":\"test/$SUITE\"}"'
@@ -428,18 +428,18 @@ steps:
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
-      - cd /e2e && npx playwright test tests/ui/chat.spec.ts --project=chromium --reporter=list,html; TEST_RC=$?; cp -r /e2e/test-results /e2e/playwright-report /drone/src/ 2>/dev/null; exit $TEST_RC
+      - cd /e2e && npx playwright test tests/ui/chat.spec.ts --project=chromium --reporter=list,html; TEST_RC=$?; echo $TEST_RC > /drone/src/.test-exit-code; cp -r /e2e/test-results /e2e/playwright-report /drone/src/ 2>/dev/null; exit $TEST_RC
   - name: upload-and-notify
     image: google/cloud-sdk:slim
     environment:
       GCR_JSON_KEY: { from_secret: gcr_json_key }
       GITHUB_TOKEN: { from_secret: github_token }
     commands:
-      - export SUITE=ui-chat REPORT_URL="https://storage.googleapis.com/hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/playwright-report/index.html"
+      - export SUITE=ui-chat && export REPORT_URL="https://storage.googleapis.com/hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/playwright-report/index.html"
       - printf '%s' "$GCR_JSON_KEY" > /tmp/gcs-key.json && gcloud auth activate-service-account --key-file=/tmp/gcs-key.json
       - gsutil -m cp -r /drone/src/playwright-report gs://hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/ 2>/dev/null || true
       - gsutil -m cp -r /drone/src/test-results gs://hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/ 2>/dev/null || true
-      - 'STATE=$([ "$DRONE_BUILD_STATUS" = "success" ] && echo "success" || echo "failure")'
+      - 'STATE=$([ "$(cat /drone/src/.test-exit-code 2>/dev/null)" = "0" ] && echo "success" || echo "failure")'
       - 'curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Accept: application/vnd.github+json"
           "https://api.github.com/repos/nicomori/ai-host-agent/statuses/$DRONE_COMMIT_SHA"
           -d "{\"state\":\"$STATE\",\"target_url\":\"$REPORT_URL\",\"description\":\"Playwright $SUITE report\",\"context\":\"test/$SUITE\"}"'
@@ -463,18 +463,18 @@ steps:
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
-      - cd /e2e && npx playwright test tests/ui/floor-plan.spec.ts --project=chromium --reporter=list,html; TEST_RC=$?; cp -r /e2e/test-results /e2e/playwright-report /drone/src/ 2>/dev/null; exit $TEST_RC
+      - cd /e2e && npx playwright test tests/ui/floor-plan.spec.ts --project=chromium --reporter=list,html; TEST_RC=$?; echo $TEST_RC > /drone/src/.test-exit-code; cp -r /e2e/test-results /e2e/playwright-report /drone/src/ 2>/dev/null; exit $TEST_RC
   - name: upload-and-notify
     image: google/cloud-sdk:slim
     environment:
       GCR_JSON_KEY: { from_secret: gcr_json_key }
       GITHUB_TOKEN: { from_secret: github_token }
     commands:
-      - export SUITE=ui-floor-plan REPORT_URL="https://storage.googleapis.com/hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/playwright-report/index.html"
+      - export SUITE=ui-floor-plan && export REPORT_URL="https://storage.googleapis.com/hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/playwright-report/index.html"
       - printf '%s' "$GCR_JSON_KEY" > /tmp/gcs-key.json && gcloud auth activate-service-account --key-file=/tmp/gcs-key.json
       - gsutil -m cp -r /drone/src/playwright-report gs://hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/ 2>/dev/null || true
       - gsutil -m cp -r /drone/src/test-results gs://hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/ 2>/dev/null || true
-      - 'STATE=$([ "$DRONE_BUILD_STATUS" = "success" ] && echo "success" || echo "failure")'
+      - 'STATE=$([ "$(cat /drone/src/.test-exit-code 2>/dev/null)" = "0" ] && echo "success" || echo "failure")'
       - 'curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Accept: application/vnd.github+json"
           "https://api.github.com/repos/nicomori/ai-host-agent/statuses/$DRONE_COMMIT_SHA"
           -d "{\"state\":\"$STATE\",\"target_url\":\"$REPORT_URL\",\"description\":\"Playwright $SUITE report\",\"context\":\"test/$SUITE\"}"'
@@ -498,18 +498,18 @@ steps:
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
-      - cd /e2e && npx playwright test tests/ui/rbac.spec.ts --project=chromium --reporter=list,html; TEST_RC=$?; cp -r /e2e/test-results /e2e/playwright-report /drone/src/ 2>/dev/null; exit $TEST_RC
+      - cd /e2e && npx playwright test tests/ui/rbac.spec.ts --project=chromium --reporter=list,html; TEST_RC=$?; echo $TEST_RC > /drone/src/.test-exit-code; cp -r /e2e/test-results /e2e/playwright-report /drone/src/ 2>/dev/null; exit $TEST_RC
   - name: upload-and-notify
     image: google/cloud-sdk:slim
     environment:
       GCR_JSON_KEY: { from_secret: gcr_json_key }
       GITHUB_TOKEN: { from_secret: github_token }
     commands:
-      - export SUITE=ui-rbac REPORT_URL="https://storage.googleapis.com/hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/playwright-report/index.html"
+      - export SUITE=ui-rbac && export REPORT_URL="https://storage.googleapis.com/hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/playwright-report/index.html"
       - printf '%s' "$GCR_JSON_KEY" > /tmp/gcs-key.json && gcloud auth activate-service-account --key-file=/tmp/gcs-key.json
       - gsutil -m cp -r /drone/src/playwright-report gs://hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/ 2>/dev/null || true
       - gsutil -m cp -r /drone/src/test-results gs://hostai-test-reports/pr-$DRONE_PULL_REQUEST/build-$DRONE_BUILD_NUMBER/$SUITE/ 2>/dev/null || true
-      - 'STATE=$([ "$DRONE_BUILD_STATUS" = "success" ] && echo "success" || echo "failure")'
+      - 'STATE=$([ "$(cat /drone/src/.test-exit-code 2>/dev/null)" = "0" ] && echo "success" || echo "failure")'
       - 'curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Accept: application/vnd.github+json"
           "https://api.github.com/repos/nicomori/ai-host-agent/statuses/$DRONE_COMMIT_SHA"
           -d "{\"state\":\"$STATE\",\"target_url\":\"$REPORT_URL\",\"description\":\"Playwright $SUITE report\",\"context\":\"test/$SUITE\"}"'
