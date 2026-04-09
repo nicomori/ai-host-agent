@@ -25,8 +25,8 @@ export default defineConfig({
     ["html", { open: isCI ? "never" : "on-failure", outputFolder: "playwright-report" }],
     ...(isCI ? [["json" as const, { outputFile: "test-results/results.json" }]] : []),
   ],
-  timeout: 30_000,
-  expect: { timeout: 5_000 },
+  timeout: isCI ? 60_000 : 30_000,
+  expect: { timeout: isCI ? 10_000 : 5_000 },
 
   use: {
     baseURL: process.env.BASE_URL ?? "http://localhost:5173",
