@@ -1,1397 +1,1352 @@
 [
   {
-    "guest_name": "Raúl Quintero",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-11",
-    "time": "21:15",
-    "party_size": 10,
-    "preference": "VIP",
-    "notes": "Cena de negocios"
-  },
-  {
-    "guest_name": "Raúl Quintero",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-11",
-    "time": "19:45",
-    "party_size": 12,
-    "preference": "Interior",
-    "notes": "Reserva especial"
-  },
-  {
-    "guest_name": "Daniela Ponce",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-16",
-    "time": "19:45",
-    "party_size": 10,
-    "preference": "Terraza",
-    "notes": "Bienvenida"
-  },
-  {
-    "guest_name": "Oscar Lara",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-14",
-    "time": "14:15",
-    "party_size": 9,
-    "preference": "Privado",
-    "notes": "Llegará 10 min tarde"
-  },
-  {
-    "guest_name": "David Contreras",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-14",
-    "time": "19:15",
-    "party_size": 11,
-    "preference": "Interior",
-    "notes": "Cliente habitual"
-  },
-  {
-    "guest_name": "Claudia Vera",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-14",
-    "time": "16:45",
-    "party_size": 1,
-    "preference": "Jardín",
-    "notes": "Despedida"
-  },
-  {
-    "guest_name": "Silvia Rangel",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-14",
-    "time": "18:00",
-    "party_size": 9,
-    "preference": "Terraza",
-    "notes": "Bienvenida"
-  },
-  {
-    "guest_name": "Laura Fernández",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-14",
-    "time": "21:00",
-    "party_size": 5,
-    "preference": "Patio",
-    "notes": "Grupo de amigos"
-  },
-  {
-    "guest_name": "Oscar Lara",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-11",
-    "time": "18:30",
-    "party_size": 7,
-    "preference": "Bar",
-    "notes": ""
-  },
-  {
-    "guest_name": "Emma Espinoza",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-15",
-    "time": "19:00",
-    "party_size": 8,
-    "preference": "Privado",
-    "notes": ""
-  },
-  {
-    "guest_name": "Ana Rodríguez",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-11",
-    "time": "19:00",
-    "party_size": 5,
-    "preference": "Patio",
-    "notes": "Cliente habitual"
-  },
-  {
-    "guest_name": "Andrés Castro",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-13",
-    "time": "14:45",
-    "party_size": 4,
-    "preference": "Patio",
-    "notes": "Cena romántica"
-  },
-  {
-    "guest_name": "Samuel Guzmán",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-10",
-    "time": "16:30",
-    "party_size": 1,
-    "preference": "VIP",
-    "notes": ""
-  },
-  {
-    "guest_name": "Paula Jiménez",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-15",
-    "time": "20:15",
-    "party_size": 4,
-    "preference": "Jardín",
-    "notes": "Pide mesa tranquila"
-  },
-  {
-    "guest_name": "Natalia Pereira",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-10",
-    "time": "20:45",
-    "party_size": 11,
-    "preference": "Ventana",
-    "notes": "Necesita silla alta"
-  },
-  {
-    "guest_name": "Natalia Pereira",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-12",
-    "time": "20:00",
-    "party_size": 8,
-    "preference": "Terraza",
-    "notes": "Bienvenida"
-  },
-  {
-    "guest_name": "Ana Rodríguez",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-12",
-    "time": "22:15",
-    "party_size": 5,
-    "preference": "Bar",
-    "notes": "Llegará 10 min tarde"
-  },
-  {
-    "guest_name": "Enrique Salinas",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-13",
-    "time": "22:45",
-    "party_size": 11,
-    "preference": "Terraza",
-    "notes": "Despedida"
-  },
-  {
-    "guest_name": "Víctor Barrera",
+    "guest_name": "Luisa Fernandez",
     "guest_phone": "+4915750441601",
     "date": "2026-04-09",
-    "time": "16:00",
-    "party_size": 3,
-    "preference": "Bar",
-    "notes": "Despedida"
-  },
-  {
-    "guest_name": "Lucas Peña",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-11",
-    "time": "22:15",
-    "party_size": 4,
-    "preference": "VIP",
-    "notes": "Grupo de amigos"
-  },
-  {
-    "guest_name": "Fernanda Soto",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-14",
-    "time": "15:30",
-    "party_size": 10,
-    "preference": "Interior",
-    "notes": "Despedida"
-  },
-  {
-    "guest_name": "Lucia Pacheco",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-10",
-    "time": "22:00",
-    "party_size": 9,
-    "preference": "Patio",
-    "notes": "Alergia al gluten"
-  },
-  {
-    "guest_name": "Carmen Velasco",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-09",
-    "time": "19:00",
+    "time": "12:00",
     "party_size": 2,
-    "preference": "Interior",
-    "notes": "Llegará 10 min tarde"
+    "preference": "Window",
+    "notes": "Anniversary lunch"
   },
   {
-    "guest_name": "Lucia Pacheco",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-16",
-    "time": "15:30",
-    "party_size": 4,
-    "preference": "Privado",
-    "notes": ""
-  },
-  {
-    "guest_name": "Juan Martínez",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-15",
-    "time": "18:30",
-    "party_size": 11,
-    "preference": "Terraza",
-    "notes": "Alergia al gluten"
-  },
-  {
-    "guest_name": "Víctor Barrera",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-11",
-    "time": "22:45",
-    "party_size": 9,
-    "preference": "Jardín",
-    "notes": "Cena romántica"
-  },
-  {
-    "guest_name": "Maximiliano Cruz",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-14",
-    "time": "13:00",
-    "party_size": 10,
-    "preference": "Bar",
-    "notes": "Despedida"
-  },
-  {
-    "guest_name": "Claudia Vera",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-12",
-    "time": "15:45",
-    "party_size": 5,
-    "preference": "Jardín",
-    "notes": ""
-  },
-  {
-    "guest_name": "Elena Ibarra",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-14",
-    "time": "17:15",
-    "party_size": 12,
-    "preference": "VIP",
-    "notes": "Cliente habitual"
-  },
-  {
-    "guest_name": "Jorge Bautista",
+    "guest_name": "Marco Bianchi",
     "guest_phone": "+4915750441601",
     "date": "2026-04-09",
-    "time": "22:45",
+    "time": "12:15",
+    "party_size": 4,
+    "preference": "Patio",
+    "notes": null
+  },
+  {
+    "guest_name": "Hans Mueller",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-09",
+    "time": "12:30",
     "party_size": 3,
-    "preference": "VIP",
-    "notes": "Reserva especial"
+    "preference": null,
+    "notes": "Gluten-free options needed"
   },
   {
-    "guest_name": "María López",
+    "guest_name": "Carmen Ruiz",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-14",
-    "time": "16:15",
-    "party_size": 4,
-    "preference": "Ventana",
-    "notes": ""
+    "date": "2026-04-09",
+    "time": "13:00",
+    "party_size": 2,
+    "preference": "Quiet Corner",
+    "notes": null
   },
   {
-    "guest_name": "Nicolás Acosta",
+    "guest_name": "Giovanni Rossi",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-16",
-    "time": "18:00",
-    "party_size": 8,
-    "preference": "Terraza",
-    "notes": "Llegará 10 min tarde"
+    "date": "2026-04-09",
+    "time": "13:15",
+    "party_size": 6,
+    "preference": "Private",
+    "notes": "Business lunch with clients"
   },
   {
-    "guest_name": "Marco Estrada",
+    "guest_name": "Petra Schneider",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-14",
-    "time": "17:00",
-    "party_size": 1,
-    "preference": "Ventana",
-    "notes": "Alergia al gluten"
+    "date": "2026-04-09",
+    "time": "13:45",
+    "party_size": 2,
+    "preference": "Bar",
+    "notes": null
   },
   {
-    "guest_name": "Victoria Paredes",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-10",
-    "time": "17:15",
-    "party_size": 4,
-    "preference": "Terraza",
-    "notes": "Cena de negocios"
-  },
-  {
-    "guest_name": "Beatriz Solís",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-16",
-    "time": "22:30",
-    "party_size": 8,
-    "preference": "VIP",
-    "notes": "Sin preferencia especial"
-  },
-  {
-    "guest_name": "Mariana Delgado",
+    "guest_name": "Alejandro Torres",
     "guest_phone": "+4915750441601",
     "date": "2026-04-09",
     "time": "14:00",
-    "party_size": 5,
-    "preference": "VIP",
-    "notes": "Bienvenida"
+    "party_size": 3,
+    "preference": null,
+    "notes": null
   },
   {
-    "guest_name": "Antonella Reyes",
+    "guest_name": "Sofia Moretti",
     "guest_phone": "+4915750441601",
     "date": "2026-04-09",
-    "time": "22:30",
-    "party_size": 12,
-    "preference": "Jardín",
-    "notes": "Alergia al gluten"
+    "time": "19:00",
+    "party_size": 4,
+    "preference": "Booth",
+    "notes": "Birthday celebration"
   },
   {
-    "guest_name": "Julieta Campos",
+    "guest_name": "Klaus Weber",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-15",
-    "time": "14:15",
-    "party_size": 3,
-    "preference": "Patio",
-    "notes": "Sin preferencia especial"
-  },
-  {
-    "guest_name": "Miguel Ángel Prado",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-11",
-    "time": "13:30",
-    "party_size": 10,
-    "preference": "Patio",
-    "notes": "Reunión familiar"
-  },
-  {
-    "guest_name": "Lucas Peña",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-12",
-    "time": "15:00",
-    "party_size": 6,
-    "preference": "Patio",
-    "notes": "Vegetariano"
-  },
-  {
-    "guest_name": "Rafael Córdoba",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-13",
-    "time": "22:45",
-    "party_size": 8,
-    "preference": "Patio",
-    "notes": "Grupo de amigos"
-  },
-  {
-    "guest_name": "Ana Rodríguez",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-11",
-    "time": "22:00",
-    "party_size": 1,
-    "preference": "VIP",
-    "notes": "Grupo de amigos"
-  },
-  {
-    "guest_name": "Santiago Molina",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-16",
-    "time": "17:45",
+    "date": "2026-04-09",
+    "time": "19:30",
     "party_size": 2,
-    "preference": "Bar",
-    "notes": "Cena romántica"
+    "preference": "Window",
+    "notes": null
   },
   {
-    "guest_name": "Fernando León",
+    "guest_name": "Isabel Navarro",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-13",
-    "time": "19:45",
-    "party_size": 5,
-    "preference": "Privado",
-    "notes": "Despedida"
-  },
-  {
-    "guest_name": "Laura Fernández",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-15",
-    "time": "21:15",
+    "date": "2026-04-09",
+    "time": "20:00",
     "party_size": 5,
     "preference": "Patio",
-    "notes": "Pide mesa tranquila"
+    "notes": "Vegetarian group"
   },
   {
-    "guest_name": "Adrián Villanueva",
+    "guest_name": "Friedrich Lang",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-12",
-    "time": "17:00",
-    "party_size": 3,
-    "preference": "Privado",
-    "notes": "Despedida"
+    "date": "2026-04-09",
+    "time": "20:15",
+    "party_size": 2,
+    "preference": null,
+    "notes": null
   },
   {
-    "guest_name": "Luciana Mendoza",
+    "guest_name": "Valentina Conti",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-09",
+    "time": "20:45",
+    "party_size": 8,
+    "preference": "Private",
+    "notes": "Engagement dinner"
+  },
+  {
+    "guest_name": "Pablo Mendez",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-09",
+    "time": "21:00",
+    "party_size": 3,
+    "preference": "Near Bathroom",
+    "notes": "Elderly guest, accessibility needed"
+  },
+  {
+    "guest_name": "Ursula Fischer",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-09",
+    "time": "21:30",
+    "party_size": 4,
+    "preference": "Booth",
+    "notes": null
+  },
+  {
+    "guest_name": "Roberto Garcia",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-09",
+    "time": "22:00",
+    "party_size": 2,
+    "preference": null,
+    "notes": "Late dinner, quick service preferred"
+  },
+  {
+    "guest_name": "Elena Marchetti",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-10",
+    "time": "12:00",
+    "party_size": 3,
+    "preference": "Patio",
+    "notes": null
+  },
+  {
+    "guest_name": "Thomas Braun",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-10",
+    "time": "12:30",
+    "party_size": 2,
+    "preference": "Window",
+    "notes": "Dairy allergy"
+  },
+  {
+    "guest_name": "Ana Martinez",
     "guest_phone": "+4915750441601",
     "date": "2026-04-10",
     "time": "12:45",
     "party_size": 4,
-    "preference": "Ventana",
-    "notes": "Vegetariano"
+    "preference": null,
+    "notes": null
   },
   {
-    "guest_name": "Victoria Paredes",
+    "guest_name": "Luca Ferrari",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-12",
-    "time": "15:00",
-    "party_size": 2,
-    "preference": "VIP",
-    "notes": "Bienvenida"
-  },
-  {
-    "guest_name": "Emilia Guerrero",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-11",
-    "time": "12:15",
-    "party_size": 7,
-    "preference": "Interior",
-    "notes": "Vegetariano"
-  },
-  {
-    "guest_name": "Silvia Rangel",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-15",
-    "time": "21:45",
-    "party_size": 10,
-    "preference": "VIP",
-    "notes": "Reunión familiar"
-  },
-  {
-    "guest_name": "Valentina Ruiz",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-16",
-    "time": "15:45",
-    "party_size": 12,
-    "preference": "Bar",
-    "notes": "Cena de negocios"
-  },
-  {
-    "guest_name": "Emilia Guerrero",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-14",
-    "time": "19:00",
-    "party_size": 5,
-    "preference": "Interior",
-    "notes": "Alergia al gluten"
-  },
-  {
-    "guest_name": "Oscar Lara",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-09",
-    "time": "16:30",
-    "party_size": 5,
-    "preference": "Jardín",
-    "notes": "Llegará 10 min tarde"
-  },
-  {
-    "guest_name": "Andrés Castro",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-15",
-    "time": "17:00",
-    "party_size": 1,
-    "preference": "Terraza",
-    "notes": "Grupo de amigos"
-  },
-  {
-    "guest_name": "Daniel Flores",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-12",
-    "time": "19:30",
-    "party_size": 9,
-    "preference": "VIP",
-    "notes": "Sin preferencia especial"
-  },
-  {
-    "guest_name": "Diego Torres",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-14",
-    "time": "16:45",
-    "party_size": 1,
-    "preference": "Bar",
-    "notes": "Reunión familiar"
-  },
-  {
-    "guest_name": "Regina Sandoval",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-14",
-    "time": "21:45",
-    "party_size": 10,
-    "preference": "Interior",
-    "notes": "Reserva especial"
-  },
-  {
-    "guest_name": "Fernanda Soto",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-09",
-    "time": "22:30",
-    "party_size": 9,
-    "preference": "Privado",
-    "notes": "Cliente habitual"
-  },
-  {
-    "guest_name": "César Trejo",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-13",
-    "time": "14:00",
-    "party_size": 6,
-    "preference": "VIP",
-    "notes": "Cena de negocios"
-  },
-  {
-    "guest_name": "Antonella Reyes",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-13",
-    "time": "21:15",
-    "party_size": 5,
-    "preference": "Patio",
-    "notes": "Celebración"
-  },
-  {
-    "guest_name": "Fernanda Soto",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-16",
+    "date": "2026-04-10",
     "time": "13:00",
-    "party_size": 7,
-    "preference": "Jardín",
-    "notes": "Alergia al gluten"
+    "party_size": 2,
+    "preference": "Bar",
+    "notes": null
   },
   {
-    "guest_name": "Adrián Villanueva",
+    "guest_name": "Brigitte Hoffmann",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-12",
-    "time": "12:30",
-    "party_size": 12,
-    "preference": "Privado",
-    "notes": "Cliente habitual"
+    "date": "2026-04-10",
+    "time": "13:30",
+    "party_size": 6,
+    "preference": "Quiet Corner",
+    "notes": "Book club meeting"
   },
   {
-    "guest_name": "Isabella Vargas",
+    "guest_name": "Diego Herrera",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-10",
+    "time": "14:00",
+    "party_size": 1,
+    "preference": "Bar",
+    "notes": null
+  },
+  {
+    "guest_name": "Francesca Colombo",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-10",
+    "time": "14:15",
+    "party_size": 3,
+    "preference": null,
+    "notes": "Need highchair"
+  },
+  {
+    "guest_name": "Maximilian Koch",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-10",
+    "time": "19:00",
+    "party_size": 4,
+    "preference": "Booth",
+    "notes": null
+  },
+  {
+    "guest_name": "Pilar Sanchez",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-10",
+    "time": "19:15",
+    "party_size": 2,
+    "preference": "Patio",
+    "notes": "Wedding anniversary"
+  },
+  {
+    "guest_name": "Andrea Ricci",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-10",
+    "time": "19:45",
+    "party_size": 10,
+    "preference": "Private",
+    "notes": "Corporate team dinner"
+  },
+  {
+    "guest_name": "Sabine Richter",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-10",
+    "time": "20:00",
+    "party_size": 3,
+    "preference": null,
+    "notes": null
+  },
+  {
+    "guest_name": "Fernando Lopez",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-10",
+    "time": "20:30",
+    "party_size": 2,
+    "preference": "Window",
+    "notes": null
+  },
+  {
+    "guest_name": "Giulia De Luca",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-10",
+    "time": "21:00",
+    "party_size": 4,
+    "preference": "Booth",
+    "notes": "Birthday cake at 21:30"
+  },
+  {
+    "guest_name": "Wolfgang Becker",
     "guest_phone": "+4915750441601",
     "date": "2026-04-10",
     "time": "21:30",
-    "party_size": 6,
-    "preference": "Privado",
-    "notes": "Sin preferencia especial"
+    "party_size": 2,
+    "preference": "Near Bathroom",
+    "notes": null
   },
   {
-    "guest_name": "Natalia Pereira",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-09",
-    "time": "18:00",
-    "party_size": 12,
-    "preference": "Patio",
-    "notes": "Cumpleaños"
-  },
-  {
-    "guest_name": "Carmen Velasco",
+    "guest_name": "Raquel Vega",
     "guest_phone": "+4915750441601",
     "date": "2026-04-10",
-    "time": "18:00",
-    "party_size": 2,
-    "preference": "VIP",
-    "notes": "Alergia al gluten"
+    "time": "22:15",
+    "party_size": 5,
+    "preference": "Quiet Corner",
+    "notes": "Farewell dinner"
   },
   {
-    "guest_name": "Catalina Ortiz",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-14",
-    "time": "16:00",
-    "party_size": 4,
-    "preference": "Patio",
-    "notes": "Grupo de amigos"
-  },
-  {
-    "guest_name": "Carmen Velasco",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-14",
-    "time": "20:00",
-    "party_size": 3,
-    "preference": "Ventana",
-    "notes": "Cena romántica"
-  },
-  {
-    "guest_name": "Benjamín Ramírez",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-10",
-    "time": "18:45",
-    "party_size": 2,
-    "preference": "Jardín",
-    "notes": "Celebración"
-  },
-  {
-    "guest_name": "Sofía Morales",
+    "guest_name": "Matteo Galli",
     "guest_phone": "+4915750441601",
     "date": "2026-04-11",
+    "time": "12:00",
+    "party_size": 2,
+    "preference": null,
+    "notes": null
+  },
+  {
+    "guest_name": "Helga Zimmermann",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-11",
+    "time": "12:15",
+    "party_size": 4,
+    "preference": "Window",
+    "notes": "Nut allergy - severe"
+  },
+  {
+    "guest_name": "Carlos Delgado",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-11",
+    "time": "12:45",
+    "party_size": 3,
+    "preference": "Patio",
+    "notes": null
+  },
+  {
+    "guest_name": "Chiara Romano",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-11",
+    "time": "13:00",
+    "party_size": 2,
+    "preference": "Bar",
+    "notes": null
+  },
+  {
+    "guest_name": "Juergen Hartmann",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-11",
+    "time": "13:30",
+    "party_size": 7,
+    "preference": "Private",
+    "notes": "Retirement celebration"
+  },
+  {
+    "guest_name": "Lucia Campos",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-11",
+    "time": "14:00",
+    "party_size": 2,
+    "preference": null,
+    "notes": "Vegan menu requested"
+  },
+  {
+    "guest_name": "Stefano Mancini",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-11",
+    "time": "14:30",
+    "party_size": 1,
+    "preference": "Quiet Corner",
+    "notes": null
+  },
+  {
+    "guest_name": "Monika Krueger",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-11",
+    "time": "19:00",
+    "party_size": 4,
+    "preference": "Booth",
+    "notes": null
+  },
+  {
+    "guest_name": "Raul Quintero",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-11",
+    "time": "19:30",
+    "party_size": 3,
+    "preference": "Patio",
+    "notes": "Business dinner"
+  },
+  {
+    "guest_name": "Alessia Lombardi",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-11",
+    "time": "20:00",
+    "party_size": 2,
+    "preference": null,
+    "notes": null
+  },
+  {
+    "guest_name": "Dieter Schulz",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-11",
+    "time": "20:15",
+    "party_size": 12,
+    "preference": "Private",
+    "notes": "Family reunion, need long table"
+  },
+  {
+    "guest_name": "Marta Jimenez",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-11",
+    "time": "20:45",
+    "party_size": 2,
+    "preference": "Window",
+    "notes": null
+  },
+  {
+    "guest_name": "Paolo Esposito",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-11",
+    "time": "21:15",
+    "party_size": 4,
+    "preference": "Booth",
+    "notes": null
+  },
+  {
+    "guest_name": "Gisela Neumann",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-11",
+    "time": "22:00",
+    "party_size": 3,
+    "preference": null,
+    "notes": "Late arrival possible"
+  },
+  {
+    "guest_name": "Ignacio Reyes",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-11",
+    "time": "22:30",
+    "party_size": 2,
+    "preference": "Bar",
+    "notes": "Drinks and appetizers only"
+  },
+  {
+    "guest_name": "Simona Ferrara",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-12",
+    "time": "12:00",
+    "party_size": 4,
+    "preference": "Patio",
+    "notes": "Children in the group"
+  },
+  {
+    "guest_name": "Rainer Vogel",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-12",
+    "time": "12:15",
+    "party_size": 2,
+    "preference": null,
+    "notes": null
+  },
+  {
+    "guest_name": "Teresa Morales",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-12",
+    "time": "12:30",
+    "party_size": 3,
+    "preference": "Quiet Corner",
+    "notes": null
+  },
+  {
+    "guest_name": "Emilio Greco",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-12",
+    "time": "13:00",
+    "party_size": 2,
+    "preference": "Window",
+    "notes": "Proposal lunch - need special setup"
+  },
+  {
+    "guest_name": "Katrin Bauer",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-12",
+    "time": "13:30",
+    "party_size": 5,
+    "preference": null,
+    "notes": null
+  },
+  {
+    "guest_name": "Javier Ramos",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-12",
+    "time": "13:45",
+    "party_size": 2,
+    "preference": "Bar",
+    "notes": "Quick business lunch"
+  },
+  {
+    "guest_name": "Daniela Vitale",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-12",
     "time": "14:15",
     "party_size": 4,
-    "preference": "Bar",
-    "notes": "Grupo de amigos"
+    "preference": "Booth",
+    "notes": null
   },
   {
-    "guest_name": "Valeria Aguilar",
+    "guest_name": "Manfred Keller",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-14",
-    "time": "12:30",
-    "party_size": 1,
-    "preference": "VIP",
-    "notes": "Cumpleaños"
+    "date": "2026-04-12",
+    "time": "19:00",
+    "party_size": 6,
+    "preference": "Private",
+    "notes": "Board dinner"
   },
   {
-    "guest_name": "Marco Estrada",
+    "guest_name": "Paloma Castro",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-09",
-    "time": "17:30",
-    "party_size": 8,
-    "preference": "Bar",
-    "notes": "Cena de negocios"
-  },
-  {
-    "guest_name": "Daniela Ponce",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-09",
-    "time": "16:00",
-    "party_size": 10,
+    "date": "2026-04-12",
+    "time": "19:15",
+    "party_size": 2,
     "preference": "Patio",
-    "notes": "Grupo de amigos"
+    "notes": null
   },
   {
-    "guest_name": "Rosa Maldonado",
+    "guest_name": "Antonio Bruno",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-13",
-    "time": "20:45",
-    "party_size": 9,
-    "preference": "Interior",
-    "notes": "Grupo de amigos"
-  },
-  {
-    "guest_name": "Rosa Maldonado",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-11",
-    "time": "19:30",
-    "party_size": 5,
-    "preference": "Ventana",
-    "notes": "Alergia al gluten"
-  },
-  {
-    "guest_name": "Joaquín Suárez",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-13",
-    "time": "17:15",
-    "party_size": 11,
-    "preference": "Terraza",
-    "notes": "Necesita silla alta"
-  },
-  {
-    "guest_name": "Valeria Aguilar",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-15",
-    "time": "15:15",
-    "party_size": 4,
-    "preference": "Ventana",
-    "notes": "Cliente habitual"
-  },
-  {
-    "guest_name": "Julieta Campos",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-10",
-    "time": "16:15",
+    "date": "2026-04-12",
+    "time": "19:45",
     "party_size": 3,
-    "preference": "VIP",
-    "notes": "Celebración"
+    "preference": null,
+    "notes": "Pescatarian diet"
   },
   {
-    "guest_name": "Alejandro Vega",
+    "guest_name": "Ingrid Schaefer",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-11",
-    "time": "13:30",
+    "date": "2026-04-12",
+    "time": "20:00",
     "party_size": 4,
-    "preference": "Bar",
-    "notes": "Llegará 10 min tarde"
+    "preference": "Window",
+    "notes": null
   },
   {
-    "guest_name": "Pedro Sánchez",
+    "guest_name": "Miguel Angel Soto",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-10",
-    "time": "18:15",
+    "date": "2026-04-12",
+    "time": "20:30",
+    "party_size": 2,
+    "preference": "Near Bathroom",
+    "notes": null
+  },
+  {
+    "guest_name": "Beatrice Conti",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-12",
+    "time": "21:00",
+    "party_size": 8,
+    "preference": "Private",
+    "notes": "Birthday party, will bring cake"
+  },
+  {
+    "guest_name": "Stefan Wolff",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-12",
+    "time": "21:30",
+    "party_size": 2,
+    "preference": "Booth",
+    "notes": null
+  },
+  {
+    "guest_name": "Laura Perez",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-12",
+    "time": "22:00",
+    "party_size": 3,
+    "preference": null,
+    "notes": null
+  },
+  {
+    "guest_name": "Fabio Marino",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-13",
+    "time": "12:00",
+    "party_size": 2,
+    "preference": "Patio",
+    "notes": null
+  },
+  {
+    "guest_name": "Elke Schroeder",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-13",
+    "time": "12:15",
+    "party_size": 4,
+    "preference": null,
+    "notes": "Celiac disease - need gluten-free menu"
+  },
+  {
+    "guest_name": "Adriana Vargas",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-13",
+    "time": "12:30",
+    "party_size": 3,
+    "preference": "Window",
+    "notes": null
+  },
+  {
+    "guest_name": "Lorenzo Pagano",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-13",
+    "time": "13:00",
     "party_size": 2,
     "preference": "Bar",
-    "notes": "Grupo de amigos"
+    "notes": null
   },
   {
-    "guest_name": "Regina Sandoval",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-13",
-    "time": "18:45",
-    "party_size": 1,
-    "preference": "Jardín",
-    "notes": "Llegará 10 min tarde"
-  },
-  {
-    "guest_name": "Daniela Ponce",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-09",
-    "time": "20:45",
-    "party_size": 9,
-    "preference": "Jardín",
-    "notes": "Pide mesa tranquila"
-  },
-  {
-    "guest_name": "Alberto Rivas",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-13",
-    "time": "22:45",
-    "party_size": 9,
-    "preference": "Bar",
-    "notes": "Pide mesa tranquila"
-  },
-  {
-    "guest_name": "Rafael Córdoba",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-09",
-    "time": "15:30",
-    "party_size": 1,
-    "preference": "Terraza",
-    "notes": "Necesita silla alta"
-  },
-  {
-    "guest_name": "Oscar Lara",
+    "guest_name": "Heike Berger",
     "guest_phone": "+4915750441601",
     "date": "2026-04-13",
     "time": "13:30",
-    "party_size": 12,
-    "preference": "Interior",
-    "notes": "Pide mesa tranquila"
+    "party_size": 5,
+    "preference": "Quiet Corner",
+    "notes": "Mother's day celebration"
   },
   {
-    "guest_name": "Carlos García",
+    "guest_name": "Oscar Medina",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-11",
-    "time": "17:45",
-    "party_size": 12,
-    "preference": "Privado",
-    "notes": "Llegará 10 min tarde"
+    "date": "2026-04-13",
+    "time": "14:00",
+    "party_size": 2,
+    "preference": null,
+    "notes": null
   },
   {
-    "guest_name": "Víctor Barrera",
+    "guest_name": "Claudia Rinaldi",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-11",
-    "time": "19:30",
+    "date": "2026-04-13",
+    "time": "14:30",
     "party_size": 1,
-    "preference": "Privado",
-    "notes": "Cena romántica"
+    "preference": "Bar",
+    "notes": "Solo diner, prefers counter seating"
   },
   {
-    "guest_name": "Santiago Molina",
+    "guest_name": "Herbert Maier",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-16",
-    "time": "15:30",
-    "party_size": 8,
-    "preference": "Patio",
-    "notes": ""
+    "date": "2026-04-13",
+    "time": "19:00",
+    "party_size": 4,
+    "preference": "Booth",
+    "notes": null
   },
   {
-    "guest_name": "Catalina Ortiz",
+    "guest_name": "Catalina Rios",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-13",
+    "time": "19:15",
+    "party_size": 2,
+    "preference": "Patio",
+    "notes": "First date"
+  },
+  {
+    "guest_name": "Marco Pellegrini",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-13",
+    "time": "19:45",
+    "party_size": 6,
+    "preference": "Private",
+    "notes": "Bachelor party dinner"
+  },
+  {
+    "guest_name": "Annette Seidel",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-13",
+    "time": "20:00",
+    "party_size": 3,
+    "preference": null,
+    "notes": null
+  },
+  {
+    "guest_name": "Rodrigo Flores",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-13",
+    "time": "20:30",
+    "party_size": 2,
+    "preference": "Window",
+    "notes": null
+  },
+  {
+    "guest_name": "Silvia Russo",
     "guest_phone": "+4915750441601",
     "date": "2026-04-13",
     "time": "21:00",
-    "party_size": 12,
-    "preference": "Interior",
-    "notes": "Sin preferencia especial"
+    "party_size": 4,
+    "preference": "Quiet Corner",
+    "notes": "Wine pairing dinner"
   },
   {
-    "guest_name": "Gloria Cervantes",
+    "guest_name": "Karl-Heinz Werner",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-15",
-    "time": "21:15",
+    "date": "2026-04-13",
+    "time": "21:45",
     "party_size": 2,
-    "preference": "Interior",
-    "notes": "Sin preferencia especial"
+    "preference": null,
+    "notes": null
   },
   {
-    "guest_name": "Alejandro Vega",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-09",
-    "time": "19:45",
-    "party_size": 7,
-    "preference": "Interior",
-    "notes": "Aniversario"
-  },
-  {
-    "guest_name": "Samuel Guzmán",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-16",
-    "time": "17:00",
-    "party_size": 8,
-    "preference": "Jardín",
-    "notes": "Celebración"
-  },
-  {
-    "guest_name": "Santiago Molina",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-16",
-    "time": "13:00",
-    "party_size": 11,
-    "preference": "Ventana",
-    "notes": "Cena de negocios"
-  },
-  {
-    "guest_name": "Alberto Rivas",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-09",
-    "time": "16:30",
-    "party_size": 1,
-    "preference": "Bar",
-    "notes": "Celebración"
-  },
-  {
-    "guest_name": "Arturo Domínguez",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-12",
-    "time": "14:00",
-    "party_size": 8,
-    "preference": "Jardín",
-    "notes": "Primera cita"
-  },
-  {
-    "guest_name": "Carmen Velasco",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-14",
-    "time": "21:30",
-    "party_size": 12,
-    "preference": "Jardín",
-    "notes": "Cumpleaños"
-  },
-  {
-    "guest_name": "Valentina Ruiz",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-16",
-    "time": "19:30",
-    "party_size": 6,
-    "preference": "Terraza",
-    "notes": "Reunión familiar"
-  },
-  {
-    "guest_name": "Daniel Flores",
+    "guest_name": "Veronica Aguilar",
     "guest_phone": "+4915750441601",
     "date": "2026-04-13",
-    "time": "15:30",
-    "party_size": 5,
-    "preference": "VIP",
-    "notes": "Grupo de amigos"
-  },
-  {
-    "guest_name": "Camila Díaz",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-15",
-    "time": "12:15",
-    "party_size": 12,
-    "preference": "Jardín",
-    "notes": "Celebración"
-  },
-  {
-    "guest_name": "Luciana Mendoza",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-10",
-    "time": "18:30",
-    "party_size": 4,
-    "preference": "Interior",
-    "notes": "Sin preferencia especial"
-  },
-  {
-    "guest_name": "Irene Caballero",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-11",
-    "time": "22:15",
-    "party_size": 12,
-    "preference": "Terraza",
-    "notes": "Pide mesa tranquila"
-  },
-  {
-    "guest_name": "Julieta Campos",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-13",
-    "time": "18:45",
-    "party_size": 11,
-    "preference": "Terraza",
-    "notes": "Reserva especial"
-  },
-  {
-    "guest_name": "Beatriz Solís",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-11",
-    "time": "16:15",
-    "party_size": 4,
-    "preference": "VIP",
-    "notes": ""
-  },
-  {
-    "guest_name": "Roberto Fuentes",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-14",
-    "time": "15:30",
-    "party_size": 10,
-    "preference": "Privado",
-    "notes": ""
-  },
-  {
-    "guest_name": "Lucia Pacheco",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-16",
-    "time": "20:15",
-    "party_size": 10,
-    "preference": "Interior",
-    "notes": ""
-  },
-  {
-    "guest_name": "Victoria Paredes",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-13",
-    "time": "15:30",
-    "party_size": 5,
-    "preference": "Jardín",
-    "notes": "Cena romántica"
-  },
-  {
-    "guest_name": "Julieta Campos",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-09",
     "time": "22:30",
-    "party_size": 10,
-    "preference": "Privado",
-    "notes": "Vegetariano"
-  },
-  {
-    "guest_name": "María López",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-10",
-    "time": "21:30",
     "party_size": 3,
-    "preference": "Privado",
-    "notes": "Bienvenida"
+    "preference": "Booth",
+    "notes": "Post-theater dinner"
   },
   {
-    "guest_name": "César Trejo",
+    "guest_name": "Davide Santoro",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-15",
-    "time": "14:45",
+    "date": "2026-04-14",
+    "time": "12:00",
+    "party_size": 4,
+    "preference": "Patio",
+    "notes": null
+  },
+  {
+    "guest_name": "Renate Fuchs",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-14",
+    "time": "12:15",
+    "party_size": 2,
+    "preference": null,
+    "notes": "Wheelchair accessible seating"
+  },
+  {
+    "guest_name": "Santiago Ortega",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-14",
+    "time": "12:45",
+    "party_size": 3,
+    "preference": "Window",
+    "notes": null
+  },
+  {
+    "guest_name": "Federica Moretti",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-14",
+    "time": "13:00",
     "party_size": 2,
     "preference": "Bar",
-    "notes": "Pide mesa tranquila"
+    "notes": null
   },
   {
-    "guest_name": "Alberto Rivas",
+    "guest_name": "Bernd Lehmann",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-11",
-    "time": "21:15",
+    "date": "2026-04-14",
+    "time": "13:30",
     "party_size": 9,
-    "preference": "Privado",
-    "notes": "Vegetariano"
+    "preference": "Private",
+    "notes": "Investor dinner"
   },
   {
-    "guest_name": "Gabriela Montes",
+    "guest_name": "Patricia Rojas",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-15",
-    "time": "21:30",
-    "party_size": 12,
-    "preference": "Terraza",
-    "notes": "Llegará 10 min tarde"
+    "date": "2026-04-14",
+    "time": "14:00",
+    "party_size": 2,
+    "preference": "Quiet Corner",
+    "notes": null
   },
   {
-    "guest_name": "Benjamín Ramírez",
+    "guest_name": "Giuseppe Amato",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-14",
+    "time": "14:30",
+    "party_size": 4,
+    "preference": null,
+    "notes": "Lactose intolerant guest"
+  },
+  {
+    "guest_name": "Ulrike Dietrich",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-14",
+    "time": "19:00",
+    "party_size": 3,
+    "preference": "Booth",
+    "notes": null
+  },
+  {
+    "guest_name": "Andres Camacho",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-14",
+    "time": "19:15",
+    "party_size": 2,
+    "preference": "Patio",
+    "notes": null
+  },
+  {
+    "guest_name": "Roberta Martinelli",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-14",
+    "time": "19:45",
+    "party_size": 4,
+    "preference": "Window",
+    "notes": "Graduation dinner"
+  },
+  {
+    "guest_name": "Gerhard Pfeiffer",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-14",
+    "time": "20:00",
+    "party_size": 2,
+    "preference": null,
+    "notes": null
+  },
+  {
+    "guest_name": "Dolores Castillo",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-14",
+    "time": "20:30",
+    "party_size": 6,
+    "preference": "Private",
+    "notes": "Surprise birthday for husband"
+  },
+  {
+    "guest_name": "Enrico Fiore",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-14",
+    "time": "21:00",
+    "party_size": 3,
+    "preference": "Booth",
+    "notes": null
+  },
+  {
+    "guest_name": "Birgit Huber",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-14",
+    "time": "21:30",
+    "party_size": 2,
+    "preference": null,
+    "notes": "Returning customer - prefers table 7"
+  },
+  {
+    "guest_name": "Esteban Fuentes",
     "guest_phone": "+4915750441601",
     "date": "2026-04-14",
     "time": "22:00",
-    "party_size": 7,
-    "preference": "Terraza",
-    "notes": "Bienvenida"
-  },
-  {
-    "guest_name": "Fernando León",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-12",
-    "time": "21:45",
-    "party_size": 7,
-    "preference": "VIP",
-    "notes": "Aniversario"
-  },
-  {
-    "guest_name": "Eduardo Bustamante",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-12",
-    "time": "19:30",
-    "party_size": 9,
-    "preference": "Interior",
-    "notes": ""
-  },
-  {
-    "guest_name": "Alberto Rivas",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-09",
-    "time": "12:30",
-    "party_size": 7,
-    "preference": "Bar",
-    "notes": "Primera cita"
-  },
-  {
-    "guest_name": "Oscar Lara",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-14",
-    "time": "19:00",
     "party_size": 4,
-    "preference": "Interior",
-    "notes": "Cumpleaños"
+    "preference": "Near Bathroom",
+    "notes": null
   },
   {
-    "guest_name": "Nicolás Acosta",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-16",
-    "time": "19:00",
-    "party_size": 7,
-    "preference": "Jardín",
-    "notes": "Cumpleaños"
-  },
-  {
-    "guest_name": "Marco Estrada",
+    "guest_name": "Arianna Bellini",
     "guest_phone": "+4915750441601",
     "date": "2026-04-15",
-    "time": "18:30",
-    "party_size": 11,
-    "preference": "Interior",
-    "notes": "Bienvenida"
+    "time": "12:00",
+    "party_size": 2,
+    "preference": "Window",
+    "notes": null
   },
   {
-    "guest_name": "Joaquín Suárez",
+    "guest_name": "Norbert Engel",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-13",
-    "time": "17:00",
-    "party_size": 11,
-    "preference": "Ventana",
-    "notes": "Llegará 10 min tarde"
-  },
-  {
-    "guest_name": "Silvia Rangel",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-14",
-    "time": "14:00",
+    "date": "2026-04-15",
+    "time": "12:15",
     "party_size": 3,
-    "preference": "VIP",
-    "notes": "Aniversario"
+    "preference": null,
+    "notes": "Kosher meal requested"
   },
   {
-    "guest_name": "Rosa Maldonado",
+    "guest_name": "Marcela Gutierrez",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-15",
+    "time": "12:30",
+    "party_size": 4,
+    "preference": "Patio",
+    "notes": null
+  },
+  {
+    "guest_name": "Nicola Fontana",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-15",
+    "time": "13:00",
+    "party_size": 2,
+    "preference": "Bar",
+    "notes": null
+  },
+  {
+    "guest_name": "Dorothea Krause",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-15",
+    "time": "13:15",
+    "party_size": 11,
+    "preference": "Private",
+    "notes": "Christening lunch"
+  },
+  {
+    "guest_name": "Hector Pena",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-15",
+    "time": "13:45",
+    "party_size": 2,
+    "preference": "Quiet Corner",
+    "notes": null
+  },
+  {
+    "guest_name": "Serena Battaglia",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-15",
+    "time": "14:15",
+    "party_size": 3,
+    "preference": null,
+    "notes": null
+  },
+  {
+    "guest_name": "Volker Reinhardt",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-15",
+    "time": "19:00",
+    "party_size": 4,
+    "preference": "Booth",
+    "notes": null
+  },
+  {
+    "guest_name": "Gloria Paredes",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-15",
+    "time": "19:30",
+    "party_size": 2,
+    "preference": "Patio",
+    "notes": "Anniversary dinner"
+  },
+  {
+    "guest_name": "Riccardo Ferretti",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-15",
+    "time": "20:00",
+    "party_size": 5,
+    "preference": "Window",
+    "notes": null
+  },
+  {
+    "guest_name": "Christine Baumann",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-15",
+    "time": "20:15",
+    "party_size": 2,
+    "preference": null,
+    "notes": null
+  },
+  {
+    "guest_name": "Manuel Espinoza",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-15",
+    "time": "20:45",
+    "party_size": 3,
+    "preference": "Near Bathroom",
+    "notes": "Guest with mobility issues"
+  },
+  {
+    "guest_name": "Isabella Napoli",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-15",
+    "time": "21:15",
+    "party_size": 4,
+    "preference": "Booth",
+    "notes": null
+  },
+  {
+    "guest_name": "Siegfried Otto",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-15",
+    "time": "21:45",
+    "party_size": 2,
+    "preference": null,
+    "notes": "Regular customer"
+  },
+  {
+    "guest_name": "Natalia Cruz",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-15",
+    "time": "22:30",
+    "party_size": 7,
+    "preference": "Private",
+    "notes": "Hen party dinner"
+  },
+  {
+    "guest_name": "Tommaso Caputo",
     "guest_phone": "+4915750441601",
     "date": "2026-04-16",
     "time": "12:00",
-    "party_size": 11,
-    "preference": "Jardín",
-    "notes": "Grupo de amigos"
-  },
-  {
-    "guest_name": "Miguel Ángel Prado",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-10",
-    "time": "17:00",
-    "party_size": 3,
-    "preference": "Ventana",
-    "notes": "Sin preferencia especial"
-  },
-  {
-    "guest_name": "Luciana Mendoza",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-09",
-    "time": "22:45",
-    "party_size": 3,
-    "preference": "Patio",
-    "notes": ""
-  },
-  {
-    "guest_name": "David Contreras",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-13",
-    "time": "22:15",
-    "party_size": 6,
-    "preference": "Patio",
-    "notes": "Cumpleaños"
-  },
-  {
-    "guest_name": "Regina Sandoval",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-15",
-    "time": "21:30",
-    "party_size": 10,
-    "preference": "Terraza",
-    "notes": "Llegará 10 min tarde"
-  },
-  {
-    "guest_name": "Hugo Figueroa",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-16",
-    "time": "14:30",
-    "party_size": 12,
-    "preference": "Interior",
-    "notes": "Pide mesa tranquila"
-  },
-  {
-    "guest_name": "David Contreras",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-11",
-    "time": "18:30",
     "party_size": 2,
-    "preference": "Interior",
-    "notes": "Aniversario"
+    "preference": null,
+    "notes": null
   },
   {
-    "guest_name": "Mateo Herrera",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-12",
-    "time": "15:45",
-    "party_size": 8,
-    "preference": "Patio",
-    "notes": "Cumpleaños"
-  },
-  {
-    "guest_name": "Natalia Pereira",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-10",
-    "time": "18:45",
-    "party_size": 10,
-    "preference": "Terraza",
-    "notes": "Cliente habitual"
-  },
-  {
-    "guest_name": "Iván Cabrera",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-12",
-    "time": "12:45",
-    "party_size": 9,
-    "preference": "VIP",
-    "notes": "Cena de negocios"
-  },
-  {
-    "guest_name": "Laura Fernández",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-15",
-    "time": "18:30",
-    "party_size": 10,
-    "preference": "Jardín",
-    "notes": "Llegará 10 min tarde"
-  },
-  {
-    "guest_name": "Andrés Castro",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-13",
-    "time": "12:45",
-    "party_size": 11,
-    "preference": "Bar",
-    "notes": "Necesita silla alta"
-  },
-  {
-    "guest_name": "Catalina Ortiz",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-15",
-    "time": "14:30",
-    "party_size": 8,
-    "preference": "Privado",
-    "notes": "Grupo de amigos"
-  },
-  {
-    "guest_name": "Fernando León",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-15",
-    "time": "22:00",
-    "party_size": 1,
-    "preference": "VIP",
-    "notes": "Celebración"
-  },
-  {
-    "guest_name": "Diego Torres",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-16",
-    "time": "14:00",
-    "party_size": 4,
-    "preference": "Ventana",
-    "notes": ""
-  },
-  {
-    "guest_name": "Eduardo Bustamante",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-11",
-    "time": "14:45",
-    "party_size": 8,
-    "preference": "Interior",
-    "notes": "Pide mesa tranquila"
-  },
-  {
-    "guest_name": "Andrés Castro",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-09",
-    "time": "22:30",
-    "party_size": 2,
-    "preference": "Jardín",
-    "notes": "Celebración"
-  },
-  {
-    "guest_name": "Carlos García",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-09",
-    "time": "22:15",
-    "party_size": 7,
-    "preference": "Interior",
-    "notes": "Pide mesa tranquila"
-  },
-  {
-    "guest_name": "Francisco Orozco",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-09",
-    "time": "19:00",
-    "party_size": 7,
-    "preference": "Privado",
-    "notes": "Celebración"
-  },
-  {
-    "guest_name": "Regina Sandoval",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-12",
-    "time": "17:30",
-    "party_size": 10,
-    "preference": "Privado",
-    "notes": "Pide mesa tranquila"
-  },
-  {
-    "guest_name": "Lucia Pacheco",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-09",
-    "time": "17:15",
-    "party_size": 9,
-    "preference": "Jardín",
-    "notes": "Bienvenida"
-  },
-  {
-    "guest_name": "Laura Fernández",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-15",
-    "time": "16:45",
-    "party_size": 11,
-    "preference": "Interior",
-    "notes": "Necesita silla alta"
-  },
-  {
-    "guest_name": "Silvia Rangel",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-09",
-    "time": "18:45",
-    "party_size": 12,
-    "preference": "VIP",
-    "notes": "Cena romántica"
-  },
-  {
-    "guest_name": "Regina Sandoval",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-11",
-    "time": "18:45",
-    "party_size": 10,
-    "preference": "Interior",
-    "notes": "Pide mesa tranquila"
-  },
-  {
-    "guest_name": "Maximiliano Cruz",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-13",
-    "time": "19:00",
-    "party_size": 10,
-    "preference": "VIP",
-    "notes": "Aniversario"
-  },
-  {
-    "guest_name": "Marco Estrada",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-16",
-    "time": "12:15",
-    "party_size": 2,
-    "preference": "Ventana",
-    "notes": "Cliente habitual"
-  },
-  {
-    "guest_name": "Enrique Salinas",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-09",
-    "time": "15:15",
-    "party_size": 7,
-    "preference": "Privado",
-    "notes": "Necesita silla alta"
-  },
-  {
-    "guest_name": "Carmen Velasco",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-15",
-    "time": "14:45",
-    "party_size": 6,
-    "preference": "VIP",
-    "notes": "Alergia al gluten"
-  },
-  {
-    "guest_name": "Emilia Guerrero",
+    "guest_name": "Hildegard Franke",
     "guest_phone": "+4915750441601",
     "date": "2026-04-16",
     "time": "12:30",
     "party_size": 3,
-    "preference": "Ventana",
-    "notes": "Cena de negocios"
+    "preference": "Window",
+    "notes": null
   },
   {
-    "guest_name": "Luciana Mendoza",
+    "guest_name": "Daniela Ibarra",
     "guest_phone": "+4915750441601",
-    "date": "2026-04-14",
+    "date": "2026-04-16",
+    "time": "12:45",
+    "party_size": 4,
+    "preference": "Patio",
+    "notes": "Need stroller parking"
+  },
+  {
+    "guest_name": "Massimo De Rosa",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-16",
     "time": "13:00",
-    "party_size": 7,
-    "preference": "VIP",
-    "notes": "Celebración"
-  },
-  {
-    "guest_name": "Maximiliano Cruz",
-    "guest_phone": "+4915750441601",
-    "date": "2026-04-13",
-    "time": "13:15",
-    "party_size": 12,
-    "preference": "Ventana",
-    "notes": "Despedida"
-  },
-  {
-    "guest_name": "Guest 5",
-    "guest_phone": "5550000005",
-    "date": "2026-04-13",
-    "time": "16:45",
-    "party_size": 6,
-    "preference": "VIP",
-    "notes": "Demo reservation 5"
-  },
-  {
-    "guest_name": "Guest 4",
-    "guest_phone": "5550000004",
-    "date": "2026-04-15",
-    "time": "22:00",
-    "party_size": 5,
+    "party_size": 2,
     "preference": "Bar",
-    "notes": "Demo reservation 4"
+    "notes": null
   },
   {
-    "guest_name": "Guest 3",
-    "guest_phone": "5550000003",
-    "date": "2026-04-09",
+    "guest_name": "Anke Lorenz",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-16",
+    "time": "13:30",
+    "party_size": 6,
+    "preference": "Quiet Corner",
+    "notes": "Strategy planning lunch"
+  },
+  {
+    "guest_name": "Victor Hugo Sandoval",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-16",
+    "time": "14:00",
+    "party_size": 1,
+    "preference": null,
+    "notes": null
+  },
+  {
+    "guest_name": "Elisa Carbone",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-16",
+    "time": "14:30",
+    "party_size": 3,
+    "preference": "Booth",
+    "notes": null
+  },
+  {
+    "guest_name": "Matthias Haas",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-16",
     "time": "19:00",
     "party_size": 4,
-    "preference": "Terraza",
-    "notes": "Demo reservation 3"
+    "preference": "Patio",
+    "notes": "Tasting menu for all"
   },
   {
-    "guest_name": "Guest 2",
-    "guest_phone": "5550000002",
-    "date": "2026-04-14",
+    "guest_name": "Ximena Cortes",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-16",
     "time": "19:15",
+    "party_size": 2,
+    "preference": "Window",
+    "notes": null
+  },
+  {
+    "guest_name": "Filippo Gentile",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-16",
+    "time": "19:45",
+    "party_size": 3,
+    "preference": null,
+    "notes": "Shellfish allergy"
+  },
+  {
+    "guest_name": "Petra Winkler",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-16",
+    "time": "20:15",
+    "party_size": 8,
+    "preference": "Private",
+    "notes": "Promotion celebration"
+  },
+  {
+    "guest_name": "Rafael Guerrero",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-16",
+    "time": "20:30",
+    "party_size": 2,
+    "preference": "Booth",
+    "notes": null
+  },
+  {
+    "guest_name": "Antonella Caruso",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-16",
+    "time": "21:00",
+    "party_size": 4,
+    "preference": null,
+    "notes": null
+  },
+  {
+    "guest_name": "Horst Friedrich",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-16",
+    "time": "21:30",
+    "party_size": 2,
+    "preference": "Near Bathroom",
+    "notes": "Elderly couple"
+  },
+  {
+    "guest_name": "Valeria Montoya",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-16",
+    "time": "22:15",
+    "party_size": 3,
+    "preference": "Quiet Corner",
+    "notes": null
+  },
+  {
+    "guest_name": "Vincenzo Leone",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-17",
+    "time": "12:00",
+    "party_size": 4,
+    "preference": "Patio",
+    "notes": null
+  },
+  {
+    "guest_name": "Gudrun Schubert",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-17",
+    "time": "12:15",
+    "party_size": 2,
+    "preference": "Window",
+    "notes": "Low-sodium diet"
+  },
+  {
+    "guest_name": "Eduardo Maldonado",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-17",
+    "time": "12:45",
+    "party_size": 3,
+    "preference": null,
+    "notes": null
+  },
+  {
+    "guest_name": "Paola Martinelli",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-17",
+    "time": "13:00",
+    "party_size": 2,
+    "preference": "Bar",
+    "notes": null
+  },
+  {
+    "guest_name": "Albrecht Weidner",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-17",
+    "time": "13:30",
+    "party_size": 5,
+    "preference": "Quiet Corner",
+    "notes": "Colleagues farewell lunch"
+  },
+  {
+    "guest_name": "Rocio Dominguez",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-17",
+    "time": "14:00",
+    "party_size": 2,
+    "preference": null,
+    "notes": null
+  },
+  {
+    "guest_name": "Cristiano Sala",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-17",
+    "time": "14:15",
+    "party_size": 4,
+    "preference": "Booth",
+    "notes": "Need menus in English"
+  },
+  {
+    "guest_name": "Elfriede Baumann",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-17",
+    "time": "19:00",
     "party_size": 3,
     "preference": "Patio",
-    "notes": "Demo reservation 2"
+    "notes": null
   },
   {
-    "guest_name": "Guest 1",
-    "guest_phone": "5550000001",
-    "date": "2026-04-09",
-    "time": "22:15",
+    "guest_name": "Joaquin Salazar",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-17",
+    "time": "19:30",
     "party_size": 2,
-    "preference": "Interior",
-    "notes": "Demo reservation 1"
+    "preference": "Window",
+    "notes": null
+  },
+  {
+    "guest_name": "Margherita Costa",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-17",
+    "time": "19:45",
+    "party_size": 10,
+    "preference": "Private",
+    "notes": "Company dinner, pre-set menu agreed"
+  },
+  {
+    "guest_name": "Reinhard Schwarz",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-17",
+    "time": "20:00",
+    "party_size": 4,
+    "preference": null,
+    "notes": null
+  },
+  {
+    "guest_name": "Alicia Villarreal",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-17",
+    "time": "20:30",
+    "party_size": 2,
+    "preference": "Booth",
+    "notes": null
+  },
+  {
+    "guest_name": "Gabriele Parisi",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-17",
+    "time": "21:00",
+    "party_size": 3,
+    "preference": "Near Bathroom",
+    "notes": "Pregnant guest needs comfortable seating"
+  },
+  {
+    "guest_name": "Karin Holz",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-17",
+    "time": "21:30",
+    "party_size": 2,
+    "preference": null,
+    "notes": null
+  },
+  {
+    "guest_name": "Emilia Nunez",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-17",
+    "time": "22:00",
+    "party_size": 4,
+    "preference": "Booth",
+    "notes": "Late dinner after concert"
+  },
+  {
+    "guest_name": "Alessandro Vitali",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-18",
+    "time": "12:00",
+    "party_size": 2,
+    "preference": "Patio",
+    "notes": null
+  },
+  {
+    "guest_name": "Lieselotte Brandt",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-18",
+    "time": "12:15",
+    "party_size": 4,
+    "preference": "Window",
+    "notes": null
+  },
+  {
+    "guest_name": "Gonzalo Figueroa",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-18",
+    "time": "12:30",
+    "party_size": 3,
+    "preference": null,
+    "notes": "Halal food required"
+  },
+  {
+    "guest_name": "Monica Piazza",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-18",
+    "time": "13:00",
+    "party_size": 2,
+    "preference": "Bar",
+    "notes": null
+  },
+  {
+    "guest_name": "Hartmut Voigt",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-18",
+    "time": "13:15",
+    "party_size": 7,
+    "preference": "Private",
+    "notes": "Family birthday, grandma turning 80"
+  },
+  {
+    "guest_name": "Amparo Medina",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-18",
+    "time": "13:45",
+    "party_size": 2,
+    "preference": "Quiet Corner",
+    "notes": null
+  },
+  {
+    "guest_name": "Dario Pellegrino",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-18",
+    "time": "14:00",
+    "party_size": 4,
+    "preference": null,
+    "notes": null
+  },
+  {
+    "guest_name": "Marlene Bergmann",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-18",
+    "time": "19:00",
+    "party_size": 3,
+    "preference": "Booth",
+    "notes": "Regular - same table as always"
+  },
+  {
+    "guest_name": "Sergio Castellanos",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-18",
+    "time": "19:15",
+    "party_size": 2,
+    "preference": "Patio",
+    "notes": null
+  },
+  {
+    "guest_name": "Renata Fabbri",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-18",
+    "time": "19:45",
+    "party_size": 4,
+    "preference": "Window",
+    "notes": "Engagement celebration"
+  },
+  {
+    "guest_name": "Erich Wiegand",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-18",
+    "time": "20:00",
+    "party_size": 2,
+    "preference": null,
+    "notes": null
+  },
+  {
+    "guest_name": "Gabriela Solis",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-18",
+    "time": "20:30",
+    "party_size": 5,
+    "preference": "Quiet Corner",
+    "notes": "Reunion dinner"
+  },
+  {
+    "guest_name": "Franco Benedetti",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-18",
+    "time": "21:00",
+    "party_size": 3,
+    "preference": "Bar",
+    "notes": null
+  },
+  {
+    "guest_name": "Dagmar Schuster",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-18",
+    "time": "21:30",
+    "party_size": 2,
+    "preference": null,
+    "notes": null
+  },
+  {
+    "guest_name": "Cesar Ibarra",
+    "guest_phone": "+4915750441601",
+    "date": "2026-04-18",
+    "time": "22:00",
+    "party_size": 4,
+    "preference": "Booth",
+    "notes": "End of project celebration"
   }
 ]
