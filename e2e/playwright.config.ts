@@ -22,16 +22,20 @@ export default defineConfig({
   workers: isCI ? 1 : undefined,
   reporter: [
     ["list"],
-    ["html", { open: isCI ? "never" : "on-failure" }],
+    ["html", { open: isCI ? "never" : "on-failure", outputFolder: "playwright-report" }],
+    ...(isCI ? [["json" as const, { outputFile: "test-results/results.json" }]] : []),
   ],
   timeout: 30_000,
   expect: { timeout: 5_000 },
 
   use: {
     baseURL: process.env.BASE_URL ?? "http://localhost:5173",
-    trace: "on-first-retry",
-    screenshot: "only-on-failure",
-    video: "retain-on-failure",
+    trace: "on",
+    screenshot: "on",
+    video: {
+      mode: "on",
+      size: { width: 1280, height: 720 },
+    },
   },
 
   projects: [
