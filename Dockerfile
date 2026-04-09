@@ -1,14 +1,18 @@
-# ─── Stage 0: UI builder (uses cached node_modules from base) ────────────────
+# ─── Stage 0: Get cached UI node_modules from base ──────────────────────────
+FROM europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-api-base:latest AS deps-cache
+
+# ─── Stage 1: UI builder (near-instant with cached node_modules) ────────────
 FROM node:20-alpine AS ui-builder
 
 WORKDIR /ui
+COPY --from=deps-cache /app/_ui_node_modules ./node_modules
 COPY ui/package.json ui/package-lock.json* ./
-RUN npm install --legacy-peer-deps
+RUN npm install --legacy-peer-deps 2>/dev/null || true
 COPY ui/ .
 RUN npm run build
 
-# ─── Stage 1: Runtime (FROM base with pre-installed deps) ───────────────────
-FROM europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-api-base:latest AS runtime
+# ─── Stage 2: Runtime (FROM base with pre-installed Python deps) ────────────
+FROM europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-api-base:latest
 
 WORKDIR /app
 
