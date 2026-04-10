@@ -89,6 +89,9 @@ def _get_dsn() -> str:
     )
 
 
+_db_initialized = False
+
+
 @contextmanager
 def get_conn() -> Generator[psycopg2.extensions.connection, None, None]:
     """Context manager yielding a psycopg2 connection with autocommit disabled."""
@@ -96,6 +99,10 @@ def get_conn() -> Generator[psycopg2.extensions.connection, None, None]:
     try:
         yield conn
         conn.commit()
+    except psycopg2.errors.UndefinedTable:
+        conn.rollback()
+        _auto_reinit_db()
+        raise
     except Exception:
         conn.rollback()
         raise
@@ -108,20 +115,39 @@ def get_conn() -> Generator[psycopg2.extensions.connection, None, None]:
 
 def init_db() -> None:
     """Create tables if they don't exist. Called at app startup."""
+    global _db_initialized
     try:
-        with get_conn() as conn:
+        with psycopg2.connect(_get_dsn(), cursor_factory=psycopg2.extras.RealDictCursor) as conn:
             with conn.cursor() as cur:
                 cur.execute(_DDL)
-                # Migrate existing tables: add confirmation columns if missing
                 cur.execute(
                     "ALTER TABLE reservations ADD COLUMN IF NOT EXISTS confirmation_status TEXT NOT NULL DEFAULT 'pending';"
                 )
                 cur.execute(
                     "ALTER TABLE reservations ADD COLUMN IF NOT EXISTS confirmation_called_at TIMESTAMPTZ;"
                 )
+            conn.commit()
+        _db_initialized = True
         logger.info("[HostAI] - DB Init: PostgreSQL schema initialized (host-agent)")
     except Exception as exc:
         logger.warning("[HostAI] - DB Init: PostgreSQL init_db failed (non-fatal): %s", exc)
+
+
+def _auto_reinit_db() -> None:
+    """Re-initialize DB schema when an UndefinedTable error is detected (e.g. after Postgres restart without PVC)."""
+    global _db_initialized
+    if not _db_initialized:
+        return
+    logger.warning("[HostAI] - DB: UndefinedTable detected — re-initializing all schemas")
+    _db_initialized = False
+    init_db()
+    try:
+        from src.api.auth_users import ensure_default_users
+        from src.services.floor_plan_service import ensure_assignments_table
+        ensure_default_users()
+        ensure_assignments_table()
+    except Exception as exc:
+        logger.warning("[HostAI] - DB: reinit auxiliary tables failed: %s", exc)
 
 
 # ─── Reservations ─────────────────────────────────────────────────────────────

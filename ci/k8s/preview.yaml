@@ -44,6 +44,14 @@ spec:
   selector:
     matchLabels:
       app: postgres
+  volumeClaimTemplates:
+    - metadata:
+        name: pgdata
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
   template:
     metadata:
       labels:
@@ -61,6 +69,11 @@ spec:
               value: "hostai_ci"
             - name: POSTGRES_PASSWORD
               value: "ci-pass-2026"
+            - name: PGDATA
+              value: "/var/lib/postgresql/data/pgdata"
+          volumeMounts:
+            - name: pgdata
+              mountPath: /var/lib/postgresql/data
           readinessProbe:
             exec:
               command: ["pg_isready", "-U", "hostai_ci"]
