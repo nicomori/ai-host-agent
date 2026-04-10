@@ -110,6 +110,12 @@ steps:
           | grep -v '^\s*uid:'
           | grep -v '^\s*creationTimestamp:'
           | kubectl apply -n $NS -f -
+      - echo "Waiting for Postgres to be ready..."
+      - kubectl rollout status statefulset/postgres -n $NS --timeout=120s
+      - echo "Waiting for Redis to be ready..."
+      - kubectl rollout status statefulset/redis -n $NS --timeout=60s
+      - echo "Restarting API to pick up Postgres connection..."
+      - kubectl rollout restart deployment/hostai-api -n $NS
       - kubectl rollout status deployment/hostai-api -n $NS --timeout=300s
 
   - name: wait-for-health
