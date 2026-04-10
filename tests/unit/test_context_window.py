@@ -10,9 +10,9 @@ Step 7 — Context window management tests (ai-host-agent).
   TC6: ContextBudget.check_alert fires at threshold, silent below
   TC7: apply_context_strategy dispatches correctly + returns alert
 """
+
 from __future__ import annotations
 
-import pytest
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 
 from src.context_window import (
@@ -28,6 +28,7 @@ from src.context_window import (
 
 
 # ─── Helpers ──────────────────────────────────────────────────────────────────
+
 
 def _build_history(n: int, prefix: str = "message") -> list:
     """Build alternating Human/AI messages."""
@@ -47,6 +48,7 @@ def _sys(content: str = "You are a helpful assistant.") -> SystemMessage:
 # ══════════════════════════════════════════════════════════════════════════════
 # TC1 — count_tokens returns positive integer for any non-empty messages
 # ══════════════════════════════════════════════════════════════════════════════
+
 
 def test_tc1_count_tokens_positive():
     msgs = [HumanMessage(content="Hello"), AIMessage(content="Hi there!")]
@@ -69,6 +71,7 @@ def test_tc1_count_tokens_empty_list():
 # ══════════════════════════════════════════════════════════════════════════════
 # TC2 — sliding_window: trims old messages, always preserves SystemMessages
 # ══════════════════════════════════════════════════════════════════════════════
+
 
 def test_tc2_sliding_window_trims_old_messages():
     sys_msg = _sys()
@@ -106,6 +109,7 @@ def test_tc2_sliding_window_preserves_recent_over_old():
 # TC3 — sliding_window: no-op when already within budget
 # ══════════════════════════════════════════════════════════════════════════════
 
+
 def test_tc3_sliding_window_noop_within_budget():
     msgs = [_sys(), HumanMessage(content="book a table"), AIMessage(content="Sure!")]
     original_len = len(msgs)
@@ -121,6 +125,7 @@ def test_tc3_sliding_window_empty():
 # ══════════════════════════════════════════════════════════════════════════════
 # TC4 — summarize_history: collapses old messages into SystemMessage summary
 # ══════════════════════════════════════════════════════════════════════════════
+
 
 def test_tc4_summarize_history_creates_summary():
     sys_msg = _sys()
@@ -148,6 +153,7 @@ def test_tc4_summarize_history_noop_within_budget():
 # TC5 — semantic_select: returns top-N most relevant messages
 # ══════════════════════════════════════════════════════════════════════════════
 
+
 def test_tc5_semantic_select_returns_top_n():
     sys_msg = _sys()
     msgs = [sys_msg]
@@ -171,6 +177,7 @@ def test_tc5_semantic_select_noop_when_few_msgs():
 # ══════════════════════════════════════════════════════════════════════════════
 # TC6 — ContextBudget: alert fires at threshold, silent below
 # ══════════════════════════════════════════════════════════════════════════════
+
 
 def test_tc6_context_budget_alert_at_threshold():
     # Very low token limit so 2 messages exceed 80%
@@ -200,6 +207,7 @@ def test_tc6_host_agent_budget_defaults():
 # TC7 — apply_context_strategy: dispatches by strategy, returns (msgs, alert)
 # ══════════════════════════════════════════════════════════════════════════════
 
+
 def test_tc7_apply_strategy_within_budget_no_trim():
     budget = ContextBudget(agent_name="A", token_limit=10_000, strategy="sliding")
     msgs = [_sys(), HumanMessage(content="hello")]
@@ -209,7 +217,9 @@ def test_tc7_apply_strategy_within_budget_no_trim():
 
 def test_tc7_apply_strategy_sliding_trims():
     budget = ContextBudget(agent_name="A", token_limit=30, strategy="sliding")
-    msgs = [_sys()] + [HumanMessage(content=f"word word word {i} extra padding here") for i in range(10)]
+    msgs = [_sys()] + [
+        HumanMessage(content=f"word word word {i} extra padding here") for i in range(10)
+    ]
     result_msgs, _alert = apply_context_strategy(msgs, budget)
     assert count_tokens(result_msgs) <= budget.token_limit
 

@@ -6,6 +6,7 @@ Tables managed here:
   - conversation_memory  : per-session conversation chunks for context window
   - voice_transcripts    : indexed call transcripts
 """
+
 from __future__ import annotations
 
 import os

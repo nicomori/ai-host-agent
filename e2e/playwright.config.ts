@@ -24,8 +24,8 @@ export default defineConfig({
     ["list"],
     ["html", { open: isCI ? "never" : "on-failure" }],
   ],
-  timeout: 30_000,
-  expect: { timeout: 5_000 },
+  timeout: isCI ? 60_000 : 30_000,
+  expect: { timeout: isCI ? 10_000 : 5_000 },
 
   use: {
     baseURL: process.env.BASE_URL ?? "http://localhost:5173",

@@ -12,20 +12,20 @@ Provides:
 All strategies preserve SystemMessages at position 0 (they carry the agent
 persona and must never be evicted).
 """
+
 from __future__ import annotations
 
 import logging
-import math
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import List, Optional
 
-from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage
+from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
 
 log = logging.getLogger(__name__)
 
 # ─── Token counter ────────────────────────────────────────────────────────────
 
-_TIKTOKEN_ENCODING = "cl100k_base"   # compatible with Claude / GPT-4 family
+_TIKTOKEN_ENCODING = "cl100k_base"  # compatible with Claude / GPT-4 family
 
 
 def count_tokens(messages: List[BaseMessage]) -> int:
@@ -39,6 +39,7 @@ def count_tokens(messages: List[BaseMessage]) -> int:
         return 0
     try:
         import tiktoken
+
         enc = tiktoken.get_encoding(_TIKTOKEN_ENCODING)
         total = 0
         for m in messages:
@@ -49,7 +50,9 @@ def count_tokens(messages: List[BaseMessage]) -> int:
         return total
     except Exception:
         # Form 2 fallback: character-based estimate
-        total = sum(len(m.content if isinstance(m.content, str) else str(m.content)) for m in messages)
+        total = sum(
+            len(m.content if isinstance(m.content, str) else str(m.content)) for m in messages
+        )
         return max(1, total // 4)
 
 
@@ -59,6 +62,7 @@ def count_tokens_str(text: str) -> int:
 
 
 # ─── Strategy 1: Sliding window ───────────────────────────────────────────────
+
 
 def sliding_window(
     messages: List[BaseMessage],
@@ -110,11 +114,17 @@ def sliding_window(
     original_count = len(messages)
     if len(result) < original_count:
         evicted = original_count - len(result)
-        log.info("sliding_window: evicted %d messages (%d→%d tokens)", evicted, count_tokens(messages), count_tokens(result))
+        log.info(
+            "sliding_window: evicted %d messages (%d→%d tokens)",
+            evicted,
+            count_tokens(messages),
+            count_tokens(result),
+        )
     return result
 
 
 # ─── Strategy 2: Summarization ────────────────────────────────────────────────
+
 
 def summarize_history(
     messages: List[BaseMessage],
@@ -156,11 +166,14 @@ def summarize_history(
     summary_msg = SystemMessage(content=summary_text)
 
     result = system_msgs + [summary_msg] + recent
-    log.info("summarize_history: summarized %d messages → 1 summary + %d recent", len(older), len(recent))
+    log.info(
+        "summarize_history: summarized %d messages → 1 summary + %d recent", len(older), len(recent)
+    )
     return result
 
 
 # ─── Strategy 3: Semantic selection ──────────────────────────────────────────
+
 
 def semantic_select(
     messages: List[BaseMessage],
@@ -203,11 +216,17 @@ def semantic_select(
     selected_sorted = sorted(selected, key=lambda m: original_idx.get(id(m), 0))
 
     result = system_msgs + selected_sorted
-    log.info("semantic_select: selected %d/%d messages for query=%r", len(selected), len(candidates), query[:40])
+    log.info(
+        "semantic_select: selected %d/%d messages for query=%r",
+        len(selected),
+        len(candidates),
+        query[:40],
+    )
     return result
 
 
 # ─── Token budget ─────────────────────────────────────────────────────────────
+
 
 @dataclass
 class ContextBudget:
@@ -221,6 +240,7 @@ class ContextBudget:
                           Default 0.8 → warn at 80% usage.
         strategy:         Default strategy: "sliding" | "summarize" | "semantic".
     """
+
     agent_name: str
     token_limit: int = 8_000
     alert_threshold: float = 0.80
@@ -245,6 +265,7 @@ class ContextBudget:
 
 
 # ─── Dispatch ─────────────────────────────────────────────────────────────────
+
 
 def apply_context_strategy(
     messages: List[BaseMessage],

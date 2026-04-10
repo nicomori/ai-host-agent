@@ -11,6 +11,7 @@ from src.config import get_settings
 logger = logging.getLogger(__name__)
 
 FLOOR_PLAN_PATH = os.path.join(os.path.dirname(__file__), "../../data/floor_plan.json")
+FLOOR_PLAN_DEFAULT_PATH = os.path.join(os.path.dirname(__file__), "../data/floor_plan.default.json")
 
 
 def _get_dsn() -> str:
@@ -56,11 +57,13 @@ def ensure_assignments_table() -> None:
 
 
 def get_floor_plan() -> dict:
-    try:
-        with open(FLOOR_PLAN_PATH, "r") as f:
-            return json.load(f)
-    except FileNotFoundError:
-        return {"tables": []}
+    for path in (FLOOR_PLAN_PATH, FLOOR_PLAN_DEFAULT_PATH):
+        try:
+            with open(path, "r") as f:
+                return json.load(f)
+        except FileNotFoundError:
+            continue
+    return {"tables": []}
 
 
 def save_floor_plan(layout: dict) -> None:

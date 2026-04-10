@@ -7,6 +7,7 @@ Roles:
   writer — can create/update reservations, seat guests
   reader — view only (GET endpoints)
 """
+
 from __future__ import annotations
 
 import bcrypt
@@ -30,12 +31,13 @@ logger = logging.getLogger(__name__)
 
 # ─── Config ──────────────────────────────────────────────────────────────────
 SECRET_KEY = os.getenv("JWT_SECRET_KEY", "ha-jwt-secret-2026-changeme")
-ALGORITHM  = "HS256"
+ALGORITHM = "HS256"
 TOKEN_TTL_HOURS = 8
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/token")
 
 # ─── Models ──────────────────────────────────────────────────────────────────
+
 
 class UserInfo(BaseModel):
     username: str
@@ -61,6 +63,7 @@ class UpdatePermissionsRequest(BaseModel):
 
 
 # ─── DB helpers ──────────────────────────────────────────────────────────────
+
 
 def _get_dsn() -> str:
     s = get_settings()
@@ -100,7 +103,9 @@ def _list_users() -> list[dict]:
     try:
         with _get_conn() as conn:
             with conn.cursor() as cur:
-                cur.execute("SELECT id, username, role, can_edit_floor_plan, created_at FROM app_users ORDER BY id")
+                cur.execute(
+                    "SELECT id, username, role, can_edit_floor_plan, created_at FROM app_users ORDER BY id"
+                )
                 rows = cur.fetchall()
             return [dict(r) for r in rows]
     except Exception:
@@ -121,8 +126,14 @@ def ensure_default_users() -> None:
                         created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
                     )
                 """)
-                cur.execute("ALTER TABLE app_users ADD COLUMN IF NOT EXISTS can_edit_floor_plan BOOLEAN DEFAULT FALSE;")
-                for username, role in [("admin", "admin"), ("writer", "writer"), ("reader", "reader")]:
+                cur.execute(
+                    "ALTER TABLE app_users ADD COLUMN IF NOT EXISTS can_edit_floor_plan BOOLEAN DEFAULT FALSE;"
+                )
+                for username, role in [
+                    ("admin", "admin"),
+                    ("writer", "writer"),
+                    ("reader", "reader"),
+                ]:
                     pwd_hash = bcrypt.hashpw(b"1234", bcrypt.gensalt()).decode()
                     cur.execute(
                         "INSERT INTO app_users (username,password_hash,role) VALUES (%s,%s,%s) "
@@ -149,9 +160,15 @@ def _create_user(username: str, password: str, role: str) -> dict:
 
 # ─── JWT helpers ─────────────────────────────────────────────────────────────
 
+
 def _create_token(username: str, role: str, can_edit_floor_plan: bool = False) -> str:
     expire = datetime.now(timezone.utc) + timedelta(hours=TOKEN_TTL_HOURS)
-    payload = {"sub": username, "role": role, "can_edit_floor_plan": can_edit_floor_plan, "exp": expire}
+    payload = {
+        "sub": username,
+        "role": role,
+        "can_edit_floor_plan": can_edit_floor_plan,
+        "exp": expire,
+    }
     return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
 
@@ -167,6 +184,7 @@ def _decode_token(token: str) -> dict:
 
 
 # ─── Auth dependency ──────────────────────────────────────────────────────────
+
 
 def get_current_user(token: str = Depends(oauth2_scheme)) -> UserInfo:
     payload = _decode_token(token)
@@ -191,7 +209,7 @@ def require_writer(user: UserInfo = Depends(get_current_user)) -> UserInfo:
 
 # ─── Auth router ──────────────────────────────────────────────────────────────
 
-from fastapi import APIRouter
+from fastapi import APIRouter  # noqa: E402
 
 auth_router = APIRouter()
 
@@ -204,7 +222,9 @@ async def login(form: OAuth2PasswordRequestForm = Depends()) -> Token:
         raise HTTPException(status_code=401, detail="Invalid credentials")
     if not bcrypt.checkpw(form.password.encode(), user["password_hash"].encode()):
         raise HTTPException(status_code=401, detail="Invalid credentials")
-    token = _create_token(user["username"], user["role"], bool(user.get("can_edit_floor_plan", False)))
+    token = _create_token(
+        user["username"], user["role"], bool(user.get("can_edit_floor_plan", False))
+    )
     return Token(
         access_token=token,
         token_type="bearer",
@@ -222,7 +242,17 @@ async def me(user: UserInfo = Depends(get_current_user)) -> UserInfo:
 async def list_users(admin: UserInfo = Depends(require_admin)) -> dict:
     """Admin only: list all users."""
     users = _list_users()
-    return {"users": [{"id": u["id"], "username": u["username"], "role": u["role"], "can_edit_floor_plan": u["can_edit_floor_plan"]} for u in users]}
+    return {
+        "users": [
+            {
+                "id": u["id"],
+                "username": u["username"],
+                "role": u["role"],
+                "can_edit_floor_plan": u["can_edit_floor_plan"],
+            }
+            for u in users
+        ]
+    }
 
 
 @auth_router.post("/users", tags=["Auth"])

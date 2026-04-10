@@ -12,7 +12,7 @@ metadata:
   name: hostai-env
   namespace: hostai-pr-${PR_NUMBER}
 data:
-  APP_ENV: "ci"
+  APP_ENV: "staging"
   APP_PORT: "8000"
   API_KEY: "ci-test-key"
   POSTGRES_HOST: "postgres-svc"
@@ -44,13 +44,19 @@ spec:
   selector:
     matchLabels:
       app: postgres
+  volumeClaimTemplates:
+    - metadata:
+        name: pgdata
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
   template:
     metadata:
       labels:
         app: postgres
     spec:
-      nodeSelector:
-        pool: apps
       containers:
         - name: postgres
           image: postgres:16-alpine
@@ -63,18 +69,23 @@ spec:
               value: "hostai_ci"
             - name: POSTGRES_PASSWORD
               value: "ci-pass-2026"
+            - name: PGDATA
+              value: "/var/lib/postgresql/data/pgdata"
+          volumeMounts:
+            - name: pgdata
+              mountPath: /var/lib/postgresql/data
           readinessProbe:
             exec:
               command: ["pg_isready", "-U", "hostai_ci"]
-            initialDelaySeconds: 5
-            periodSeconds: 5
+            initialDelaySeconds: 3
+            periodSeconds: 3
           resources:
             requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
               cpu: "250m"
               memory: "256Mi"
-            limits:
-              cpu: "500m"
-              memory: "512Mi"
 ---
 apiVersion: v1
 kind: Service
@@ -104,8 +115,6 @@ spec:
       labels:
         app: redis
     spec:
-      nodeSelector:
-        pool: apps
       containers:
         - name: redis
           image: redis:7-alpine
@@ -114,15 +123,15 @@ spec:
           readinessProbe:
             exec:
               command: ["redis-cli", "ping"]
-            initialDelaySeconds: 5
-            periodSeconds: 5
+            initialDelaySeconds: 3
+            periodSeconds: 3
           resources:
             requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
               cpu: "100m"
               memory: "128Mi"
-            limits:
-              cpu: "250m"
-              memory: "256Mi"
 ---
 apiVersion: v1
 kind: Service
@@ -153,8 +162,6 @@ spec:
     spec:
       imagePullSecrets:
         - name: ar-pull-secret
-      nodeSelector:
-        pool: apps
       containers:
         - name: api
           image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-api:${COMMIT_SHA}
@@ -168,9 +175,9 @@ spec:
             httpGet:
               path: /health
               port: 8000
-            initialDelaySeconds: 10
-            periodSeconds: 5
-            failureThreshold: 6
+            initialDelaySeconds: 5
+            periodSeconds: 3
+            failureThreshold: 20
           resources:
             requests:
               cpu: "100m"

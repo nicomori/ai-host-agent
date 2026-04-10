@@ -4,6 +4,7 @@ HostAI — AgentState definition (Step 5).
 The state is a TypedDict that flows through every node of the LangGraph graph.
 All fields use reducers so concurrent node updates are safe.
 """
+
 from __future__ import annotations
 
 import operator
@@ -15,10 +16,11 @@ from langchain_core.messages import BaseMessage
 
 class ReservationData(TypedDict, total=False):
     """Structured data extracted by the agent during the conversation."""
+
     guest_name: str
     guest_phone: str
-    date: str            # YYYY-MM-DD
-    time: str            # HH:MM
+    date: str  # YYYY-MM-DD
+    time: str  # HH:MM
     party_size: int
     notes: str
     reservation_id: str
@@ -35,6 +37,7 @@ class AgentState(TypedDict):
     Single-writer fields (last-write-wins, no reducer needed):
       - session_id, intent, reservation_data, next_action, final_response
     """
+
     # Conversation history — append-only via operator.add
     messages: Annotated[list[BaseMessage], operator.add]
 

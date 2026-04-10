@@ -674,7 +674,7 @@ export default function Dashboard() {
 
   const { data, isLoading } = useQuery({
     queryKey: ["reservations"],
-    queryFn: () => listReservations(1, 100).then((r) => r.data),
+    queryFn: () => listReservations(1, 500).then((r) => r.data),
     refetchInterval: 60_000,
   });
 

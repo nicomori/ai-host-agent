@@ -10,6 +10,7 @@ Step 12 — Semantic Caching + Cost Optimization tests (ai-host-agent).
   TC6: CacheStats tracks hits and misses correctly across multiple calls
   TC7: clear() empties the cache — subsequent lookup returns None
 """
+
 from __future__ import annotations
 
 import pytest
@@ -28,6 +29,7 @@ import src.cache as cache_module
 
 
 # ─── Helpers ─────────────────────────────────────────────────────────────────
+
 
 def _make_orthogonal_embed():
     """
@@ -75,6 +77,7 @@ def reset_cache_singleton():
 # TC1 — CacheConfig defaults
 # ══════════════════════════════════════════════════════════════════════════════
 
+
 def test_tc1_cache_config_defaults():
     """CacheConfig must have sensible defaults for the HostAI pipeline."""
     config = CacheConfig()
@@ -106,6 +109,7 @@ def test_tc1_cache_config_custom():
 # TC2 — CacheStats computed properties
 # ══════════════════════════════════════════════════════════════════════════════
 
+
 def test_tc2_cache_stats_zero_state():
     """CacheStats with no calls must have hit_rate=0 and cost_saved=0."""
     stats = CacheStats()
@@ -126,8 +130,8 @@ def test_tc2_cache_stats_cost_saved():
     """estimated_cost_saved_usd must reflect token savings and configured rates."""
     stats = CacheStats(
         hits=1,
-        tokens_saved_input=1_000_000,   # 1M input tokens
-        tokens_saved_output=500_000,    # 0.5M output tokens
+        tokens_saved_input=1_000_000,  # 1M input tokens
+        tokens_saved_output=500_000,  # 0.5M output tokens
         cost_input_per_million=3.0,
         cost_output_per_million=15.0,
     )
@@ -139,6 +143,7 @@ def test_tc2_cache_stats_cost_saved():
 # ══════════════════════════════════════════════════════════════════════════════
 # TC3 — lookup() returns None when cache is empty
 # ══════════════════════════════════════════════════════════════════════════════
+
 
 def test_tc3_lookup_miss_empty_cache(tmp_cache):
     """lookup() must return None when no entries exist in the cache."""
@@ -165,6 +170,7 @@ def test_tc3_lookup_disabled_cache(tmp_path):
 # ══════════════════════════════════════════════════════════════════════════════
 # TC4 — store() + lookup() same query → cache hit
 # ══════════════════════════════════════════════════════════════════════════════
+
 
 def test_tc4_store_then_lookup_same_query(tmp_cache):
     """
@@ -203,6 +209,7 @@ def test_tc4_store_disabled_does_not_persist(tmp_path):
 # ══════════════════════════════════════════════════════════════════════════════
 # TC5 — lookup() returns None for a dissimilar query
 # ══════════════════════════════════════════════════════════════════════════════
+
 
 def test_tc5_lookup_miss_dissimilar_query(tmp_path):
     """
@@ -257,6 +264,7 @@ def test_tc5_lookup_hit_similar_query(tmp_path):
 # TC6 — CacheStats tracks hits and misses correctly
 # ══════════════════════════════════════════════════════════════════════════════
 
+
 def test_tc6_stats_track_multiple_calls(tmp_path):
     """
     After a mix of cache hits and misses, CacheStats must accurately reflect
@@ -290,7 +298,7 @@ def test_tc6_stats_track_multiple_calls(tmp_path):
     assert stats.misses == 1
     assert stats.total_requests == 3
     assert abs(stats.hit_rate - 2 / 3) < 1e-9
-    assert stats.tokens_saved_input == 200   # 2 hits × 100 tokens
+    assert stats.tokens_saved_input == 200  # 2 hits × 100 tokens
     assert stats.tokens_saved_output == 100  # 2 hits × 50 tokens
     assert stats.estimated_cost_saved_usd > 0.0
 
@@ -298,6 +306,7 @@ def test_tc6_stats_track_multiple_calls(tmp_path):
 # ══════════════════════════════════════════════════════════════════════════════
 # TC7 — clear() empties the cache
 # ══════════════════════════════════════════════════════════════════════════════
+
 
 def test_tc7_clear_empties_cache(tmp_cache):
     """
@@ -333,6 +342,7 @@ def test_tc7_clear_then_reuse(tmp_cache):
 # ══════════════════════════════════════════════════════════════════════════════
 # Extra — get_cache() singleton and estimate_cost()
 # ══════════════════════════════════════════════════════════════════════════════
+
 
 def test_get_cache_returns_singleton(tmp_path):
     """get_cache() must return the same instance on subsequent calls."""

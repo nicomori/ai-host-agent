@@ -10,6 +10,7 @@ Step N+1 — PostgreSQL persistence:
   - All reads/writes go to PostgreSQL via pg_db module
   - _reservations in-memory dict removed (state survives restart)
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -22,14 +23,14 @@ from typing import Annotated, Optional
 from fastapi import APIRouter, Depends, Form, HTTPException, Query, Request, Security, status
 from fastapi.responses import FileResponse, Response, StreamingResponse
 from pydantic import BaseModel
-from twilio.twiml.voice_response import Gather, Say, VoiceResponse
+from twilio.twiml.voice_response import Gather, VoiceResponse
 
 from src.api.auth import verify_api_key
 from src.config import AppSettings, get_settings
 from src.services import db as pg_db
-from src.models.floor_plan import FloorPlanLayout, AssignmentsForHour, TableAssignmentResponse
+from src.models.floor_plan import AssignmentsForHour, TableAssignmentResponse
 from src.services import floor_plan_service
-from src.api.auth_users import get_current_user, require_admin, UserInfo
+from src.api.auth_users import get_current_user, UserInfo
 from src.models.reservation import (
     CancelReservationRequest,
     CancelReservationResponse,
@@ -38,8 +39,6 @@ from src.models.reservation import (
     ReservationListResponse,
     ReservationResponse,
     ReservationStatus,
-    VoiceInboundRequest,
-    VoiceInboundResponse,
     VoiceOutboundResponse,
     CallStatus,
 )
@@ -50,6 +49,7 @@ SettingsDep = Annotated[AppSettings, Depends(get_settings)]
 
 
 # ─── Request models ─────────────────────────────────────────────────────────
+
 
 class UpdateStatusRequest(BaseModel):
     status: str
@@ -84,6 +84,7 @@ def _get_reservation_or_404(reservation_id: str) -> dict:
 
 # ─── Reservations ──────────────────────────────────────────────────────────────
 
+
 @router.get(
     "/reservations",
     response_model=ReservationListResponse,
@@ -93,7 +94,7 @@ def _get_reservation_or_404(reservation_id: str) -> dict:
 async def list_reservations(
     cfg: SettingsDep,
     page: int = Query(default=1, ge=1),
-    page_size: int = Query(default=20, ge=1, le=100),
+    page_size: int = Query(default=20, ge=1, le=500),
     status_filter: Optional[ReservationStatus] = Query(default=None, alias="status"),
 ) -> ReservationListResponse:
     all_rows = pg_db.list_reservations(
@@ -101,7 +102,7 @@ async def list_reservations(
     )
     total = len(all_rows)
     start = (page - 1) * page_size
-    page_items = all_rows[start: start + page_size]
+    page_items = all_rows[start : start + page_size]
     return ReservationListResponse(
         reservations=[ReservationResponse(**r) for r in page_items],
         total=total,
@@ -159,6 +160,7 @@ async def stream_reservations(
     Server-Sent Events stream for live reservation updates.
     Resolution Form 1: Placed BEFORE /{reservation_id} to avoid path-param shadowing.
     """
+
     async def event_generator():
         rows = pg_db.list_reservations()
         snapshot = {
@@ -177,7 +179,11 @@ async def stream_reservations(
     return StreamingResponse(
         event_generator(),
         media_type="text/event-stream",
-        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no", "Connection": "keep-alive"},
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+            "Connection": "keep-alive",
+        },
     )
 
 
@@ -241,11 +247,28 @@ async def cancel_reservation(
 # ─── Voice ────────────────────────────────────────────────────────────────────
 
 _GOODBYE_SIGNALS = [
-    "goodbye", "arrivederci", "thank you", "grazie", "see you", "a presto",
-    "have a great", "buona serata", "enjoy your", "confirmed", "confirmed!",
-    "anything else", "is there anything else",
-    "adiós", "chau", "gracias", "hasta luego", "nos vemos", "confirmada",
-    "algo más", "hay algo más", "reserva confirmada",
+    "goodbye",
+    "arrivederci",
+    "thank you",
+    "grazie",
+    "see you",
+    "a presto",
+    "have a great",
+    "buona serata",
+    "enjoy your",
+    "confirmed",
+    "confirmed!",
+    "anything else",
+    "is there anything else",
+    "adiós",
+    "chau",
+    "gracias",
+    "hasta luego",
+    "nos vemos",
+    "confirmada",
+    "algo más",
+    "hay algo más",
+    "reserva confirmada",
 ]
 
 
@@ -292,7 +315,10 @@ async def voice_inbound(
         )
     except Exception as exc:
         import logging
-        logging.getLogger(__name__).warning("[HostAI] - Voice Inbound: failed to save call log for %s: %s", CallSid, exc)
+
+        logging.getLogger(__name__).warning(
+            "[HostAI] - Voice Inbound: failed to save call log for %s: %s", CallSid, exc
+        )
 
     from src.services.voice_tts import synthesize as tts_synthesize
 
@@ -302,10 +328,7 @@ async def voice_inbound(
     eleven_key = cfg.env.elevenlabs_api_key
     eleven_voice = cfg.env.elevenlabs_voice_id
 
-    welcome = (
-        f"Hola, buenas, hablas con {cfg.restaurant_name}. "
-        "¿En qué te puedo ayudar?"
-    )
+    welcome = f"Hola, buenas, hablas con {cfg.restaurant_name}. ¿En qué te puedo ayudar?"
 
     vr = VoiceResponse()
     gather = Gather(
@@ -359,14 +382,22 @@ async def voice_process(
                 return
             except Exception as exc:
                 import logging
-                logging.getLogger(__name__).warning("[HostAI] - Voice TTS: ElevenLabs synthesis failed, falling back to Twilio TTS: %s", exc)
+
+                logging.getLogger(__name__).warning(
+                    "[HostAI] - Voice TTS: ElevenLabs synthesis failed, falling back to Twilio TTS: %s",
+                    exc,
+                )
         vr_or_gather.say(text, language=language)
 
     if not SpeechResult.strip():
         vr = VoiceResponse()
         gather = Gather(
-            input="speech", action=process_url, method="POST",
-            language=language, speech_timeout="auto", action_on_empty_result=True,
+            input="speech",
+            action=process_url,
+            method="POST",
+            language=language,
+            speech_timeout="auto",
+            action_on_empty_result=True,
         )
         _twiml_say_or_play(gather, "No te escuché. ¿Podés repetir?")
         vr.append(gather)
@@ -381,8 +412,12 @@ async def voice_process(
         vr.hangup()
     else:
         gather = Gather(
-            input="speech", action=process_url, method="POST",
-            language=language, speech_timeout="auto", action_on_empty_result=True,
+            input="speech",
+            action=process_url,
+            method="POST",
+            language=language,
+            speech_timeout="auto",
+            action_on_empty_result=True,
         )
         _twiml_say_or_play(gather, agent_text)
         vr.append(gather)
@@ -399,6 +434,7 @@ async def voice_process(
 )
 async def serve_audio(uid: str):
     from src.services.voice_tts import get_audio_path
+
     path = get_audio_path(uid)
     if not path:
         raise HTTPException(status_code=404, detail="Audio not found")
@@ -494,18 +530,25 @@ async def update_confirmation_config(
         raise HTTPException(status_code=403, detail="Admin role required")
     minutes = body.get("confirmation_call_minutes_before")
     if minutes is None or not isinstance(minutes, int) or minutes < 5:
-        raise HTTPException(status_code=422, detail="confirmation_call_minutes_before must be an integer >= 5")
+        raise HTTPException(
+            status_code=422, detail="confirmation_call_minutes_before must be an integer >= 5"
+        )
     import yaml
+
     config_path = os.path.join(os.path.dirname(__file__), "../../config.yaml")
     with open(config_path, "r") as f:
         cfg = yaml.safe_load(f) or {}
     cfg.setdefault("reservations", {})["confirmation_call_minutes_before"] = minutes
     with open(config_path, "w") as f:
         yaml.dump(cfg, f, default_flow_style=False)
-    return {"confirmation_call_minutes_before": minutes, "message": "Config updated. Restart API to apply."}
+    return {
+        "confirmation_call_minutes_before": minutes,
+        "message": "Config updated. Restart API to apply.",
+    }
 
 
 # ─── Agent ────────────────────────────────────────────────────────────────────
+
 
 class AgentChatRequest(BaseModel):
     session_id: Optional[str] = None
@@ -529,8 +572,9 @@ class AgentChatResponse(BaseModel):
 async def agent_chat(body: AgentChatRequest, cfg: SettingsDep) -> AgentChatResponse:
     from src.agents.graph import invoke_agent
     from src.observability import trace_session
+
     session_id = body.session_id or str(uuid.uuid4())
-    with trace_session(session_id=session_id, user_message=body.message) as trace:
+    with trace_session(session_id=session_id, user_message=body.message):
         result = invoke_agent(
             session_id=session_id,
             user_message=body.message,
@@ -545,6 +589,7 @@ async def agent_chat(body: AgentChatRequest, cfg: SettingsDep) -> AgentChatRespo
 
 
 # ─── Floor Plan ───────────────────────────────────────────────────────────────
+
 
 @router.get(
     "/floor-plan",
@@ -596,25 +641,59 @@ async def check_availability(
     date: str = Query(..., description="YYYY-MM-DD"),
     hour: str = Query(..., description="HH:MM"),
     party_size: int = Query(default=2, ge=1),
-    section: Optional[str] = Query(default=None, description="Preferred section (e.g. Patio, Window)"),
+    section: Optional[str] = Query(
+        default=None, description="Preferred section (e.g. Patio, Window)"
+    ),
 ) -> dict:
     """Returns available tables for a given date/hour, optionally filtered by section and party size."""
     plan = floor_plan_service.get_floor_plan()
     all_tables = plan.get("tables", [])
     assignments = floor_plan_service.get_assignments(date, hour)
     used_ids = {a["table_id"] for a in assignments}
-    available = [t for t in all_tables if t["id"] not in used_ids and t.get("seats", 0) >= party_size]
+    available = [
+        t for t in all_tables if t["id"] not in used_ids and t.get("seats", 0) >= party_size
+    ]
     if section:
         s = section.lower()
         matching = [t for t in available if s in (t.get("section", "") or "").lower()]
         return {
-            "date": date, "hour": hour, "party_size": party_size, "section": section,
-            "matching_tables": [{"id": t["id"], "label": t.get("label"), "seats": t.get("seats"), "section": t.get("section")} for t in matching],
-            "other_available": [{"id": t["id"], "label": t.get("label"), "seats": t.get("seats"), "section": t.get("section")} for t in available if t not in matching],
+            "date": date,
+            "hour": hour,
+            "party_size": party_size,
+            "section": section,
+            "matching_tables": [
+                {
+                    "id": t["id"],
+                    "label": t.get("label"),
+                    "seats": t.get("seats"),
+                    "section": t.get("section"),
+                }
+                for t in matching
+            ],
+            "other_available": [
+                {
+                    "id": t["id"],
+                    "label": t.get("label"),
+                    "seats": t.get("seats"),
+                    "section": t.get("section"),
+                }
+                for t in available
+                if t not in matching
+            ],
         }
     return {
-        "date": date, "hour": hour, "party_size": party_size,
-        "available_tables": [{"id": t["id"], "label": t.get("label"), "seats": t.get("seats"), "section": t.get("section")} for t in available],
+        "date": date,
+        "hour": hour,
+        "party_size": party_size,
+        "available_tables": [
+            {
+                "id": t["id"],
+                "label": t.get("label"),
+                "seats": t.get("seats"),
+                "section": t.get("section"),
+            }
+            for t in available
+        ],
     }
 
 

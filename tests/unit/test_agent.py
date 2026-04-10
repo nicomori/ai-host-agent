@@ -2,13 +2,13 @@
 BLOQUE 5 — LangGraph Agent Base: Test Suite (HostAI)
 15 test cases covering state, graph nodes, routing, and API endpoint.
 """
+
 from __future__ import annotations
 
 import os
 import tempfile
 import uuid
 
-import pytest
 from langgraph.checkpoint.memory import MemorySaver
 
 
@@ -17,9 +17,17 @@ def test_tc01_agent_state_schema():
     """TC-01: AgentState must be importable and contain expected keys."""
     from src.agents.state import AgentState
     import typing
+
     hints = typing.get_type_hints(AgentState)
-    for key in ["messages", "session_id", "intent", "reservation_data",
-                "next_action", "final_response", "errors"]:
+    for key in [
+        "messages",
+        "session_id",
+        "intent",
+        "reservation_data",
+        "next_action",
+        "final_response",
+        "errors",
+    ]:
         assert key in hints, f"Missing key: {key}"
 
 
@@ -27,6 +35,7 @@ def test_tc01_agent_state_schema():
 def test_tc02_build_graph_compiles():
     """TC-02: build_graph() must return a compiled LangGraph graph."""
     from src.agents.graph import build_graph, reset_graph
+
     reset_graph()
     graph = build_graph(checkpointer=MemorySaver())
     assert graph is not None
@@ -37,6 +46,7 @@ def test_tc02_build_graph_compiles():
 def test_tc03_invoke_make_reservation():
     """TC-03: Message with 'reserva' must trigger make_reservation intent."""
     from src.agents.graph import invoke_agent, reset_graph
+
     reset_graph()
     result = invoke_agent(
         session_id=str(uuid.uuid4()),
@@ -53,6 +63,7 @@ def test_tc03_invoke_make_reservation():
 def test_tc04_invoke_cancel_reservation():
     """TC-04: Message with 'cancel' must trigger cancel_reservation intent."""
     from src.agents.graph import invoke_agent, reset_graph
+
     reset_graph()
     result = invoke_agent(
         session_id=str(uuid.uuid4()),
@@ -60,7 +71,10 @@ def test_tc04_invoke_cancel_reservation():
         checkpointer=MemorySaver(),
     )
     assert result["intent"] == "cancel_reservation"
-    assert "cancel" in result["final_response"].lower() or "reservation" in result["final_response"].lower()
+    assert (
+        "cancel" in result["final_response"].lower()
+        or "reservation" in result["final_response"].lower()
+    )
     reset_graph()
 
 
@@ -68,6 +82,7 @@ def test_tc04_invoke_cancel_reservation():
 def test_tc05_invoke_unknown_clarify():
     """TC-05: Unknown message must trigger clarify response."""
     from src.agents.graph import invoke_agent, reset_graph
+
     reset_graph()
     result = invoke_agent(
         session_id=str(uuid.uuid4()),
@@ -83,6 +98,7 @@ def test_tc05_invoke_unknown_clarify():
 def test_tc06_invoke_query_reservation():
     """TC-06: Message with 'status' must trigger query_reservation intent."""
     from src.agents.graph import invoke_agent, reset_graph
+
     reset_graph()
     result = invoke_agent(
         session_id=str(uuid.uuid4()),
@@ -100,12 +116,15 @@ def test_tc07_agent_chat_endpoint():
     with tempfile.TemporaryDirectory() as tmp:
         os.environ["LANCEDB_URI"] = tmp
         from src.config import get_settings
+
         get_settings.cache_clear()
         from src.main import create_app
         from src.agents.graph import reset_graph
+
         reset_graph()
         app = create_app()
         from fastapi.testclient import TestClient
+
         with TestClient(app, raise_server_exceptions=True) as client:
             r = client.post(
                 "/api/v1/agent/chat",
@@ -126,6 +145,7 @@ def test_tc07_agent_chat_endpoint():
 def test_tc08_invoke_agent_result_has_all_keys():
     """TC-08: invoke_agent() must return a dict with all required top-level keys."""
     from src.agents.graph import invoke_agent, reset_graph
+
     reset_graph()
     result = invoke_agent(
         session_id=str(uuid.uuid4()),
@@ -141,6 +161,7 @@ def test_tc08_invoke_agent_result_has_all_keys():
 def test_tc09_errors_empty_on_success():
     """TC-09: errors must be an empty list when the agent completes successfully."""
     from src.agents.graph import invoke_agent, reset_graph
+
     reset_graph()
     result = invoke_agent(
         session_id=str(uuid.uuid4()),
@@ -158,6 +179,7 @@ def test_tc09_errors_empty_on_success():
 def test_tc10_session_id_echoed_in_result():
     """TC-10: session_id in result must match the session_id passed to invoke_agent."""
     from src.agents.graph import invoke_agent, reset_graph
+
     reset_graph()
     sid = str(uuid.uuid4())
     result = invoke_agent(
@@ -175,6 +197,7 @@ def test_tc10_session_id_echoed_in_result():
 def test_tc11_build_graph_with_memory_saver_no_raise():
     """TC-11: build_graph(checkpointer=MemorySaver()) must compile cleanly."""
     from src.agents.graph import build_graph, reset_graph
+
     reset_graph()
     graph = build_graph(checkpointer=MemorySaver())
     assert graph is not None
@@ -187,6 +210,7 @@ def test_tc11_build_graph_with_memory_saver_no_raise():
 def test_tc12_final_response_non_empty_all_intents():
     """TC-12: final_response must be a non-empty string for every supported intent."""
     from src.agents.graph import invoke_agent, reset_graph
+
     messages = [
         ("Quiero hacer una reserva para 4 personas mañana", "make_reservation"),
         ("I want to cancel my reservation", "cancel_reservation"),
@@ -209,6 +233,7 @@ def test_tc12_final_response_non_empty_all_intents():
 def test_tc13_sequential_invocations_same_session():
     """TC-13: Two sequential invoke_agent calls with different messages must both succeed."""
     from src.agents.graph import invoke_agent, reset_graph
+
     reset_graph()
     cp = MemorySaver()
     sid = str(uuid.uuid4())
@@ -225,12 +250,15 @@ def test_tc14_chat_endpoint_unknown_message():
     with tempfile.TemporaryDirectory() as tmp:
         os.environ["LANCEDB_URI"] = tmp
         from src.config import get_settings
+
         get_settings.cache_clear()
         from src.main import create_app
         from src.agents.graph import reset_graph
+
         reset_graph()
         app = create_app()
         from fastapi.testclient import TestClient
+
         with TestClient(app, raise_server_exceptions=True) as client:
             r = client.post(
                 "/api/v1/agent/chat",
@@ -251,12 +279,15 @@ def test_tc15_chat_endpoint_returns_session_id():
     with tempfile.TemporaryDirectory() as tmp:
         os.environ["LANCEDB_URI"] = tmp
         from src.config import get_settings
+
         get_settings.cache_clear()
         from src.main import create_app
         from src.agents.graph import reset_graph
+
         reset_graph()
         app = create_app()
         from fastapi.testclient import TestClient
+
         with TestClient(app, raise_server_exceptions=True) as client:
             for msg in ["I want a reservation", "Cancel my booking"]:
                 r = client.post("/api/v1/agent/chat", json={"message": msg})

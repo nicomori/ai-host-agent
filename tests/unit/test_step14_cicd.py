@@ -17,6 +17,7 @@ Error resolutions applied:
   Form 4: Dockerfile parsed line-by-line without shell execution
   Form 5: pytest.importorskip guards protect against missing yaml module
 """
+
 from __future__ import annotations
 
 import pathlib
@@ -49,6 +50,7 @@ def _get_triggers(workflow: dict) -> dict:
 
 # ─── TC-01: ci.yml exists and is valid YAML ───────────────────────────────────
 
+
 def test_tc01_ci_workflow_exists_and_valid_yaml():
     """TC-01: .github/workflows/ci.yml must exist and parse as valid YAML."""
     assert CI_WORKFLOW.exists(), f"ci.yml not found at {CI_WORKFLOW}"
@@ -63,6 +65,7 @@ def test_tc01_ci_workflow_exists_and_valid_yaml():
 
 # ─── TC-02: ci.yml triggers on push + pull_request ────────────────────────────
 
+
 def test_tc02_ci_triggers_push_and_pr():
     """TC-02: CI workflow must trigger on push and pull_request events."""
     workflow = _load_yaml(CI_WORKFLOW)
@@ -74,13 +77,16 @@ def test_tc02_ci_triggers_push_and_pr():
     assert "pull_request" in triggers, "CI must trigger on 'pull_request'"
     push_branches = triggers["push"].get("branches", [])
     pr_branches = triggers["pull_request"].get("branches", [])
-    assert any(b in push_branches for b in ["main", "master"]), \
+    assert any(b in push_branches for b in ["main", "master"]), (
         "push trigger must include main/master"
-    assert any(b in pr_branches for b in ["main", "master"]), \
+    )
+    assert any(b in pr_branches for b in ["main", "master"]), (
         "pull_request trigger must include main/master"
+    )
 
 
 # ─── TC-03: ci.yml has lint job with ruff ─────────────────────────────────────
+
 
 def test_tc03_ci_has_lint_job_with_ruff():
     """TC-03: CI workflow must have a lint job that runs ruff."""
@@ -97,6 +103,7 @@ def test_tc03_ci_has_lint_job_with_ruff():
 
 
 # ─── TC-04: ci.yml has test job with pytest ────────────────────────────────────
+
 
 def test_tc04_ci_has_test_job_with_pytest():
     """TC-04: CI workflow must have a test job that runs pytest."""
@@ -118,6 +125,7 @@ def test_tc04_ci_has_test_job_with_pytest():
 
 # ─── TC-05: ci.yml has docker-build job ──────────────────────────────────────
 
+
 def test_tc05_ci_has_docker_build_job():
     """TC-05: CI workflow must have a docker-build job that does NOT push."""
     workflow = _load_yaml(CI_WORKFLOW)
@@ -131,12 +139,14 @@ def test_tc05_ci_has_docker_build_job():
         step_with = step.get("with", {}) or {}
         push_val = step_with.get("push", None)
         if push_val is not None:
-            assert push_val is False, \
+            assert push_val is False, (
                 f"docker-build CI job must NOT push (push: false). Got: {push_val}"
+            )
     print("\nTC-05 docker-build job has no push=true ✓")
 
 
 # ─── TC-06: cd.yml has build-and-push job with metadata action ────────────────
+
 
 def test_tc06_cd_has_build_and_push_job():
     """TC-06: cd.yml must have build-and-push job with docker metadata action."""
@@ -158,6 +168,7 @@ def test_tc06_cd_has_build_and_push_job():
 
 # ─── TC-07: Dockerfile has multi-stage build ─────────────────────────────────
 
+
 def test_tc07_dockerfile_has_multi_stage_build():
     """TC-07: Dockerfile must define both builder and runtime stages."""
     assert DOCKERFILE.exists(), f"Dockerfile not found at {DOCKERFILE}"
@@ -166,8 +177,9 @@ def test_tc07_dockerfile_has_multi_stage_build():
     from_lines = [ln.strip() for ln in lines if ln.strip().upper().startswith("FROM")]
     print(f"\nTC-07 FROM lines: {from_lines}")
     # Must have at least 2 stages (multi-stage build)
-    assert len(from_lines) >= 2, \
+    assert len(from_lines) >= 2, (
         f"Dockerfile must have ≥2 FROM statements (multi-stage). Got: {from_lines}"
+    )
     # Stages must include 'builder' and 'runtime' targets
     as_names = [ln.split(" AS ")[-1].strip().lower() for ln in from_lines if " AS " in ln.upper()]
     print(f"\nTC-07 stage names: {as_names}")
@@ -177,17 +189,20 @@ def test_tc07_dockerfile_has_multi_stage_build():
 
 # ─── TC-08: ci.yml lint job has checkout step ────────────────────────────────
 
+
 def test_tc08_ci_lint_job_has_checkout():
     """TC-08: CI lint job must have a checkout step (actions/checkout)."""
     workflow = _load_yaml(CI_WORKFLOW)
     lint_steps = workflow.get("jobs", {}).get("lint", {}).get("steps", [])
     uses_list = [s.get("uses", "") or "" for s in lint_steps]
     print(f"\nTC-08 lint uses: {uses_list}")
-    assert any("actions/checkout" in u for u in uses_list), \
+    assert any("actions/checkout" in u for u in uses_list), (
         "lint job must include an actions/checkout step"
+    )
 
 
 # ─── TC-09: cd.yml triggers on push to main or release event ─────────────────
+
 
 def test_tc09_cd_triggers_on_release_or_tag():
     """TC-09: cd.yml must trigger on release publish or tag push."""
@@ -196,19 +211,14 @@ def test_tc09_cd_triggers_on_release_or_tag():
     triggers = _get_triggers(workflow)
     print(f"\nTC-09 cd.yml triggers: {triggers}")
     has_release = "release" in triggers
-    has_tag_push = (
-        "push" in triggers
-        and any(
-            t.startswith("v") or t.startswith("refs/tags")
-            for t in triggers["push"].get("tags", [])
-        )
+    has_tag_push = "push" in triggers and any(
+        t.startswith("v") or t.startswith("refs/tags") for t in triggers["push"].get("tags", [])
     )
-    assert has_release or has_tag_push, (
-        "cd.yml must trigger on 'release' event or tag push"
-    )
+    assert has_release or has_tag_push, "cd.yml must trigger on 'release' event or tag push"
 
 
 # ─── TC-10: ci.yml test job has checkout step ────────────────────────────────
+
 
 def test_tc10_ci_test_job_has_checkout():
     """TC-10: CI test job must include actions/checkout step."""
@@ -216,11 +226,13 @@ def test_tc10_ci_test_job_has_checkout():
     test_steps = workflow.get("jobs", {}).get("test", {}).get("steps", [])
     uses_list = [s.get("uses", "") or "" for s in test_steps]
     print(f"\nTC-10 test uses: {uses_list}")
-    assert any("actions/checkout" in u for u in uses_list), \
+    assert any("actions/checkout" in u for u in uses_list), (
         "test job must include an actions/checkout step"
+    )
 
 
 # ─── TC-11: Dockerfile has EXPOSE instruction ─────────────────────────────────
+
 
 def test_tc11_dockerfile_has_expose():
     """TC-11: Dockerfile must contain an EXPOSE instruction."""
@@ -234,6 +246,7 @@ def test_tc11_dockerfile_has_expose():
 
 # ─── TC-12: ci.yml uses setup-python action ──────────────────────────────────
 
+
 def test_tc12_ci_uses_setup_python():
     """TC-12: CI workflow must use actions/setup-python in at least one job."""
     workflow = _load_yaml(CI_WORKFLOW)
@@ -244,11 +257,11 @@ def test_tc12_ci_uses_setup_python():
             if uses:
                 all_uses.append(uses)
     print(f"\nTC-12 all uses: {all_uses}")
-    assert any("setup-python" in u for u in all_uses), \
-        "CI workflow must use actions/setup-python"
+    assert any("setup-python" in u for u in all_uses), "CI workflow must use actions/setup-python"
 
 
 # ─── TC-13: ci.yml docker-build needs test ───────────────────────────────────
+
 
 def test_tc13_docker_build_needs_test():
     """TC-13: docker-build job must depend on test (needs: test)."""
@@ -263,23 +276,26 @@ def test_tc13_docker_build_needs_test():
 
 # ─── TC-14: cd.yml uses secrets for Docker Hub ───────────────────────────────
 
+
 def test_tc14_cd_uses_secrets_for_docker():
     """TC-14: cd.yml build-and-push job must reference Docker Hub secrets."""
     assert CD_WORKFLOW.exists()
-    workflow = _load_yaml(CD_WORKFLOW)
+    _load_yaml(CD_WORKFLOW)
     cd_text = (CD_WORKFLOW).read_text()
     print(f"\nTC-14 checking secrets in cd.yml (first 500 chars): {cd_text[:500]}")
     has_dockerhub = any(
         term in cd_text for term in ["DOCKERHUB_USERNAME", "DOCKER_USERNAME", "REGISTRY_USERNAME"]
     )
     has_token = any(
-        term in cd_text for term in ["DOCKERHUB_TOKEN", "DOCKER_PASSWORD", "REGISTRY_TOKEN", "REGISTRY_PASSWORD"]
+        term in cd_text
+        for term in ["DOCKERHUB_TOKEN", "DOCKER_PASSWORD", "REGISTRY_TOKEN", "REGISTRY_PASSWORD"]
     )
     assert has_dockerhub, "cd.yml must reference a Docker Hub username secret"
     assert has_token, "cd.yml must reference a Docker Hub token/password secret"
 
 
 # ─── TC-15: ci.yml runs ruff format or ruff check ────────────────────────────
+
 
 def test_tc15_ci_ruff_has_format_or_check():
     """TC-15: CI lint job must run ruff with either 'check' or 'format --check'."""
@@ -289,5 +305,6 @@ def test_tc15_ci_ruff_has_format_or_check():
     print(f"\nTC-15 lint runs combined: {runs[:300]}")
     has_ruff_check = "ruff check" in runs
     has_ruff_format = "ruff format" in runs
-    assert has_ruff_check or has_ruff_format, \
+    assert has_ruff_check or has_ruff_format, (
         f"lint job must run 'ruff check' or 'ruff format'. Got: {runs[:200]}"
+    )

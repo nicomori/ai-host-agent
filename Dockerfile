@@ -1,78 +1,27 @@
-# ─── Stage 0: UI builder ─────────────────────────────────────────────────────
+# ─── Stage 0: Get cached UI node_modules from base ──────────────────────────
+FROM europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-api-base:latest AS deps-cache
+
+# ─── Stage 1: UI builder (near-instant with cached node_modules) ────────────
 FROM node:20-alpine AS ui-builder
 
 WORKDIR /ui
+COPY --from=deps-cache /app/_ui_node_modules ./node_modules
 COPY ui/package.json ui/package-lock.json* ./
-RUN npm install --legacy-peer-deps
+RUN npm install --legacy-peer-deps 2>/dev/null || true
 COPY ui/ .
 RUN npm run build
 
-# ─── Stage 1: Python builder ─────────────────────────────────────────────────
-FROM python:3.11-slim AS builder
+# ─── Stage 2: Runtime (FROM base with pre-installed Python deps) ────────────
+FROM europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-api-base:latest AS runtime
 
 WORKDIR /app
 
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
-
-COPY pyproject.toml .
-RUN uv pip install --system --no-cache-dir \
-    "fastapi>=0.111.0" \
-    "uvicorn[standard]>=0.30.0" \
-    "pydantic>=2.7.0" \
-    "pydantic-settings>=2.3.0" \
-    "httpx>=0.27.0" \
-    "aiofiles>=23.2.1" \
-    "anthropic>=0.29.0" \
-    "langgraph>=0.2.0" \
-    "langgraph-checkpoint-sqlite>=2.0.0" \
-    "langchain-anthropic>=0.1.0" \
-    "openai>=1.35.0" \
-    "elevenlabs>=1.0.0" \
-    "twilio>=9.0.0" \
-    "asyncpg>=0.29.0" \
-    "psycopg2-binary>=2.9.0" \
-    "redis>=5.0.0" \
-    "lancedb>=0.10.0" \
-    "pyarrow>=15.0.0" \
-    "tenacity>=8.3.0" \
-    "structlog>=24.2.0" \
-    "pyyaml>=6.0.1" \
-    "python-dotenv>=1.0.1" \
-    "apscheduler>=3.10.4" \
-    "bcrypt>=4.1.0" \
-    "python-jose[cryptography]>=3.3.0" \
-    "pytest>=8.2.0" \
-    "pytest-asyncio>=0.23.0" \
-    "pytest-cov>=5.0.0" \
-    "respx>=0.21.0" \
-    "factory-boy>=3.3.0" \
-    "ruff>=0.4.0" \
-    "langfuse>=2.0.0" \
-    "langchain>=0.2.0" \
-    "python-multipart>=0.0.9"
-
-# ─── Stage 2: runtime ────────────────────────────────────────────────────────
-FROM python:3.11-slim AS runtime
-
-WORKDIR /app
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl ffmpeg \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy installed packages from builder
-COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
-COPY --from=builder /usr/local/bin /usr/local/bin
-
-# Copy full source
-COPY . .
+# Copy full source (--chown avoids 73s chown -R on every build)
+COPY --chown=appuser:appuser . .
 
 # Copy built UI from ui-builder stage
-COPY --from=ui-builder /ui/dist /app/ui/dist
+COPY --chown=appuser:appuser --from=ui-builder /ui/dist /app/ui/dist
 
-RUN mkdir -p /app/tmp/audio /app/tmp/transcripts
-
-RUN useradd -r -s /bin/false appuser && chown -R appuser /app
 USER appuser
 
 EXPOSE 8000

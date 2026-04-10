@@ -9,12 +9,12 @@ Tables managed here:
 Uses psycopg2 (sync) for simplicity; can be swapped to asyncpg for async routes.
 Connection credentials are read from AppSettings (env vars / .env).
 """
+
 from __future__ import annotations
 
 import json
 import logging
 from contextlib import contextmanager
-from datetime import datetime
 from typing import Any, Generator
 
 import psycopg2
@@ -77,6 +77,7 @@ CREATE TABLE IF NOT EXISTS agent_sessions (
 
 # ─── Connection factory ────────────────────────────────────────────────────────
 
+
 def _get_dsn() -> str:
     s = get_settings()
     return (
@@ -88,6 +89,9 @@ def _get_dsn() -> str:
     )
 
 
+_db_initialized = False
+
+
 @contextmanager
 def get_conn() -> Generator[psycopg2.extensions.connection, None, None]:
     """Context manager yielding a psycopg2 connection with autocommit disabled."""
@@ -95,6 +99,10 @@ def get_conn() -> Generator[psycopg2.extensions.connection, None, None]:
     try:
         yield conn
         conn.commit()
+    except psycopg2.errors.UndefinedTable:
+        conn.rollback()
+        _auto_reinit_db()
+        raise
     except Exception:
         conn.rollback()
         raise
@@ -104,27 +112,52 @@ def get_conn() -> Generator[psycopg2.extensions.connection, None, None]:
 
 # ─── Schema init ───────────────────────────────────────────────────────────────
 
+
 def init_db() -> None:
     """Create tables if they don't exist. Called at app startup."""
+    global _db_initialized
     try:
-        with get_conn() as conn:
+        with psycopg2.connect(_get_dsn(), cursor_factory=psycopg2.extras.RealDictCursor) as conn:
             with conn.cursor() as cur:
                 cur.execute(_DDL)
-                # Migrate existing tables: add confirmation columns if missing
-                cur.execute("ALTER TABLE reservations ADD COLUMN IF NOT EXISTS confirmation_status TEXT NOT NULL DEFAULT 'pending';")
-                cur.execute("ALTER TABLE reservations ADD COLUMN IF NOT EXISTS confirmation_called_at TIMESTAMPTZ;")
+                cur.execute(
+                    "ALTER TABLE reservations ADD COLUMN IF NOT EXISTS confirmation_status TEXT NOT NULL DEFAULT 'pending';"
+                )
+                cur.execute(
+                    "ALTER TABLE reservations ADD COLUMN IF NOT EXISTS confirmation_called_at TIMESTAMPTZ;"
+                )
+            conn.commit()
+        _db_initialized = True
         logger.info("[HostAI] - DB Init: PostgreSQL schema initialized (host-agent)")
     except Exception as exc:
         logger.warning("[HostAI] - DB Init: PostgreSQL init_db failed (non-fatal): %s", exc)
 
 
+def _auto_reinit_db() -> None:
+    """Re-initialize DB schema when an UndefinedTable error is detected (e.g. after Postgres restart without PVC)."""
+    global _db_initialized
+    if not _db_initialized:
+        return
+    logger.warning("[HostAI] - DB: UndefinedTable detected — re-initializing all schemas")
+    _db_initialized = False
+    init_db()
+    try:
+        from src.api.auth_users import ensure_default_users
+        from src.services.floor_plan_service import ensure_assignments_table
+        ensure_default_users()
+        ensure_assignments_table()
+    except Exception as exc:
+        logger.warning("[HostAI] - DB: reinit auxiliary tables failed: %s", exc)
+
+
 # ─── Reservations ─────────────────────────────────────────────────────────────
+
 
 def _row_to_reservation(row: dict) -> dict:
     """Convert a DB row to the API dict shape. Includes both 'id' (SERIAL) and 'reservation_id' (UUID)."""
     called_at = row.get("confirmation_called_at")
     return {
-        "id": row.get("id"),                         # SERIAL PK — kept for legacy tests
+        "id": row.get("id"),  # SERIAL PK — kept for legacy tests
         "reservation_id": str(row["reservation_id"]),
         "guest_name": row["guest_name"],
         "guest_phone": row["guest_phone"],
@@ -155,6 +188,7 @@ def save_reservation(
 ) -> dict[str, Any]:
     """Insert a reservation row and return the created record."""
     import uuid as _uuid
+
     rid = reservation_id or str(_uuid.uuid4())
     sql = """
         INSERT INTO reservations
@@ -165,16 +199,27 @@ def save_reservation(
     """
     with get_conn() as conn:
         with conn.cursor() as cur:
-            cur.execute(sql, (
-                rid, guest_name, guest_phone, date, time, party_size,
-                preference, special_requests, notes,
-            ))
+            cur.execute(
+                sql,
+                (
+                    rid,
+                    guest_name,
+                    guest_phone,
+                    date,
+                    time,
+                    party_size,
+                    preference,
+                    special_requests,
+                    notes,
+                ),
+            )
             row = cur.fetchone()
     return _row_to_reservation(dict(row))
 
 
 def get_reservation_by_uuid(reservation_id: str) -> dict[str, Any] | None:
     import uuid as _uuid
+
     try:
         _uuid.UUID(reservation_id)  # validate format before querying
     except (ValueError, AttributeError):
@@ -196,25 +241,27 @@ def get_reservation(reservation_id: int | str) -> dict[str, Any] | None:
             if isinstance(reservation_id, int):
                 cur.execute("SELECT * FROM reservations WHERE id = %s", (reservation_id,))
             else:
-                cur.execute("SELECT * FROM reservations WHERE reservation_id = %s", (reservation_id,))
+                cur.execute(
+                    "SELECT * FROM reservations WHERE reservation_id = %s", (reservation_id,)
+                )
             row = cur.fetchone()
     return _row_to_reservation(dict(row)) if row else None
 
 
 def list_reservations(
     status_filter: str | None = None,
-    limit: int = 200,
+    limit: int = 2000,
 ) -> list[dict[str, Any]]:
     with get_conn() as conn:
         with conn.cursor() as cur:
             if status_filter:
                 cur.execute(
-                    "SELECT * FROM reservations WHERE status=%s ORDER BY created_at DESC LIMIT %s",
+                    "SELECT * FROM reservations WHERE status=%s ORDER BY date, time, created_at DESC LIMIT %s",
                     (status_filter, limit),
                 )
             else:
                 cur.execute(
-                    "SELECT * FROM reservations ORDER BY created_at DESC LIMIT %s",
+                    "SELECT * FROM reservations ORDER BY date, time, created_at DESC LIMIT %s",
                     (limit,),
                 )
             return [_row_to_reservation(dict(r)) for r in cur.fetchall()]
@@ -266,6 +313,7 @@ def truncate_reservations() -> None:
 
 # ─── Call logs ────────────────────────────────────────────────────────────────
 
+
 def save_call_log(
     call_sid: str,
     from_number: str,
@@ -288,8 +336,10 @@ def save_call_log(
     """
     with get_conn() as conn:
         with conn.cursor() as cur:
-            cur.execute(sql, (call_sid, from_number, to_number, call_status,
-                               duration_sec, transcript, intent))
+            cur.execute(
+                sql,
+                (call_sid, from_number, to_number, call_status, duration_sec, transcript, intent),
+            )
             row = cur.fetchone()
     return dict(row)
 
@@ -303,6 +353,7 @@ def get_call_log(call_sid: str) -> dict[str, Any] | None:
 
 
 # ─── Agent sessions ───────────────────────────────────────────────────────────
+
 
 def save_agent_session(
     session_id: str,
@@ -326,13 +377,17 @@ def save_agent_session(
     """
     with get_conn() as conn:
         with conn.cursor() as cur:
-            cur.execute(sql, (
-                session_id, call_sid,
-                json.dumps(messages),
-                intent,
-                json.dumps(reservation_data) if reservation_data else None,
-                json.dumps(agent_trace) if agent_trace else None,
-            ))
+            cur.execute(
+                sql,
+                (
+                    session_id,
+                    call_sid,
+                    json.dumps(messages),
+                    intent,
+                    json.dumps(reservation_data) if reservation_data else None,
+                    json.dumps(agent_trace) if agent_trace else None,
+                ),
+            )
             row = cur.fetchone()
     return dict(row)
 

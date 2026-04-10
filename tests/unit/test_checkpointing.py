@@ -2,13 +2,13 @@
 BLOQUE 6 — Estado persistente + checkpointing: Test Suite (HostAI)
 15 test cases covering SqliteSaver, thread_id persistence, resume, and factory.
 """
+
 from __future__ import annotations
 
 import os
 import tempfile
 import uuid
 
-import pytest
 from langgraph.checkpoint.memory import MemorySaver
 from langchain_core.messages import HumanMessage
 
@@ -18,10 +18,9 @@ def test_tc01_checkpointing_module_imports():
     """TC-01: src.checkpointing module must be importable and expose key symbols."""
     from src.checkpointing import (
         CHECKPOINT_DB_PATH,
-        sqlite_checkpointer,
-        get_memory_checkpointer,
         get_checkpointer,
     )
+
     assert CHECKPOINT_DB_PATH.endswith(".sqlite")
     assert callable(get_checkpointer)
 
@@ -30,6 +29,7 @@ def test_tc01_checkpointing_module_imports():
 def test_tc02_memory_checkpointer():
     """TC-02: get_memory_checkpointer() must return a MemorySaver instance."""
     from src.checkpointing import get_memory_checkpointer
+
     cp = get_memory_checkpointer()
     assert isinstance(cp, MemorySaver)
 
@@ -40,6 +40,7 @@ def test_tc03_sqlite_checkpointer_creates_file():
     with tempfile.TemporaryDirectory() as tmp:
         db_path = os.path.join(tmp, "sub", "checkpoints.sqlite")
         from src.checkpointing import sqlite_checkpointer
+
         with sqlite_checkpointer(db_path=db_path) as cp:
             assert cp is not None
         assert os.path.exists(db_path), "SQLite file was not created"
@@ -49,6 +50,7 @@ def test_tc03_sqlite_checkpointer_creates_file():
 def test_tc04_state_persists_same_thread():
     """TC-04: Two invoke calls with the same thread_id must share state."""
     from src.agents.graph import build_graph, reset_graph
+
     reset_graph()
     cp = MemorySaver()
     graph = build_graph(checkpointer=cp)
@@ -56,8 +58,12 @@ def test_tc04_state_persists_same_thread():
     cfg = {"configurable": {"thread_id": session_id}}
 
     from langchain_core.messages import SystemMessage
+
     base = {
-        "messages": [SystemMessage(content="You are HostAI."), HumanMessage(content="I want to make a reservation")],
+        "messages": [
+            SystemMessage(content="You are HostAI."),
+            HumanMessage(content="I want to make a reservation"),
+        ],
         "session_id": session_id,
         "intent": None,
         "reservation_data": None,
@@ -70,7 +76,13 @@ def test_tc04_state_persists_same_thread():
 
     # Second call — same thread_id, new message
     from langchain_core.messages import HumanMessage as HM
-    state2 = {**base, "messages": [HM(content="Cancel that")], "intent": None, "final_response": None}
+
+    state2 = {
+        **base,
+        "messages": [HM(content="Cancel that")],
+        "intent": None,
+        "final_response": None,
+    }
     result2 = graph.invoke(state2, config=cfg)
     # State was resumed — different intent
     assert result2["intent"] == "cancel_reservation"
@@ -82,6 +94,7 @@ def test_tc05_different_threads_isolated():
     """TC-05: Two different thread_ids must produce independent states."""
     from src.agents.graph import build_graph, reset_graph
     from langchain_core.messages import SystemMessage, HumanMessage
+
     reset_graph()
     cp = MemorySaver()
     graph = build_graph(checkpointer=cp)
@@ -90,8 +103,12 @@ def test_tc05_different_threads_isolated():
         cfg = {"configurable": {"thread_id": tid}}
         state = {
             "messages": [SystemMessage(content="You are HostAI."), HumanMessage(content=msg)],
-            "session_id": tid, "intent": None, "reservation_data": None,
-            "next_action": None, "final_response": None, "errors": [],
+            "session_id": tid,
+            "intent": None,
+            "reservation_data": None,
+            "next_action": None,
+            "final_response": None,
+            "errors": [],
         }
         return graph.invoke(state, config=cfg)
 
@@ -108,6 +125,7 @@ def test_tc06_get_checkpointer_sqlite():
     with tempfile.TemporaryDirectory() as tmp:
         db_path = os.path.join(tmp, "cp.sqlite")
         from src.checkpointing import get_checkpointer
+
         cp = get_checkpointer(use_sqlite=True, db_path=db_path)
         assert cp is not None
         # Should have put method (checkpointer interface)
@@ -121,9 +139,12 @@ def test_tc07_build_graph_uses_sqlite_env():
         db_path = os.path.join(tmp, "cp.sqlite")
         os.environ["CHECKPOINT_DB_PATH"] = db_path
         # Invalidate cached module to pick up new env var
-        import importlib, src.checkpointing as _m
+        import importlib
+        import src.checkpointing as _m
+
         importlib.reload(_m)
         from src.agents.graph import build_graph, reset_graph
+
         reset_graph()
         graph = build_graph()  # no explicit checkpointer
         assert graph is not None
@@ -136,6 +157,7 @@ def test_tc07_build_graph_uses_sqlite_env():
 def test_tc08_get_checkpointer_memory_default():
     """TC-08: get_checkpointer(use_sqlite=False) must return a MemorySaver instance."""
     from src.checkpointing import get_checkpointer
+
     cp = get_checkpointer(use_sqlite=False)
     assert isinstance(cp, MemorySaver)
 
@@ -146,6 +168,7 @@ def test_tc09_sqlite_checkpointer_nested_dirs():
     with tempfile.TemporaryDirectory() as tmp:
         db_path = os.path.join(tmp, "a", "b", "c", "data.sqlite")
         from src.checkpointing import sqlite_checkpointer
+
         with sqlite_checkpointer(db_path=db_path) as cp:
             assert cp is not None
         assert os.path.exists(db_path), f"Nested path not created: {db_path}"
@@ -155,6 +178,7 @@ def test_tc09_sqlite_checkpointer_nested_dirs():
 def test_tc10_fallback_saver_has_put():
     """TC-10: The checkpointer returned by get_checkpointer must expose the 'put' method."""
     from src.checkpointing import get_checkpointer
+
     cp = get_checkpointer(use_sqlite=False)
     assert hasattr(cp, "put"), "Checkpointer must have 'put' method"
     assert callable(cp.put)
@@ -166,6 +190,7 @@ def test_tc11_get_checkpointer_sqlite_creates_file():
     with tempfile.TemporaryDirectory() as tmp:
         db_path = os.path.join(tmp, "explicit.sqlite")
         from src.checkpointing import get_checkpointer
+
         cp = get_checkpointer(use_sqlite=True, db_path=db_path)
         assert cp is not None
         assert os.path.exists(db_path), "SQLite file must be created by get_checkpointer"
@@ -174,8 +199,8 @@ def test_tc11_get_checkpointer_sqlite_creates_file():
 # ─── TC-12: sqlite_checkpointer is a context manager ─────────────────────────
 def test_tc12_sqlite_checkpointer_is_context_manager():
     """TC-12: sqlite_checkpointer must be usable as a context manager (with statement)."""
-    import contextlib
     from src.checkpointing import sqlite_checkpointer
+
     assert hasattr(sqlite_checkpointer, "__call__")
     with tempfile.TemporaryDirectory() as tmp:
         db_path = os.path.join(tmp, "ctx_test.sqlite")
@@ -190,6 +215,7 @@ def test_tc12_sqlite_checkpointer_is_context_manager():
 def test_tc13_checkpoint_db_path_default_name():
     """TC-13: Default CHECKPOINT_DB_PATH must end with 'checkpoints.sqlite'."""
     from src.checkpointing import CHECKPOINT_DB_PATH
+
     assert "checkpoints.sqlite" in CHECKPOINT_DB_PATH
 
 
@@ -197,6 +223,7 @@ def test_tc13_checkpoint_db_path_default_name():
 def test_tc14_get_memory_checkpointer_not_none():
     """TC-14: get_memory_checkpointer() must return a non-None checkpointer."""
     from src.checkpointing import get_memory_checkpointer
+
     cp = get_memory_checkpointer()
     assert cp is not None
     assert hasattr(cp, "get") or hasattr(cp, "put")
@@ -208,6 +235,7 @@ def test_tc15_sqlite_checkpointer_reopen():
     with tempfile.TemporaryDirectory() as tmp:
         db_path = os.path.join(tmp, "reopen_test.sqlite")
         from src.checkpointing import sqlite_checkpointer
+
         with sqlite_checkpointer(db_path=db_path) as cp1:
             assert cp1 is not None
         # Reopen — must not raise

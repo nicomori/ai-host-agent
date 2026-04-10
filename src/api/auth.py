@@ -2,6 +2,7 @@
 Authentication — HostAI (ai-host-agent).
 Accepts X-API-Key header OR Bearer JWT token (from /api/v1/auth/token).
 """
+
 from __future__ import annotations
 
 import os
@@ -15,7 +16,7 @@ from src.config import get_settings
 _API_KEY_HEADER = APIKeyHeader(name="X-API-Key", auto_error=False)
 
 SECRET_KEY = os.getenv("JWT_SECRET_KEY", "ha-jwt-secret-2026-changeme")
-ALGORITHM  = "HS256"
+ALGORITHM = "HS256"
 
 
 async def verify_api_key(
@@ -34,7 +35,8 @@ async def verify_api_key(
     if auth_header.startswith("Bearer "):
         token = auth_header[7:]
         try:
-            from jose import jwt, JWTError
+            from jose import jwt
+
             payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
             return payload.get("sub", "unknown")
         except Exception:

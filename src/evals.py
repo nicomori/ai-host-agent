@@ -21,6 +21,7 @@ Scoring functions:
   score_guardrail_raised : 1.0 iff result["exception"] is the expected type
   score_pii_masked   : 1.0 - (leak_fraction) — penalises PII that survived masking
 """
+
 from __future__ import annotations
 
 import time
@@ -30,13 +31,15 @@ from typing import Any, Callable, Optional
 
 # ─── Data classes ─────────────────────────────────────────────────────────────
 
+
 @dataclass
 class EvalCase:
     """A single evaluation case: input kwargs, expected value, scoring function."""
+
     case_id: str
     name: str
-    input: dict[str, Any]              # keyword args forwarded to the eval function
-    expected: Any                      # expected output / value
+    input: dict[str, Any]  # keyword args forwarded to the eval function
+    expected: Any  # expected output / value
     score_fn: Callable[[Any, Any], float]  # (actual, expected) → [0.0, 1.0]
     tags: list[str] = field(default_factory=list)
     description: str = ""
@@ -45,19 +48,21 @@ class EvalCase:
 @dataclass
 class EvalResult:
     """Outcome of running one EvalCase."""
+
     case_id: str
     name: str
-    passed: bool           # score >= pass_threshold
-    score: float           # [0.0, 1.0]
+    passed: bool  # score >= pass_threshold
+    score: float  # [0.0, 1.0]
     actual: Any
     expected: Any
-    error: Optional[str] = None    # set if the eval fn raised an exception
+    error: Optional[str] = None  # set if the eval fn raised an exception
     latency_ms: float = 0.0
 
 
 @dataclass
 class EvalReport:
     """Aggregated metrics for a completed EvalSuite run."""
+
     suite_name: str
     results: list[EvalResult]
     pass_threshold: float = 0.8
@@ -102,6 +107,7 @@ class EvalReport:
 @dataclass
 class EvalSuite:
     """Named collection of EvalCases for a specific capability."""
+
     name: str
     cases: list[EvalCase] = field(default_factory=list)
 
@@ -112,6 +118,7 @@ class EvalSuite:
 
 
 # ─── Scoring functions ────────────────────────────────────────────────────────
+
 
 def score_exact_match(actual: Any, expected: Any) -> float:
     """Return 1.0 if actual == expected, else 0.0."""
@@ -169,6 +176,7 @@ def score_pii_masked(actual: dict, expected: list[str]) -> float:
 
 
 # ─── EvalRunner ───────────────────────────────────────────────────────────────
+
 
 class EvalRunner:
     """

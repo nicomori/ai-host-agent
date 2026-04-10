@@ -1,5 +1,4 @@
 from __future__ import annotations
-from typing import Optional
 from pydantic import BaseModel
 
 
@@ -19,8 +18,8 @@ class FloorPlanLayout(BaseModel):
 class TableAssignment(BaseModel):
     table_id: str
     reservation_id: str
-    date: str   # YYYY-MM-DD
-    hour: str   # HH:MM
+    date: str  # YYYY-MM-DD
+    hour: str  # HH:MM
 
 
 class TableAssignmentResponse(BaseModel):

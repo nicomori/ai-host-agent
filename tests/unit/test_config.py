@@ -3,14 +3,13 @@ BLOQUE 3 — Archivo Config Externo: Test Suite (HostAI)
 15 test cases: AppConfig from_yaml, tipos, validacion, Settings merge, lancedb_uri priority,
                validate_secrets prod, AppSettings singleton, and 8 additional coverage cases.
 """
+
 from __future__ import annotations
 
-import os
 import tempfile
 from pathlib import Path
 
 import pytest
-import yaml
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 
@@ -19,10 +18,11 @@ PROJECT_ROOT = Path(__file__).parent.parent.parent
 def test_tc01_appconfig_from_yaml():
     """TC-01: AppConfig.from_yaml() must parse config.yaml into typed sections."""
     from src.config import AppConfig
+
     cfg = AppConfig.from_yaml()
 
     assert cfg.app.name == "ai-host-agent"
-    assert cfg.app.version == "0.1.0"
+    assert cfg.app.version == "0.2.1"
     assert cfg.server.port == 8000
     assert cfg.agent.checkpointer == "postgres"
     assert cfg.voice.stt_provider == "whisper"
@@ -39,7 +39,8 @@ def test_tc01_appconfig_from_yaml():
 def test_tc02_appconfig_defaults_without_yaml():
     """TC-02: AppConfig() must instantiate with all defaults when no YAML is provided."""
     from src.config import AppConfig
-    with tempfile.NamedTemporaryFile(suffix=".yaml", delete=True) as f:
+
+    with tempfile.NamedTemporaryFile(suffix=".yaml", delete=True):
         pass  # file already deleted — use non-existent path
     cfg = AppConfig.from_yaml(Path("/tmp/nonexistent_config_12345.yaml"))
 
@@ -55,10 +56,10 @@ def test_tc03_field_validators_reject_invalid():
     from src.config import LLMSection, ServerSection, AgentSection
 
     with pytest.raises(ValidationError):
-        LLMSection(temperature=2.5)   # > 1.0
+        LLMSection(temperature=2.5)  # > 1.0
 
     with pytest.raises(ValidationError):
-        ServerSection(port=99999)     # > 65535
+        ServerSection(port=99999)  # > 65535
 
     with pytest.raises(ValidationError):
         AgentSection(max_conversation_turns=0)  # < 1
@@ -113,6 +114,7 @@ def test_tc06_validate_secrets_raises_in_production(monkeypatch):
 def test_tc07_get_settings_is_singleton():
     """TC-07: get_settings() must return the exact same object on repeated calls (lru_cache)."""
     from src.config import get_settings
+
     a = get_settings()
     b = get_settings()
     assert a is b, "get_settings() is not returning a singleton"
@@ -123,6 +125,7 @@ def test_tc07_get_settings_is_singleton():
 def test_tc08_llm_temperature_in_range():
     """TC-08: LLM temperature from config.yaml must be in [0.0, 1.0]."""
     from src.config import AppConfig
+
     cfg = AppConfig.from_yaml()
     assert 0.0 <= cfg.llm.temperature <= 1.0
 
@@ -131,6 +134,7 @@ def test_tc08_llm_temperature_in_range():
 def test_tc09_server_port_valid():
     """TC-09: Server port from config must be a valid TCP port (1–65535)."""
     from src.config import AppConfig
+
     cfg = AppConfig.from_yaml()
     assert 1 <= cfg.server.port <= 65535
 
@@ -139,6 +143,7 @@ def test_tc09_server_port_valid():
 def test_tc10_lancedb_tables_count():
     """TC-10: config.yaml lancedb.tables must declare exactly 3 tables."""
     from src.config import AppConfig
+
     cfg = AppConfig.from_yaml()
     assert len(cfg.lancedb.tables) == 3
 
@@ -147,6 +152,7 @@ def test_tc10_lancedb_tables_count():
 def test_tc11_settings_default_env(monkeypatch):
     """TC-11: Settings.app_env must default to 'development' when APP_ENV not set."""
     from src.config import Settings
+
     monkeypatch.delenv("APP_ENV", raising=False)
     env = Settings(_env_file=None)
     assert env.app_env == "development"
@@ -156,6 +162,7 @@ def test_tc11_settings_default_env(monkeypatch):
 def test_tc12_lancedb_uri_env_overrides_yaml(monkeypatch):
     """TC-12: env LANCEDB_URI must take precedence over config.yaml uri."""
     from src.config import AppConfig, AppSettings, Settings
+
     monkeypatch.setenv("LANCEDB_URI", "/override/path")
     env = Settings(_env_file=None)
     yaml_cfg = AppConfig.from_yaml()
@@ -168,6 +175,7 @@ def test_tc12_lancedb_uri_env_overrides_yaml(monkeypatch):
 def test_tc13_get_settings_cache_clear(monkeypatch):
     """TC-13: After cache_clear(), get_settings() must re-evaluate env vars."""
     from src.config import get_settings
+
     monkeypatch.setenv("LANCEDB_URI", "/fresh/path")
     get_settings.cache_clear()
     s = get_settings()
@@ -180,6 +188,7 @@ def test_tc14_agent_section_turns_positive():
     """TC-14: AgentSection must reject max_conversation_turns <= 0."""
     from pydantic import ValidationError
     from src.config import AgentSection
+
     with pytest.raises(ValidationError):
         AgentSection(max_conversation_turns=-1)
 
@@ -189,6 +198,7 @@ def test_tc15_app_version_semver():
     """TC-15: app.version in config.yaml must follow x.y.z semver pattern."""
     import re
     from src.config import AppConfig
+
     cfg = AppConfig.from_yaml()
     assert re.match(r"^\d+\.\d+\.\d+", cfg.app.version), (
         f"app.version '{cfg.app.version}' does not match semver pattern x.y.z"

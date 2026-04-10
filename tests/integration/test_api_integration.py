@@ -18,11 +18,8 @@ API Integration Tests — ai-host-agent
   TC-14: DELETE /api/v1/reservations/{nonexistent} returns 401/404
   TC-15: POST /api/v1/agent/chat returns session_id and final_response
 """
+
 from __future__ import annotations
-
-import json
-
-import pytest
 
 
 API_KEY = "dev-secret-key"
@@ -39,6 +36,7 @@ _RESERVATION_PAYLOAD = {
 
 # ─── TC-01 ────────────────────────────────────────────────────────────────────
 
+
 def test_tc01_health(step4_client):
     """TC-01: GET /health returns 200 with status=ok."""
     r = step4_client.get("/health")
@@ -49,6 +47,7 @@ def test_tc01_health(step4_client):
 
 
 # ─── TC-02 ────────────────────────────────────────────────────────────────────
+
 
 def test_tc02_list_reservations_empty(step4_client):
     """TC-02: GET /api/v1/reservations starts empty."""
@@ -61,6 +60,7 @@ def test_tc02_list_reservations_empty(step4_client):
 
 # ─── TC-03 ────────────────────────────────────────────────────────────────────
 
+
 def test_tc03_create_reservation(step4_client):
     """TC-03: POST /api/v1/reservations with API key returns 201."""
     r = step4_client.post("/api/v1/reservations", json=_RESERVATION_PAYLOAD, headers=HEADERS)
@@ -72,6 +72,7 @@ def test_tc03_create_reservation(step4_client):
 
 # ─── TC-04 ────────────────────────────────────────────────────────────────────
 
+
 def test_tc04_list_reservations_non_empty(step4_client):
     """TC-04: GET /api/v1/reservations returns ≥ 1 after create."""
     step4_client.post("/api/v1/reservations", json=_RESERVATION_PAYLOAD, headers=HEADERS)
@@ -81,6 +82,7 @@ def test_tc04_list_reservations_non_empty(step4_client):
 
 
 # ─── TC-05 ────────────────────────────────────────────────────────────────────
+
 
 def test_tc05_get_reservation_by_id(step4_client):
     """TC-05: GET /api/v1/reservations/{id} returns the specific reservation."""
@@ -94,6 +96,7 @@ def test_tc05_get_reservation_by_id(step4_client):
 
 
 # ─── TC-06 ────────────────────────────────────────────────────────────────────
+
 
 def test_tc06_cancel_reservation(step4_client):
     """TC-06: DELETE /api/v1/reservations/{id} sets status to cancelled."""
@@ -113,6 +116,7 @@ def test_tc06_cancel_reservation(step4_client):
 
 # ─── TC-07 ────────────────────────────────────────────────────────────────────
 
+
 def test_tc07_create_reservation_no_api_key_returns_401(step4_client):
     """TC-07: POST /api/v1/reservations without X-API-Key returns 401."""
     r = step4_client.post("/api/v1/reservations", json=_RESERVATION_PAYLOAD)
@@ -121,6 +125,7 @@ def test_tc07_create_reservation_no_api_key_returns_401(step4_client):
 
 # ─── TC-08 ────────────────────────────────────────────────────────────────────
 
+
 def test_tc08_get_nonexistent_reservation_returns_404(step4_client):
     """TC-08: GET /api/v1/reservations/{bad_id} returns 404."""
     r = step4_client.get("/api/v1/reservations/nonexistent-id-xyz")
@@ -128,6 +133,7 @@ def test_tc08_get_nonexistent_reservation_returns_404(step4_client):
 
 
 # ─── TC-09 ────────────────────────────────────────────────────────────────────
+
 
 def test_tc09_voice_inbound_returns_session(step4_client):
     """TC-09: POST /api/v1/voice/inbound returns call_sid and session_id."""
@@ -147,6 +153,7 @@ def test_tc09_voice_inbound_returns_session(step4_client):
 
 # ─── TC-10 ────────────────────────────────────────────────────────────────────
 
+
 def test_tc10_voice_outbound_returns_scheduled(step4_client):
     """TC-10: POST /api/v1/voice/outbound/{id} returns scheduled status."""
     create = step4_client.post("/api/v1/reservations", json=_RESERVATION_PAYLOAD, headers=HEADERS)
@@ -160,6 +167,7 @@ def test_tc10_voice_outbound_returns_scheduled(step4_client):
 
 # ─── TC-11 ────────────────────────────────────────────────────────────────────
 
+
 def test_tc11_stream_reservations_sse(step4_client):
     """TC-11: GET /api/v1/reservations/stream?once=true returns SSE data."""
     r = step4_client.get("/api/v1/reservations/stream?once=true")
@@ -172,6 +180,7 @@ def test_tc11_stream_reservations_sse(step4_client):
 
 # ─── TC-12 ────────────────────────────────────────────────────────────────────
 
+
 def test_tc12_list_reservations_filter_by_status(step4_client):
     """TC-12: GET /api/v1/reservations?status=confirmed filters by status."""
     step4_client.post("/api/v1/reservations", json=_RESERVATION_PAYLOAD, headers=HEADERS)
@@ -183,11 +192,16 @@ def test_tc12_list_reservations_filter_by_status(step4_client):
 
 # ─── TC-13 ────────────────────────────────────────────────────────────────────
 
+
 def test_tc13_list_reservations_pagination(step4_client):
     """TC-13: GET /api/v1/reservations?page=1&page_size=1 returns at most 1 item."""
     # Create 2 reservations
     step4_client.post("/api/v1/reservations", json=_RESERVATION_PAYLOAD, headers=HEADERS)
-    step4_client.post("/api/v1/reservations", json={**_RESERVATION_PAYLOAD, "guest_name": "Another Guest"}, headers=HEADERS)
+    step4_client.post(
+        "/api/v1/reservations",
+        json={**_RESERVATION_PAYLOAD, "guest_name": "Another Guest"},
+        headers=HEADERS,
+    )
     r = step4_client.get("/api/v1/reservations?page=1&page_size=1")
     assert r.status_code == 200
     body = r.json()
@@ -198,11 +212,10 @@ def test_tc13_list_reservations_pagination(step4_client):
 
 # ─── TC-14 ────────────────────────────────────────────────────────────────────
 
+
 def test_tc14_delete_nonexistent_reservation(step4_client):
     """TC-14: DELETE /api/v1/reservations/{bad_id} returns 401 (no key) or 404."""
-    r_no_key = step4_client.request(
-        "DELETE", "/api/v1/reservations/bad-id", json={}
-    )
+    r_no_key = step4_client.request("DELETE", "/api/v1/reservations/bad-id", json={})
     # Without API key → 401; with API key → 404
     assert r_no_key.status_code == 401
     r_with_key = step4_client.request(
@@ -212,6 +225,7 @@ def test_tc14_delete_nonexistent_reservation(step4_client):
 
 
 # ─── TC-15 ────────────────────────────────────────────────────────────────────
+
 
 def test_tc15_agent_chat_returns_response(step4_client):
     """TC-15: POST /api/v1/agent/chat returns session_id and final_response."""
