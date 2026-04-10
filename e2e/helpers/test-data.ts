@@ -79,8 +79,8 @@ export const SAMPLE_RESERVATION: ReservationData = {
 /** Floor plan minimo para tests que requieren mesas */
 export const MINIMAL_FLOOR_PLAN = {
   tables: [
-    { id: "t1", label: "Mesa 1", shape: "rect", seats: 4, x: 100, y: 100, section: "Patio" },
-    { id: "t2", label: "Mesa 2", shape: "circle", seats: 2, x: 250, y: 100, section: "Window" },
+    { id: "t1", label: "Mesa 1", shape: "rect", seats: 4, x: 120, y: 80, section: "Window" },
+    { id: "t14", label: "Mesa 14", shape: "circle", seats: 4, x: 120, y: 750, section: "Patio" },
   ],
   elements: [],
   zones: [],

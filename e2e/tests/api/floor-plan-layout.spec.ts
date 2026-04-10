@@ -2,8 +2,8 @@
  * Test Suite: Floor Plan Layout & Table Preferences
  * ==================================================
  * Verifica que el plano del restaurante tiene la estructura correcta:
- * - 18 mesas con 66 asientos distribuidos en secciones
- * - Elementos arquitectonicos (ventanas, puertas, banos)
+ * - 17 mesas con 60 asientos distribuidos en secciones
+ * - Elementos arquitectonicos (ventanas, puertas, banos, cocina)
  * - Zonas (interior, patio)
  * - Cada mesa tiene la seccion/preferencia correcta
  * Tag: @api @regression
@@ -12,15 +12,15 @@ import { test, expect } from "../../fixtures/base.fixture";
 
 test.describe("Floor Plan Layout Validation @api @regression", () => {
 
-  test("TC-FP-001: floor plan has 18 tables with correct total seats", async ({ apiAsAdmin }) => {
+  test("TC-FP-001: floor plan has 17 tables with correct total seats", async ({ apiAsAdmin }) => {
     const res = await apiAsAdmin.getFloorPlan();
     expect(res.ok()).toBeTruthy();
 
     const body = await res.json();
-    expect(body.tables).toHaveLength(18);
+    expect(body.tables).toHaveLength(17);
 
     const totalSeats = body.tables.reduce((sum: number, t: { seats: number }) => sum + t.seats, 0);
-    expect(totalSeats).toBe(66);
+    expect(totalSeats).toBe(60);
   });
 
   test("TC-FP-002: each section has correct number of tables", async ({ apiAsAdmin }) => {
@@ -32,13 +32,13 @@ test.describe("Floor Plan Layout Validation @api @regression", () => {
       sectionCounts[t.section] = (sectionCounts[t.section] || 0) + 1;
     }
 
-    expect(sectionCounts["Window"]).toBe(4);
-    expect(sectionCounts["Bar"]).toBe(2);
+    expect(sectionCounts["Window"]).toBe(3);
+    expect(sectionCounts["Bar"]).toBe(3);
     expect(sectionCounts["Booth"]).toBe(2);
     expect(sectionCounts["Private"]).toBe(1);
     expect(sectionCounts["Near Bathroom"]).toBe(2);
     expect(sectionCounts["Quiet"]).toBe(2);
-    expect(sectionCounts["Patio"]).toBe(5);
+    expect(sectionCounts["Patio"]).toBe(4);
   });
 
   test("TC-FP-003: section seat capacity matches requirements", async ({ apiAsAdmin }) => {
@@ -50,16 +50,16 @@ test.describe("Floor Plan Layout Validation @api @regression", () => {
       sectionSeats[t.section] = (sectionSeats[t.section] || 0) + t.seats;
     }
 
-    expect(sectionSeats["Window"]).toBe(16);    // 4x4
-    expect(sectionSeats["Bar"]).toBe(4);         // 2x2
-    expect(sectionSeats["Booth"]).toBe(8);       // 2x4
-    expect(sectionSeats["Private"]).toBe(6);     // 1x6
-    expect(sectionSeats["Near Bathroom"]).toBe(4); // 2x2
-    expect(sectionSeats["Quiet"]).toBe(8);       // 2x4
-    expect(sectionSeats["Patio"]).toBe(20);      // 5x4
+    expect(sectionSeats["Window"]).toBe(12);       // 3x4
+    expect(sectionSeats["Bar"]).toBe(6);            // 3x2
+    expect(sectionSeats["Booth"]).toBe(8);          // 2x4
+    expect(sectionSeats["Private"]).toBe(8);        // 1x8
+    expect(sectionSeats["Near Bathroom"]).toBe(4);  // 2x2
+    expect(sectionSeats["Quiet"]).toBe(4);          // 2x2
+    expect(sectionSeats["Patio"]).toBe(18);         // 3x4 + 1x6
   });
 
-  test("TC-FP-004: floor plan has elements (windows, doors, bathrooms)", async ({ apiAsAdmin }) => {
+  test("TC-FP-004: floor plan has elements (windows, doors, bathrooms, kitchen)", async ({ apiAsAdmin }) => {
     const res = await apiAsAdmin.getFloorPlan();
     const body = await res.json();
 
@@ -71,11 +71,13 @@ test.describe("Floor Plan Layout Validation @api @regression", () => {
     const windowsV = kinds.filter((k: string) => k === "window_v");
     const doors = kinds.filter((k: string) => k === "door");
     const bathrooms = kinds.filter((k: string) => k === "bathroom");
+    const kitchens = kinds.filter((k: string) => k === "kitchen");
 
-    expect(windows.length).toBe(4);
+    expect(windows.length).toBe(3);
     expect(windowsV.length).toBe(2);
     expect(doors.length).toBe(2);
     expect(bathrooms.length).toBe(2);
+    expect(kitchens.length).toBe(1);
   });
 
   test("TC-FP-005: floor plan has indoor and patio zones", async ({ apiAsAdmin }) => {
