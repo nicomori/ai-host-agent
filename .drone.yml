@@ -91,6 +91,16 @@ steps:
     image: bitnami/kubectl:latest
     commands:
       - export NS="hostai-pr-$DRONE_PULL_REQUEST"
+      - |
+        if kubectl get namespace $NS 2>/dev/null; then
+          echo "Namespace $NS exists, deleting and waiting..."
+          kubectl delete namespace $NS --ignore-not-found=true
+          for i in $(seq 1 30); do
+            kubectl get namespace $NS 2>/dev/null || break
+            echo "Waiting for namespace deletion... ($i/30)"
+            sleep 3
+          done
+        fi
       - sed -e "s|\$${PR_NUMBER}|$DRONE_PULL_REQUEST|g"
             -e "s|\$${COMMIT_SHA}|$DRONE_COMMIT_SHA|g"
             ci/k8s/preview.yaml | kubectl apply -f -
@@ -100,7 +110,7 @@ steps:
           | grep -v '^\s*uid:'
           | grep -v '^\s*creationTimestamp:'
           | kubectl apply -n $NS -f -
-      - kubectl rollout status deployment/hostai-api -n $NS --timeout=180s
+      - kubectl rollout status deployment/hostai-api -n $NS --timeout=300s
 
   - name: wait-for-health
     image: curlimages/curl:8.5.0
