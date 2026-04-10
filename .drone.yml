@@ -13,37 +13,31 @@
 # =============================================================================
 
 # ══════════════════════════════════════════════════════════════════════════════
-# PIPELINE: BUILD IMAGES (K8s Runner + DinD sidecar)
+# PIPELINE: BUILD IMAGES (Docker Runner + persistent DinD with PVC cache)
+# Uses type:docker to leverage the drone-docker-runner's persistent DinD daemon
+# with PVC docker-cache (10Gi) → layers cached between builds → builds <30s
 # ══════════════════════════════════════════════════════════════════════════════
 kind: pipeline
-type: kubernetes
+type: docker
 name: build-images
 
 trigger:
   event: [pull_request]
 
-services:
-  - name: dind
-    image: docker:27-dind
-    privileged: true
-    environment:
-      DOCKER_TLS_CERTDIR: ""
-      DOCKER_BUILDKIT: "1"
-
 steps:
   - name: build-app-image
     image: docker:27-cli
     environment:
-      DOCKER_HOST: tcp://localhost:2375
       DOCKER_BUILDKIT: "1"
       GCR_JSON_KEY:
         from_secret: gcr_json_key
+    volumes:
+      - name: docker-socket
+        path: /var/run/docker.sock
     commands:
-      - until docker info >/dev/null 2>&1; do sleep 1; done
       - printf '%s' "$GCR_JSON_KEY" > /tmp/gcr-key.json
       - docker login -u _json_key --password-stdin europe-west3-docker.pkg.dev < /tmp/gcr-key.json
       - export REGISTRY=europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai
-      - docker pull $REGISTRY/hostai-api:latest || true
       - docker build
           --cache-from $REGISTRY/hostai-api:latest
           -t $REGISTRY/hostai-api:$DRONE_COMMIT_SHA
@@ -55,15 +49,16 @@ steps:
   - name: build-e2e-image
     image: docker:27-cli
     environment:
-      DOCKER_HOST: tcp://localhost:2375
       DOCKER_BUILDKIT: "1"
       GCR_JSON_KEY:
         from_secret: gcr_json_key
+    volumes:
+      - name: docker-socket
+        path: /var/run/docker.sock
     commands:
       - printf '%s' "$GCR_JSON_KEY" > /tmp/gcr-key.json
       - docker login -u _json_key --password-stdin europe-west3-docker.pkg.dev < /tmp/gcr-key.json
       - export REGISTRY=europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai
-      - docker pull $REGISTRY/hostai-e2e:latest || true
       - docker build
           --cache-from $REGISTRY/hostai-e2e:latest
           -t $REGISTRY/hostai-e2e:$DRONE_COMMIT_SHA
@@ -72,6 +67,11 @@ steps:
       - docker push $REGISTRY/hostai-e2e:$DRONE_COMMIT_SHA
       - docker push $REGISTRY/hostai-e2e:latest
     depends_on: [build-app-image]
+
+volumes:
+  - name: docker-socket
+    host:
+      path: /var/run/docker.sock
 
 # ══════════════════════════════════════════════════════════════════════════════
 # PIPELINE: DEPLOY PREVIEW (K8s Runner, type: kubernetes)
@@ -361,39 +361,31 @@ steps:
     depends_on: [report-datadog]
 
 # ══════════════════════════════════════════════════════════════════════════════
-# PIPELINE: BUILD PRODUCTION (push a main, K8s Runner + DinD)
+# PIPELINE: BUILD PRODUCTION (Docker Runner + persistent DinD with PVC cache)
 # ══════════════════════════════════════════════════════════════════════════════
 ---
 kind: pipeline
-type: kubernetes
+type: docker
 name: build-production
 
 trigger:
   branch: [main]
   event: [push]
 
-services:
-  - name: dind
-    image: docker:27-dind
-    privileged: true
-    environment:
-      DOCKER_TLS_CERTDIR: ""
-      DOCKER_BUILDKIT: "1"
-
 steps:
   - name: build-and-push
     image: docker:27-cli
     environment:
-      DOCKER_HOST: tcp://localhost:2375
       DOCKER_BUILDKIT: "1"
       GCR_JSON_KEY:
         from_secret: gcr_json_key
+    volumes:
+      - name: docker-socket
+        path: /var/run/docker.sock
     commands:
-      - until docker info >/dev/null 2>&1; do sleep 1; done
       - printf '%s' "$GCR_JSON_KEY" > /tmp/gcr-key.json
       - docker login -u _json_key --password-stdin europe-west3-docker.pkg.dev < /tmp/gcr-key.json
       - export REGISTRY=europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai
-      - docker pull $REGISTRY/hostai-api:latest || true
       - docker build
           --cache-from $REGISTRY/hostai-api:latest
           -t $REGISTRY/hostai-api:$DRONE_COMMIT_SHA
@@ -401,6 +393,11 @@ steps:
           .
       - docker push $REGISTRY/hostai-api:$DRONE_COMMIT_SHA
       - docker push $REGISTRY/hostai-api:latest
+
+volumes:
+  - name: docker-socket
+    host:
+      path: /var/run/docker.sock
 
 # ══════════════════════════════════════════════════════════════════════════════
 # PIPELINE: DEPLOY PRODUCTION (push a main, K8s Runner)
