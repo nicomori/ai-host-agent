@@ -93,11 +93,12 @@ steps:
       - export NS="hostai-pr-$DRONE_PULL_REQUEST"
       - |
         if kubectl get namespace $NS 2>/dev/null; then
-          echo "Namespace $NS exists, deleting and waiting..."
+          echo "Namespace $NS exists, deleting PVCs first then namespace..."
+          kubectl delete pvc --all -n $NS --ignore-not-found=true 2>/dev/null || true
           kubectl delete namespace $NS --ignore-not-found=true
-          for i in $(seq 1 30); do
+          for i in $(seq 1 60); do
             kubectl get namespace $NS 2>/dev/null || break
-            echo "Waiting for namespace deletion... ($i/30)"
+            echo "Waiting for namespace deletion... ($i/60)"
             sleep 3
           done
         fi
@@ -123,18 +124,20 @@ steps:
     commands:
       - |
         BASE="http://hostai-api-svc.hostai-pr-$DRONE_PULL_REQUEST.svc.cluster.local:8000"
-        echo "Waiting for health..."
-        for i in $(seq 1 30); do
-          curl -sf "$BASE/health" > /dev/null 2>&1 && echo "Health OK!" && break
-          echo "Attempt $i/30 - waiting 3s..."
-          sleep 3
+        echo "Waiting for DNS + API readiness..."
+        sleep 10
+        echo "Checking health..."
+        for i in $(seq 1 40); do
+          curl -sf --connect-timeout 5 "$BASE/health" > /dev/null 2>&1 && echo "Health OK!" && break
+          echo "Attempt $i/40 - waiting 5s..."
+          sleep 5
         done
         echo "Verifying auth endpoint (DB seeded)..."
-        for i in $(seq 1 15); do
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X POST "$BASE/api/v1/auth/token" -d "username=admin&password=1234&grant_type=password" -H "Content-Type: application/x-www-form-urlencoded")
+        for i in $(seq 1 20); do
+          STATUS=$(curl -s --connect-timeout 5 -o /dev/null -w "%{http_code}" -X POST "$BASE/api/v1/auth/token" -d "username=admin&password=1234&grant_type=password" -H "Content-Type: application/x-www-form-urlencoded")
           [ "$STATUS" = "200" ] && echo "Auth OK!" && exit 0
-          echo "Auth attempt $i/15 (status=$STATUS) - waiting 3s..."
-          sleep 3
+          echo "Auth attempt $i/20 (status=$STATUS) - waiting 5s..."
+          sleep 5
         done
         echo "Auth check FAILED"
         exit 1
