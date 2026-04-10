@@ -16,13 +16,12 @@ FROM europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-api-base:l
 
 WORKDIR /app
 
-# Copy full source
-COPY . .
+# Copy full source (--chown avoids 73s chown -R on every build)
+COPY --chown=appuser:appuser . .
 
 # Copy built UI from ui-builder stage
-COPY --from=ui-builder /ui/dist /app/ui/dist
+COPY --chown=appuser:appuser --from=ui-builder /ui/dist /app/ui/dist
 
-RUN chown -R appuser /app
 USER appuser
 
 EXPOSE 8000

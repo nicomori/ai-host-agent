@@ -145,7 +145,7 @@ steps:
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
-      - npx playwright test tests/api/health.spec.ts --project=chromium --reporter=list
+      - cd /e2e && npx playwright test tests/api/health.spec.ts --project=chromium --reporter=list
 
 ---
 kind: pipeline
@@ -162,7 +162,7 @@ steps:
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
-      - npx playwright test tests/api/auth.spec.ts --project=chromium --reporter=list
+      - cd /e2e && npx playwright test tests/api/auth.spec.ts --project=chromium --reporter=list
 
 ---
 kind: pipeline
@@ -179,7 +179,7 @@ steps:
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
-      - npx playwright test tests/api/reservations.spec.ts --project=chromium --reporter=list
+      - cd /e2e && npx playwright test tests/api/reservations.spec.ts --project=chromium --reporter=list
 
 ---
 kind: pipeline
@@ -196,7 +196,7 @@ steps:
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
-      - npx playwright test tests/api/floor-plan.spec.ts --project=chromium --reporter=list
+      - cd /e2e && npx playwright test tests/api/floor-plan.spec.ts --project=chromium --reporter=list
 
 ---
 kind: pipeline
@@ -213,7 +213,7 @@ steps:
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
-      - npx playwright test tests/api/config.spec.ts --project=chromium --reporter=list
+      - cd /e2e && npx playwright test tests/api/config.spec.ts --project=chromium --reporter=list
 
 ---
 kind: pipeline
@@ -230,7 +230,7 @@ steps:
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
-      - npx playwright test tests/api/security.spec.ts --project=chromium --reporter=list
+      - cd /e2e && npx playwright test tests/api/security.spec.ts --project=chromium --reporter=list
 
 ---
 kind: pipeline
@@ -247,7 +247,7 @@ steps:
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
-      - npx playwright test tests/api/agent.spec.ts --project=chromium --reporter=list
+      - cd /e2e && npx playwright test tests/api/agent.spec.ts --project=chromium --reporter=list
 
 ---
 kind: pipeline
@@ -264,7 +264,7 @@ steps:
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
-      - npx playwright test tests/ui/dashboard.spec.ts --project=chromium --reporter=list
+      - cd /e2e && npx playwright test tests/ui/dashboard.spec.ts --project=chromium --reporter=list
 
 ---
 kind: pipeline
@@ -281,7 +281,7 @@ steps:
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
-      - npx playwright test tests/ui/chat.spec.ts --project=chromium --reporter=list
+      - cd /e2e && npx playwright test tests/ui/chat.spec.ts --project=chromium --reporter=list
 
 ---
 kind: pipeline
@@ -298,7 +298,7 @@ steps:
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
-      - npx playwright test tests/ui/floor-plan.spec.ts --project=chromium --reporter=list
+      - cd /e2e && npx playwright test tests/ui/floor-plan.spec.ts --project=chromium --reporter=list
 
 ---
 kind: pipeline
@@ -315,7 +315,7 @@ steps:
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
-      - npx playwright test tests/ui/rbac.spec.ts --project=chromium --reporter=list
+      - cd /e2e && npx playwright test tests/ui/rbac.spec.ts --project=chromium --reporter=list
 
 # ══════════════════════════════════════════════════════════════════════════════
 # PIPELINE: REPORT + CLEANUP (siempre corre al final)
