@@ -4,7 +4,7 @@
 # GKE Standard cluster: drone-ci-standard (europe-west3-a)
 # K8s Runner (cap 8): builds con DinD service + tests paralelos + deploy
 #
-# PR flow:  build-images → deploy-preview → 11 tests paralelos → cleanup
+# PR flow:  build-images → deploy-preview → 4 tests (2 phases, max 2 pods) → cleanup
 # Main flow: build-production → deploy-production
 #
 # Base images (pre-baked deps, rebuild when deps change):
@@ -144,13 +144,16 @@ steps:
     depends_on: [deploy]
 
 # ══════════════════════════════════════════════════════════════════════════════
-# PIPELINES: 11 TESTS E2E EN PARALELO (K8s Runner, 1 pod cada uno)
+# TEST PIPELINES — Optimized for 2-node GKE cluster (e2-medium)
+# Phase 1: test-api (1 pod) + test-ui-light (1 pod) — 2 pods parallel
+# Phase 2: test-ui-dashboard (1 pod) + test-ui-floor-plan (1 pod) — 2 pods parallel
+# Max concurrent test pods: 2 (down from 11)
 # ══════════════════════════════════════════════════════════════════════════════
 
 ---
 kind: pipeline
 type: kubernetes
-name: test-api-health
+name: test-api
 trigger: { event: [pull_request] }
 depends_on: [deploy-preview]
 image_pull_secrets: [ar-pull-secret]
@@ -163,12 +166,12 @@ steps:
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
-      - cd /e2e && npx playwright test tests/api/health.spec.ts --project=chromium --reporter=list
+      - cd /e2e && npx playwright test tests/api/ --project=chromium --reporter=list
 
 ---
 kind: pipeline
 type: kubernetes
-name: test-api-auth
+name: test-ui-light
 trigger: { event: [pull_request] }
 depends_on: [deploy-preview]
 image_pull_secrets: [ar-pull-secret]
@@ -181,104 +184,14 @@ steps:
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
-      - cd /e2e && npx playwright test tests/api/auth.spec.ts --project=chromium --reporter=list
-
----
-kind: pipeline
-type: kubernetes
-name: test-api-reservations
-trigger: { event: [pull_request] }
-depends_on: [deploy-preview]
-image_pull_secrets: [ar-pull-secret]
-steps:
-  - name: run
-    image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
-    environment:
-      CI: "true"
-      API_KEY: "ci-test-key"
-      API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
-      BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
-    commands:
-      - cd /e2e && npx playwright test tests/api/reservations.spec.ts --project=chromium --reporter=list
-
----
-kind: pipeline
-type: kubernetes
-name: test-api-floor-plan
-trigger: { event: [pull_request] }
-depends_on: [deploy-preview]
-image_pull_secrets: [ar-pull-secret]
-steps:
-  - name: run
-    image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
-    environment:
-      CI: "true"
-      API_KEY: "ci-test-key"
-      API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
-      BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
-    commands:
-      - cd /e2e && npx playwright test tests/api/floor-plan.spec.ts --project=chromium --reporter=list
-
----
-kind: pipeline
-type: kubernetes
-name: test-api-config
-trigger: { event: [pull_request] }
-depends_on: [deploy-preview]
-image_pull_secrets: [ar-pull-secret]
-steps:
-  - name: run
-    image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
-    environment:
-      CI: "true"
-      API_KEY: "ci-test-key"
-      API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
-      BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
-    commands:
-      - cd /e2e && npx playwright test tests/api/config.spec.ts --project=chromium --reporter=list
-
----
-kind: pipeline
-type: kubernetes
-name: test-api-security
-trigger: { event: [pull_request] }
-depends_on: [deploy-preview]
-image_pull_secrets: [ar-pull-secret]
-steps:
-  - name: run
-    image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
-    environment:
-      CI: "true"
-      API_KEY: "ci-test-key"
-      API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
-      BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
-    commands:
-      - cd /e2e && npx playwright test tests/api/security.spec.ts --project=chromium --reporter=list
-
----
-kind: pipeline
-type: kubernetes
-name: test-api-agent
-trigger: { event: [pull_request] }
-depends_on: [deploy-preview]
-image_pull_secrets: [ar-pull-secret]
-steps:
-  - name: run
-    image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
-    environment:
-      CI: "true"
-      API_KEY: "ci-test-key"
-      API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
-      BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
-    commands:
-      - cd /e2e && npx playwright test tests/api/agent.spec.ts --project=chromium --reporter=list
+      - cd /e2e && npx playwright test tests/ui/auth.spec.ts tests/ui/rbac.spec.ts tests/ui/chat.spec.ts --project=chromium --reporter=list
 
 ---
 kind: pipeline
 type: kubernetes
 name: test-ui-dashboard
 trigger: { event: [pull_request] }
-depends_on: [deploy-preview]
+depends_on: [test-api, test-ui-light]
 image_pull_secrets: [ar-pull-secret]
 steps:
   - name: run
@@ -294,27 +207,9 @@ steps:
 ---
 kind: pipeline
 type: kubernetes
-name: test-ui-chat
-trigger: { event: [pull_request] }
-depends_on: [deploy-preview]
-image_pull_secrets: [ar-pull-secret]
-steps:
-  - name: run
-    image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
-    environment:
-      CI: "true"
-      API_KEY: "ci-test-key"
-      API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
-      BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
-    commands:
-      - cd /e2e && npx playwright test tests/ui/chat.spec.ts --project=chromium --reporter=list
-
----
-kind: pipeline
-type: kubernetes
 name: test-ui-floor-plan
 trigger: { event: [pull_request] }
-depends_on: [deploy-preview]
+depends_on: [test-api, test-ui-light]
 image_pull_secrets: [ar-pull-secret]
 steps:
   - name: run
@@ -326,24 +221,6 @@ steps:
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
       - cd /e2e && npx playwright test tests/ui/floor-plan.spec.ts --project=chromium --reporter=list
-
----
-kind: pipeline
-type: kubernetes
-name: test-ui-rbac
-trigger: { event: [pull_request] }
-depends_on: [deploy-preview]
-image_pull_secrets: [ar-pull-secret]
-steps:
-  - name: run
-    image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
-    environment:
-      CI: "true"
-      API_KEY: "ci-test-key"
-      API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
-      BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
-    commands:
-      - cd /e2e && npx playwright test tests/ui/rbac.spec.ts --project=chromium --reporter=list
 
 # ══════════════════════════════════════════════════════════════════════════════
 # PIPELINE: REPORT + CLEANUP (siempre corre al final)
@@ -357,17 +234,10 @@ trigger:
   event: [pull_request]
 
 depends_on:
-  - test-api-health
-  - test-api-auth
-  - test-api-reservations
-  - test-api-floor-plan
-  - test-api-config
-  - test-api-security
-  - test-api-agent
+  - test-api
+  - test-ui-light
   - test-ui-dashboard
-  - test-ui-chat
   - test-ui-floor-plan
-  - test-ui-rbac
 
 steps:
   - name: report-datadog
