@@ -1,0 +1,278 @@
+{
+  "tables": [
+    {
+      "id": "t1",
+      "label": "Mesa 1",
+      "shape": "rect",
+      "seats": 4,
+      "x": 100,
+      "y": 80,
+      "section": "Window"
+    },
+    {
+      "id": "t2",
+      "label": "Mesa 2",
+      "shape": "rect",
+      "seats": 4,
+      "x": 280,
+      "y": 80,
+      "section": "Window"
+    },
+    {
+      "id": "t3",
+      "label": "Mesa 3",
+      "shape": "rect",
+      "seats": 4,
+      "x": 460,
+      "y": 80,
+      "section": "Window"
+    },
+    {
+      "id": "t4",
+      "label": "Mesa 4",
+      "shape": "rect",
+      "seats": 4,
+      "x": 640,
+      "y": 80,
+      "section": "Window"
+    },
+    {
+      "id": "t5",
+      "label": "Mesa 5",
+      "shape": "circle",
+      "seats": 2,
+      "x": 60,
+      "y": 250,
+      "section": "Bar"
+    },
+    {
+      "id": "t6",
+      "label": "Mesa 6",
+      "shape": "circle",
+      "seats": 2,
+      "x": 60,
+      "y": 380,
+      "section": "Bar"
+    },
+    {
+      "id": "t7",
+      "label": "Mesa 7",
+      "shape": "rect",
+      "seats": 4,
+      "x": 60,
+      "y": 510,
+      "section": "Booth"
+    },
+    {
+      "id": "t8",
+      "label": "Mesa 8",
+      "shape": "rect",
+      "seats": 4,
+      "x": 200,
+      "y": 510,
+      "section": "Booth"
+    },
+    {
+      "id": "t9",
+      "label": "Mesa 9",
+      "shape": "circle",
+      "seats": 6,
+      "x": 420,
+      "y": 300,
+      "section": "Private"
+    },
+    {
+      "id": "t10",
+      "label": "Mesa 10",
+      "shape": "rect",
+      "seats": 2,
+      "x": 640,
+      "y": 480,
+      "section": "Near Bathroom"
+    },
+    {
+      "id": "t11",
+      "label": "Mesa 11",
+      "shape": "rect",
+      "seats": 2,
+      "x": 640,
+      "y": 370,
+      "section": "Near Bathroom"
+    },
+    {
+      "id": "t12",
+      "label": "Mesa 12",
+      "shape": "rect",
+      "seats": 4,
+      "x": 700,
+      "y": 80,
+      "section": "Quiet"
+    },
+    {
+      "id": "t13",
+      "label": "Mesa 13",
+      "shape": "rect",
+      "seats": 4,
+      "x": 700,
+      "y": 210,
+      "section": "Quiet"
+    },
+    {
+      "id": "t14",
+      "label": "Mesa 14",
+      "shape": "circle",
+      "seats": 4,
+      "x": 100,
+      "y": 750,
+      "section": "Patio"
+    },
+    {
+      "id": "t15",
+      "label": "Mesa 15",
+      "shape": "circle",
+      "seats": 4,
+      "x": 280,
+      "y": 750,
+      "section": "Patio"
+    },
+    {
+      "id": "t16",
+      "label": "Mesa 16",
+      "shape": "circle",
+      "seats": 4,
+      "x": 460,
+      "y": 750,
+      "section": "Patio"
+    },
+    {
+      "id": "t17",
+      "label": "Mesa 17",
+      "shape": "rect",
+      "seats": 4,
+      "x": 100,
+      "y": 900,
+      "section": "Patio"
+    },
+    {
+      "id": "t18",
+      "label": "Mesa 18",
+      "shape": "rect",
+      "seats": 4,
+      "x": 350,
+      "y": 900,
+      "section": "Patio"
+    }
+  ],
+  "elements": [
+    {
+      "id": "w1",
+      "kind": "window",
+      "x": 60,
+      "y": 20,
+      "width": 140,
+      "height": 18,
+      "label": "Ventana 1"
+    },
+    {
+      "id": "w2",
+      "kind": "window",
+      "x": 240,
+      "y": 20,
+      "width": 140,
+      "height": 18,
+      "label": "Ventana 2"
+    },
+    {
+      "id": "w3",
+      "kind": "window",
+      "x": 420,
+      "y": 20,
+      "width": 140,
+      "height": 18,
+      "label": "Ventana 3"
+    },
+    {
+      "id": "w4",
+      "kind": "window",
+      "x": 600,
+      "y": 20,
+      "width": 140,
+      "height": 18,
+      "label": "Ventana 4"
+    },
+    {
+      "id": "wv1",
+      "kind": "window_v",
+      "x": 802,
+      "y": 80,
+      "width": 18,
+      "height": 140,
+      "label": "Ventana Lateral 1"
+    },
+    {
+      "id": "wv2",
+      "kind": "window_v",
+      "x": 802,
+      "y": 260,
+      "width": 18,
+      "height": 140,
+      "label": "Ventana Lateral 2"
+    },
+    {
+      "id": "d1",
+      "kind": "door",
+      "x": 200,
+      "y": 620,
+      "width": 60,
+      "height": 80,
+      "label": "Puerta Patio 1"
+    },
+    {
+      "id": "d2",
+      "kind": "door",
+      "x": 400,
+      "y": 620,
+      "width": 60,
+      "height": 80,
+      "label": "Puerta Patio 2"
+    },
+    {
+      "id": "b1",
+      "kind": "bathroom",
+      "x": 740,
+      "y": 540,
+      "width": 70,
+      "height": 70,
+      "label": "Ba\u00f1o Hombres"
+    },
+    {
+      "id": "b2",
+      "kind": "bathroom",
+      "x": 740,
+      "y": 440,
+      "width": 70,
+      "height": 70,
+      "label": "Ba\u00f1o Mujeres"
+    }
+  ],
+  "zones": [
+    {
+      "id": "z1",
+      "kind": "zone_indoor",
+      "x": 20,
+      "y": 20,
+      "width": 800,
+      "height": 600,
+      "label": "Interior"
+    },
+    {
+      "id": "z2",
+      "kind": "zone_outdoor",
+      "x": 20,
+      "y": 660,
+      "width": 600,
+      "height": 400,
+      "label": "Patio"
+    }
+  ]
+}

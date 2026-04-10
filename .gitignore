@@ -43,8 +43,8 @@ e2e/node_modules/
 e2e/test-results/
 e2e/playwright-report/
 
-# Data
-data/
+# Data (top-level only — src/data/ must be tracked)
+/data/
 
 # Temp
 tmp/
