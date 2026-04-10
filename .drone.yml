@@ -142,6 +142,7 @@ steps:
     image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
     environment:
       CI: "true"
+      API_KEY: "ci-test-key"
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
@@ -159,6 +160,7 @@ steps:
     image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
     environment:
       CI: "true"
+      API_KEY: "ci-test-key"
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
@@ -176,6 +178,7 @@ steps:
     image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
     environment:
       CI: "true"
+      API_KEY: "ci-test-key"
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
@@ -193,6 +196,7 @@ steps:
     image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
     environment:
       CI: "true"
+      API_KEY: "ci-test-key"
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
@@ -210,6 +214,7 @@ steps:
     image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
     environment:
       CI: "true"
+      API_KEY: "ci-test-key"
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
@@ -227,6 +232,7 @@ steps:
     image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
     environment:
       CI: "true"
+      API_KEY: "ci-test-key"
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
@@ -244,6 +250,7 @@ steps:
     image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
     environment:
       CI: "true"
+      API_KEY: "ci-test-key"
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
@@ -261,6 +268,7 @@ steps:
     image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
     environment:
       CI: "true"
+      API_KEY: "ci-test-key"
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
@@ -278,6 +286,7 @@ steps:
     image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
     environment:
       CI: "true"
+      API_KEY: "ci-test-key"
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
@@ -295,6 +304,7 @@ steps:
     image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
     environment:
       CI: "true"
+      API_KEY: "ci-test-key"
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
@@ -312,6 +322,7 @@ steps:
     image: europe-west3-docker.pkg.dev/nico-drone-ci-poc-2026/hostai/hostai-e2e:${DRONE_COMMIT_SHA}
     environment:
       CI: "true"
+      API_KEY: "ci-test-key"
       API_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
       BASE_URL: http://hostai-api-svc.hostai-pr-${DRONE_PULL_REQUEST}.svc.cluster.local:8000
     commands:
