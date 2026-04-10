@@ -12,7 +12,7 @@ metadata:
   name: hostai-env
   namespace: hostai-pr-${PR_NUMBER}
 data:
-  APP_ENV: "ci"
+  APP_ENV: "staging"
   APP_PORT: "8000"
   API_KEY: "ci-test-key"
   POSTGRES_HOST: "postgres-svc"
